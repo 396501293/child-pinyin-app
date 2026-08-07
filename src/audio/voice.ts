@@ -3,7 +3,7 @@
 // 解锁后定时器驱动的自动播放才合法；不裸用 <audio>.play()。
 // 任一 clip 失败（fetch/decode/ctx 不可用）：静默降级 Web Speech 念 say 文本。
 import { clipInfo, type ClipId } from './manifest';
-import { initTTS, speak, ttsAvailable } from './tts';
+import { initTTS, speak, stopTTS, ttsAvailable } from './tts';
 import { LruCache } from './lru';
 
 /** 纯函数（可测）：clip 文件 → 部署路径下的 URL。 */
@@ -52,14 +52,19 @@ async function load(id: ClipId): Promise<AudioBuffer> {
   return p;
 }
 
-/** 播放一个 clip，播完 resolve；失败静默降级 say（此时立即 resolve，不精确等语音）。 */
+/** 播放一个 clip，播完 resolve；失败静默降级 say（此时立即 resolve，不精确等语音）。
+ *  默认打断在播内容——「至多一个音源」不靠 UI 自觉；序列内部才传 interrupt:false。 */
 export async function playClip(id: ClipId, opts: { interrupt?: boolean } = {}): Promise<void> {
-  if (opts.interrupt) stopVoice();
+  const info = clipInfo(id); // 未知 id 在此就地爆炸（守卫钉死），不进静默降级
+  if (opts.interrupt ?? true) stopVoice();
   const gen = generation;
   try {
     const buf = await load(id);
     const c = ac()!; // load 成功即 ctx 存在
-    if (c.state === 'suspended') await c.resume(); // 手势调用栈内合法；失败走 catch
+    if (c.state === 'suspended') {
+      // iOS 上非手势栈内 resume() 可能永远 pending：限时等待，超时按锁定处理走降级
+      await Promise.race([c.resume(), new Promise((r) => setTimeout(r, 1500))]);
+    }
     if (c.state !== 'running') throw new Error('voice: AudioContext locked');
     if (gen !== generation) return; // 等待期间被打断：安静放弃
     await new Promise<void>((resolve) => {
@@ -74,16 +79,17 @@ export async function playClip(id: ClipId, opts: { interrupt?: boolean } = {}): 
       src.start();
     });
   } catch {
-    if (gen === generation) say(clipInfo(id).say);
+    if (gen === generation) say(info.say);
   }
 }
 
 /** 顺序播放（教拼读：[sm-b, ym-a, sy-ba4] → “b — a — bà”）；被 stopVoice 打断即止。 */
 export async function playSeq(ids: ClipId[], gapMs = 250): Promise<void> {
+  stopVoice(); // 接管音源，序列内不再各自打断
   const gen = generation;
   for (const [i, id] of ids.entries()) {
     if (gen !== generation) return;
-    await playClip(id);
+    await playClip(id, { interrupt: false });
     if (i < ids.length - 1 && gapMs > 0) {
       await new Promise((r) => setTimeout(r, gapMs));
     }
@@ -95,7 +101,7 @@ export function stopVoice(): void {
   generation++;
   current?.stop();
   current = null;
-  if ('speechSynthesis' in globalThis) speechSynthesis.cancel();
+  stopTTS();
 }
 
 /** 预热本课 clips（fetch+decode 进 LRU）；失败不响——真播时自会降级。 */

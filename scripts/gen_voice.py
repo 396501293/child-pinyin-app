@@ -6,13 +6,18 @@
              不能放 public/——Vite 会整目录拷进 dist 并被 PWA 预缓存）
 - 听审页   → scripts/qa-listen.html         （file:// 打开，分组列出全部 clip）
 
-跳过已存在文件（可续跑）；--force 全量重生成；--only <前缀> 过滤 clip id。
-临时写 .tmp 再改名，中断不会留下半截 mp3。瞬时失败重试 3 次；
-默认直连，末次重试改走 http(s)_proxy 环境变量（若有）。任一 clip 失败则退出码非 0。
+跳过条件 = 文件已存在 且 sidecar 状态（scripts/audio-qa/.texts.json，记录
+filename→已生成的 text+voice）与当前一致：听审后改了 say/voice 重跑会精准重生成，
+不会「跳过并沿用旧录音」。已有文件而无状态记录时视为与当前文本一致（首跑自举；
+正确性由「改 say 必然发生在有状态之后」的工作流保证）。--force 无条件全量重生成；
+--only <前缀> 过滤 clip id。临时写 .tmp 再改名，中断不会留下半截 mp3。
+瞬时失败重试 3 次；默认直连，末次重试改走 http(s)_proxy 环境变量（若有）。
+任一 clip 失败则退出码非 0。
 """
 
 import argparse
 import asyncio
+import html
 import json
 import os
 import random
@@ -26,6 +31,7 @@ SCRIPT_JSON = ROOT / "src" / "data" / "audio-script.json"
 AUDIO_DIR = ROOT / "public" / "audio"
 QA_DIR = ROOT / "scripts" / "audio-qa"
 QA_HTML = ROOT / "scripts" / "qa-listen.html"
+STATE_FILE = QA_DIR / ".texts.json"  # filename→{text,voice}；gitignore（随 audio-qa/）
 CONCURRENCY = 4  # 对非官方端点客气一点，防限流
 ATTEMPTS = 3
 
@@ -47,11 +53,15 @@ def env_proxy():
     return None
 
 
-async def gen_take(sem, voice, text, path, force, stats):
-    """生成单条音频；已存在且非 force 则跳过。"""
+async def gen_take(sem, voice, text, path, force, stats, state):
+    """生成单条音频；文件已存在且记录的 text+voice 未变则跳过（无记录视为未变，自举）。"""
+    expected = {"text": text, "voice": voice}
     if path.exists() and not force:
-        stats["skipped"] += 1
-        return
+        previous = state.get(path.name)
+        if previous is None or previous == expected:
+            state[path.name] = expected
+            stats["skipped"] += 1
+            return
     async with sem:
         last_error = None
         for attempt in range(1, ATTEMPTS + 1):
@@ -63,6 +73,7 @@ async def gen_take(sem, voice, text, path, force, stats):
                 if tmp.stat().st_size == 0:
                     raise RuntimeError("empty output")
                 tmp.replace(path)
+                state[path.name] = expected
                 stats["generated"] += 1
                 return
             except Exception as error:  # noqa: BLE001 —— 端点异常种类不可枚举
@@ -89,7 +100,7 @@ def build_qa_html(clips):
             cand_mark = " ★有候选" if clip.get("candidates") else ""
             out.append(
                 f"<tr><td><code>{clip_id}</code>{cand_mark}</td>"
-                f"<td class='say'>{clip['say']}</td>"
+                f"<td class='say'>{html.escape(clip['say'])}</td>"
                 f"<td>{audio('../public/audio/' + clip['file'])}</td></tr>"
             )
         return "\n".join(out)
@@ -109,13 +120,13 @@ def build_qa_html(clips):
             continue
         takes = "".join(
             f"<div class='cand{' pick' if text == clip['say'] else ''}'>"
-            f"<span>{index}. {text}{'（当前 say）' if text == clip['say'] else ''}</span>"
+            f"<span>{index}. {html.escape(text)}{'（当前 say）' if text == clip['say'] else ''}</span>"
             f"{audio(f'audio-qa/{stem(clip)}.cand{index}.mp3')}</div>"
             for index, text in enumerate(candidates, 1)
         )
         cand_rows.append(
             f"<tr><td><code>{clip_id}</code></td>"
-            f"<td class='say'>{clip['say']}</td>"
+            f"<td class='say'>{html.escape(clip['say'])}</td>"
             f"<td>{audio('../public/audio/' + clip['file'])}</td>"
             f"<td>{takes}</td></tr>"
         )
@@ -161,20 +172,34 @@ async def main():
     voice = doc["voice"]
     clips = doc["clips"]
     selected = {k: v for k, v in clips.items() if k.startswith(args.only)}
+    if not selected:
+        print(f"⚠ --only '{args.only}' 未匹配任何 clip", file=sys.stderr)
+        sys.exit(1)
 
     AUDIO_DIR.mkdir(parents=True, exist_ok=True)
     QA_DIR.mkdir(parents=True, exist_ok=True)
+    for leftover in (*AUDIO_DIR.glob("*.tmp"), *QA_DIR.glob("*.tmp")):
+        leftover.unlink()  # 上次中断的残留
+    try:
+        state = json.loads(STATE_FILE.read_text(encoding="utf-8"))
+    except (FileNotFoundError, json.JSONDecodeError):
+        state = {}
 
     sem = asyncio.Semaphore(CONCURRENCY)
     stats = {"generated": 0, "skipped": 0, "failed": []}
     tasks = []
     for clip in selected.values():
-        tasks.append(gen_take(sem, voice, clip["say"], AUDIO_DIR / clip["file"], args.force, stats))
+        tasks.append(
+            gen_take(sem, voice, clip["say"], AUDIO_DIR / clip["file"], args.force, stats, state)
+        )
         for index, text in enumerate(clip.get("candidates", []), 1):
             qa_path = QA_DIR / f"{stem(clip)}.cand{index}.mp3"
-            tasks.append(gen_take(sem, voice, text, qa_path, args.force, stats))
+            tasks.append(gen_take(sem, voice, text, qa_path, args.force, stats, state))
     await asyncio.gather(*tasks)
 
+    STATE_FILE.write_text(
+        json.dumps(state, ensure_ascii=False, indent=1, sort_keys=True) + "\n", encoding="utf-8"
+    )
     build_qa_html(clips)  # 听审页始终全量重建（含未选中的 clip，页面才完整）
 
     total_bytes = sum(f.stat().st_size for f in AUDIO_DIR.glob("*.mp3"))

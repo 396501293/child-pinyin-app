@@ -12,6 +12,7 @@ import { LESSONS } from '../../src/core/curriculum';
 import { parseSyllable, toneMark } from '../../src/core/pinyin';
 import type { Tone } from '../../src/core/pinyin';
 import {
+  BARE_VOWELS,
   clipForLetter,
   clipForLine,
   clipForSyllable,
@@ -19,6 +20,7 @@ import {
   clipForWholeRead,
   clipInfo,
 } from '../../src/audio/manifest';
+import type { ClipId } from '../../src/audio/manifest';
 import { VOICE } from '../../src/audio/lines';
 
 const CLIPS: Record<string, { say: string; file: string }> = audioScript.clips;
@@ -64,7 +66,7 @@ describe('guard (a): every curriculum reference resolves to a clip', () => {
   });
 
   it('L1-2 vowels × 4 tones resolve via clipForTonedVowel', () => {
-    for (const vowel of ['a', 'o', 'e', 'i', 'u', 'ü']) {
+    for (const vowel of BARE_VOWELS) {
       for (const tone of TONES) {
         expect(CLIP_IDS.has(clipForTonedVowel(vowel, tone)), `${vowel}${tone}`).toBe(true);
       }
@@ -90,8 +92,11 @@ describe('guard (a): every curriculum reference resolves to a clip', () => {
 });
 
 describe('guard (b): every clip file exists on disk', () => {
-  it('all clip files are committed in public/audio/', () => {
+  it('all clip files are committed in public/audio/, named after their id', () => {
     for (const [id, clip] of Object.entries(CLIPS)) {
+      // id↔file 对应关系锁死（ü→v 转 ASCII）：防听审改 json 时张冠李戴——
+      // 若无此行，任意置换 file 字段其余守卫仍全绿。
+      expect(clip.file, id).toBe(id.replace(/ü/g, 'v') + '.mp3');
       expect(existsSync(join(AUDIO_DIR, clip.file)), `${id} -> ${clip.file}`).toBe(true);
     }
   });
@@ -159,5 +164,6 @@ describe('manifest id mapping', () => {
     expect(() => clipForTonedVowel('a', 0)).toThrow();
     expect(() => clipForLine('ln-nope')).toThrow();
     expect(() => clipForLine('sy-ba4')).toThrow(); // 非 ln- 不走台词通道
+    expect(() => clipInfo('sy-nope1' as ClipId)).toThrow(); // clipInfo 同守「缺失即 throw」
   });
 });

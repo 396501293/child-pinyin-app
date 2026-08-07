@@ -12,3 +12,4 @@ package-lock.json
 scripts/.venv/
 scripts/audio-qa/
 scripts/qa-listen.html
+public/audio/*.tmp

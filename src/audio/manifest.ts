@@ -19,13 +19,20 @@ function ensure(id: string): ClipId {
   return id as ClipId;
 }
 
-export const clipInfo = (id: ClipId): Clip => CLIPS[id];
+export function clipInfo(id: ClipId): Clip {
+  const clip = CLIPS[id];
+  if (!clip) throw new Error(`manifest: no clip '${id}'`);
+  return clip;
+}
 
-const BARE_VOWELS = new Set(['a', 'o', 'e', 'i', 'u', 'ü']);
+/** 可带调的 6 个裸元音（L1-2 练2 的对象；带调时走 tv-* 而非 sy-*）。 */
+export const BARE_VOWELS: readonly string[] = ['a', 'o', 'e', 'i', 'u', 'ü'];
 
 /** 带调音节 → sy-{书写形base}{调}；L1-2 的裸带调元音没有 sy-*，路由到 tv-*（同一个音）。 */
 export function clipForSyllable(syl: Syllable): ClipId {
-  if (syl.initial === '' && BARE_VOWELS.has(syl.base)) return clipForTonedVowel(syl.base, syl.tone);
+  if (syl.initial === '' && BARE_VOWELS.includes(syl.base)) {
+    return clipForTonedVowel(syl.base, syl.tone);
+  }
   return ensure(`sy-${syl.base}${syl.tone}`);
 }
 
