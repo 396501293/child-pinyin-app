@@ -1,0 +1,1022 @@
+{
+  "version": 1,
+  "voice": "zh-CN-XiaoxiaoNeural",
+  "clips": {
+    "sm-b": {
+      "say": "玻",
+      "file": "sm-b.mp3"
+    },
+    "sm-p": {
+      "say": "坡",
+      "file": "sm-p.mp3"
+    },
+    "sm-m": {
+      "say": "摸",
+      "file": "sm-m.mp3"
+    },
+    "sm-f": {
+      "say": "佛",
+      "file": "sm-f.mp3"
+    },
+    "sm-d": {
+      "say": "得",
+      "file": "sm-d.mp3",
+      "candidates": [
+        "得",
+        "德"
+      ]
+    },
+    "sm-t": {
+      "say": "特",
+      "file": "sm-t.mp3"
+    },
+    "sm-n": {
+      "say": "讷",
+      "file": "sm-n.mp3",
+      "candidates": [
+        "讷",
+        "呢"
+      ]
+    },
+    "sm-l": {
+      "say": "勒",
+      "file": "sm-l.mp3",
+      "candidates": [
+        "勒",
+        "乐"
+      ]
+    },
+    "sm-g": {
+      "say": "哥",
+      "file": "sm-g.mp3"
+    },
+    "sm-k": {
+      "say": "科",
+      "file": "sm-k.mp3"
+    },
+    "sm-h": {
+      "say": "喝",
+      "file": "sm-h.mp3"
+    },
+    "sm-j": {
+      "say": "基",
+      "file": "sm-j.mp3"
+    },
+    "sm-q": {
+      "say": "欺",
+      "file": "sm-q.mp3"
+    },
+    "sm-x": {
+      "say": "希",
+      "file": "sm-x.mp3"
+    },
+    "sm-zh": {
+      "say": "知",
+      "file": "sm-zh.mp3"
+    },
+    "sm-ch": {
+      "say": "蚩",
+      "file": "sm-ch.mp3",
+      "candidates": [
+        "蚩",
+        "吃"
+      ]
+    },
+    "sm-sh": {
+      "say": "诗",
+      "file": "sm-sh.mp3"
+    },
+    "sm-r": {
+      "say": "日",
+      "file": "sm-r.mp3"
+    },
+    "sm-z": {
+      "say": "资",
+      "file": "sm-z.mp3"
+    },
+    "sm-c": {
+      "say": "雌",
+      "file": "sm-c.mp3"
+    },
+    "sm-s": {
+      "say": "思",
+      "file": "sm-s.mp3"
+    },
+    "sm-y": {
+      "say": "医",
+      "file": "sm-y.mp3"
+    },
+    "sm-w": {
+      "say": "屋",
+      "file": "sm-w.mp3"
+    },
+    "ym-a": {
+      "say": "啊",
+      "file": "ym-a.mp3",
+      "candidates": [
+        "啊",
+        "阿"
+      ]
+    },
+    "ym-o": {
+      "say": "喔",
+      "file": "ym-o.mp3",
+      "candidates": [
+        "喔",
+        "噢",
+        "哦"
+      ]
+    },
+    "ym-e": {
+      "say": "鹅",
+      "file": "ym-e.mp3"
+    },
+    "ym-i": {
+      "say": "衣",
+      "file": "ym-i.mp3"
+    },
+    "ym-u": {
+      "say": "乌",
+      "file": "ym-u.mp3"
+    },
+    "ym-ü": {
+      "say": "迂",
+      "file": "ym-v.mp3"
+    },
+    "ym-ai": {
+      "say": "哀",
+      "file": "ym-ai.mp3"
+    },
+    "ym-ei": {
+      "say": "诶",
+      "file": "ym-ei.mp3",
+      "candidates": [
+        "诶",
+        "欸"
+      ]
+    },
+    "ym-ui": {
+      "say": "威",
+      "file": "ym-ui.mp3",
+      "candidates": [
+        "威",
+        "微",
+        "喂"
+      ]
+    },
+    "ym-ao": {
+      "say": "熬",
+      "file": "ym-ao.mp3",
+      "candidates": [
+        "熬",
+        "凹"
+      ]
+    },
+    "ym-ou": {
+      "say": "欧",
+      "file": "ym-ou.mp3"
+    },
+    "ym-iu": {
+      "say": "优",
+      "file": "ym-iu.mp3"
+    },
+    "ym-ie": {
+      "say": "耶",
+      "file": "ym-ie.mp3"
+    },
+    "ym-üe": {
+      "say": "约",
+      "file": "ym-ve.mp3"
+    },
+    "ym-er": {
+      "say": "儿",
+      "file": "ym-er.mp3"
+    },
+    "ym-an": {
+      "say": "安",
+      "file": "ym-an.mp3"
+    },
+    "ym-en": {
+      "say": "恩",
+      "file": "ym-en.mp3"
+    },
+    "ym-in": {
+      "say": "因",
+      "file": "ym-in.mp3"
+    },
+    "ym-un": {
+      "say": "温",
+      "file": "ym-un.mp3",
+      "candidates": [
+        "温",
+        "文"
+      ]
+    },
+    "ym-ün": {
+      "say": "晕",
+      "file": "ym-vn.mp3",
+      "candidates": [
+        "晕",
+        "云"
+      ]
+    },
+    "ym-ang": {
+      "say": "昂",
+      "file": "ym-ang.mp3"
+    },
+    "ym-eng": {
+      "say": "鞥",
+      "file": "ym-eng.mp3",
+      "candidates": [
+        "鞥",
+        "亨"
+      ]
+    },
+    "ym-ing": {
+      "say": "英",
+      "file": "ym-ing.mp3"
+    },
+    "ym-ong": {
+      "say": "翁",
+      "file": "ym-ong.mp3",
+      "candidates": [
+        "翁",
+        "嗡"
+      ]
+    },
+    "tv-a1": {
+      "say": "阿",
+      "file": "tv-a1.mp3"
+    },
+    "tv-a2": {
+      "say": "á",
+      "file": "tv-a2.mp3",
+      "candidates": [
+        "á",
+        "嗄",
+        "啊"
+      ]
+    },
+    "tv-a3": {
+      "say": "ǎ",
+      "file": "tv-a3.mp3",
+      "candidates": [
+        "ǎ",
+        "啊"
+      ]
+    },
+    "tv-a4": {
+      "say": "à",
+      "file": "tv-a4.mp3",
+      "candidates": [
+        "à",
+        "啊"
+      ]
+    },
+    "tv-o1": {
+      "say": "噢",
+      "file": "tv-o1.mp3",
+      "candidates": [
+        "噢",
+        "喔",
+        "ō"
+      ]
+    },
+    "tv-o2": {
+      "say": "哦",
+      "file": "tv-o2.mp3",
+      "candidates": [
+        "哦",
+        "ó"
+      ]
+    },
+    "tv-o3": {
+      "say": "ǒ",
+      "file": "tv-o3.mp3",
+      "candidates": [
+        "ǒ",
+        "哦"
+      ]
+    },
+    "tv-o4": {
+      "say": "ò",
+      "file": "tv-o4.mp3",
+      "candidates": [
+        "ò",
+        "哦"
+      ]
+    },
+    "tv-e1": {
+      "say": "婀",
+      "file": "tv-e1.mp3",
+      "candidates": [
+        "婀",
+        "ē"
+      ]
+    },
+    "tv-e2": {
+      "say": "鹅",
+      "file": "tv-e2.mp3"
+    },
+    "tv-e3": {
+      "say": "ě",
+      "file": "tv-e3.mp3",
+      "candidates": [
+        "ě",
+        "恶"
+      ]
+    },
+    "tv-e4": {
+      "say": "饿",
+      "file": "tv-e4.mp3"
+    },
+    "tv-i1": {
+      "say": "衣",
+      "file": "tv-i1.mp3"
+    },
+    "tv-i2": {
+      "say": "移",
+      "file": "tv-i2.mp3"
+    },
+    "tv-i3": {
+      "say": "椅",
+      "file": "tv-i3.mp3"
+    },
+    "tv-i4": {
+      "say": "意",
+      "file": "tv-i4.mp3"
+    },
+    "tv-u1": {
+      "say": "乌",
+      "file": "tv-u1.mp3"
+    },
+    "tv-u2": {
+      "say": "无",
+      "file": "tv-u2.mp3"
+    },
+    "tv-u3": {
+      "say": "五",
+      "file": "tv-u3.mp3"
+    },
+    "tv-u4": {
+      "say": "物",
+      "file": "tv-u4.mp3"
+    },
+    "tv-ü1": {
+      "say": "迂",
+      "file": "tv-v1.mp3"
+    },
+    "tv-ü2": {
+      "say": "鱼",
+      "file": "tv-v2.mp3"
+    },
+    "tv-ü3": {
+      "say": "雨",
+      "file": "tv-v3.mp3"
+    },
+    "tv-ü4": {
+      "say": "玉",
+      "file": "tv-v4.mp3"
+    },
+    "sy-ba1": {
+      "say": "八",
+      "file": "sy-ba1.mp3"
+    },
+    "sy-ba2": {
+      "say": "拔",
+      "file": "sy-ba2.mp3"
+    },
+    "sy-ba3": {
+      "say": "把",
+      "file": "sy-ba3.mp3"
+    },
+    "sy-ba4": {
+      "say": "爸",
+      "file": "sy-ba4.mp3"
+    },
+    "sy-bai1": {
+      "say": "掰",
+      "file": "sy-bai1.mp3"
+    },
+    "sy-bai2": {
+      "say": "白",
+      "file": "sy-bai2.mp3"
+    },
+    "sy-bai3": {
+      "say": "百",
+      "file": "sy-bai3.mp3"
+    },
+    "sy-bai4": {
+      "say": "拜",
+      "file": "sy-bai4.mp3"
+    },
+    "sy-bei1": {
+      "say": "杯",
+      "file": "sy-bei1.mp3"
+    },
+    "sy-bi3": {
+      "say": "笔",
+      "file": "sy-bi3.mp3"
+    },
+    "sy-ca1": {
+      "say": "擦",
+      "file": "sy-ca1.mp3"
+    },
+    "sy-cha2": {
+      "say": "茶",
+      "file": "sy-cha2.mp3"
+    },
+    "sy-ci1": {
+      "say": "疵",
+      "file": "sy-ci1.mp3"
+    },
+    "sy-ci2": {
+      "say": "词",
+      "file": "sy-ci2.mp3"
+    },
+    "sy-ci3": {
+      "say": "此",
+      "file": "sy-ci3.mp3"
+    },
+    "sy-ci4": {
+      "say": "次",
+      "file": "sy-ci4.mp3"
+    },
+    "sy-cuo4": {
+      "say": "错",
+      "file": "sy-cuo4.mp3"
+    },
+    "sy-da4": {
+      "say": "大",
+      "file": "sy-da4.mp3"
+    },
+    "sy-dai4": {
+      "say": "带",
+      "file": "sy-dai4.mp3"
+    },
+    "sy-dao4": {
+      "say": "到",
+      "file": "sy-dao4.mp3"
+    },
+    "sy-du2": {
+      "say": "读",
+      "file": "sy-du2.mp3"
+    },
+    "sy-dui4": {
+      "say": "对",
+      "file": "sy-dui4.mp3"
+    },
+    "sy-er4": {
+      "say": "二",
+      "file": "sy-er4.mp3"
+    },
+    "sy-feng1": {
+      "say": "风",
+      "file": "sy-feng1.mp3"
+    },
+    "sy-fu2": {
+      "say": "服",
+      "file": "sy-fu2.mp3"
+    },
+    "sy-gao1": {
+      "say": "高",
+      "file": "sy-gao1.mp3"
+    },
+    "sy-ge1": {
+      "say": "哥",
+      "file": "sy-ge1.mp3"
+    },
+    "sy-gou3": {
+      "say": "狗",
+      "file": "sy-gou3.mp3"
+    },
+    "sy-gua1": {
+      "say": "瓜",
+      "file": "sy-gua1.mp3"
+    },
+    "sy-guo4": {
+      "say": "过",
+      "file": "sy-guo4.mp3"
+    },
+    "sy-hai3": {
+      "say": "海",
+      "file": "sy-hai3.mp3"
+    },
+    "sy-hao3": {
+      "say": "好",
+      "file": "sy-hao3.mp3"
+    },
+    "sy-he2": {
+      "say": "河",
+      "file": "sy-he2.mp3"
+    },
+    "sy-hu1": {
+      "say": "呼",
+      "file": "sy-hu1.mp3"
+    },
+    "sy-hu2": {
+      "say": "湖",
+      "file": "sy-hu2.mp3"
+    },
+    "sy-hu3": {
+      "say": "虎",
+      "file": "sy-hu3.mp3"
+    },
+    "sy-hu4": {
+      "say": "户",
+      "file": "sy-hu4.mp3"
+    },
+    "sy-huo3": {
+      "say": "火",
+      "file": "sy-huo3.mp3"
+    },
+    "sy-ji1": {
+      "say": "鸡",
+      "file": "sy-ji1.mp3"
+    },
+    "sy-jia1": {
+      "say": "家",
+      "file": "sy-jia1.mp3"
+    },
+    "sy-jie3": {
+      "say": "姐",
+      "file": "sy-jie3.mp3"
+    },
+    "sy-jin4": {
+      "say": "进",
+      "file": "sy-jin4.mp3"
+    },
+    "sy-ju2": {
+      "say": "橘",
+      "file": "sy-ju2.mp3"
+    },
+    "sy-ju4": {
+      "say": "句",
+      "file": "sy-ju4.mp3"
+    },
+    "sy-kai1": {
+      "say": "开",
+      "file": "sy-kai1.mp3"
+    },
+    "sy-ke4": {
+      "say": "课",
+      "file": "sy-ke4.mp3"
+    },
+    "sy-ku3": {
+      "say": "苦",
+      "file": "sy-ku3.mp3"
+    },
+    "sy-kun4": {
+      "say": "困",
+      "file": "sy-kun4.mp3"
+    },
+    "sy-la1": {
+      "say": "拉",
+      "file": "sy-la1.mp3"
+    },
+    "sy-lai2": {
+      "say": "来",
+      "file": "sy-lai2.mp3"
+    },
+    "sy-leng3": {
+      "say": "冷",
+      "file": "sy-leng3.mp3"
+    },
+    "sy-liu4": {
+      "say": "六",
+      "file": "sy-liu4.mp3"
+    },
+    "sy-long2": {
+      "say": "龙",
+      "file": "sy-long2.mp3"
+    },
+    "sy-lu4": {
+      "say": "鹿",
+      "file": "sy-lu4.mp3"
+    },
+    "sy-ma1": {
+      "say": "妈",
+      "file": "sy-ma1.mp3"
+    },
+    "sy-ma2": {
+      "say": "麻",
+      "file": "sy-ma2.mp3"
+    },
+    "sy-ma3": {
+      "say": "马",
+      "file": "sy-ma3.mp3"
+    },
+    "sy-ma4": {
+      "say": "骂",
+      "file": "sy-ma4.mp3"
+    },
+    "sy-man3": {
+      "say": "满",
+      "file": "sy-man3.mp3"
+    },
+    "sy-mao1": {
+      "say": "猫",
+      "file": "sy-mao1.mp3"
+    },
+    "sy-men2": {
+      "say": "门",
+      "file": "sy-men2.mp3"
+    },
+    "sy-meng4": {
+      "say": "梦",
+      "file": "sy-meng4.mp3"
+    },
+    "sy-mu4": {
+      "say": "木",
+      "file": "sy-mu4.mp3"
+    },
+    "sy-na2": {
+      "say": "拿",
+      "file": "sy-na2.mp3"
+    },
+    "sy-niu2": {
+      "say": "牛",
+      "file": "sy-niu2.mp3"
+    },
+    "sy-nü3": {
+      "say": "女",
+      "file": "sy-nv3.mp3"
+    },
+    "sy-pang4": {
+      "say": "胖",
+      "file": "sy-pang4.mp3"
+    },
+    "sy-po2": {
+      "say": "婆",
+      "file": "sy-po2.mp3"
+    },
+    "sy-qi1": {
+      "say": "七",
+      "file": "sy-qi1.mp3"
+    },
+    "sy-qi2": {
+      "say": "旗",
+      "file": "sy-qi2.mp3"
+    },
+    "sy-qi3": {
+      "say": "起",
+      "file": "sy-qi3.mp3"
+    },
+    "sy-qi4": {
+      "say": "气",
+      "file": "sy-qi4.mp3"
+    },
+    "sy-qu4": {
+      "say": "去",
+      "file": "sy-qu4.mp3"
+    },
+    "sy-que1": {
+      "say": "缺",
+      "file": "sy-que1.mp3"
+    },
+    "sy-que4": {
+      "say": "鹊",
+      "file": "sy-que4.mp3"
+    },
+    "sy-qun2": {
+      "say": "裙",
+      "file": "sy-qun2.mp3"
+    },
+    "sy-re4": {
+      "say": "热",
+      "file": "sy-re4.mp3"
+    },
+    "sy-se4": {
+      "say": "色",
+      "file": "sy-se4.mp3"
+    },
+    "sy-shan1": {
+      "say": "山",
+      "file": "sy-shan1.mp3"
+    },
+    "sy-she2": {
+      "say": "蛇",
+      "file": "sy-she2.mp3"
+    },
+    "sy-shu1": {
+      "say": "书",
+      "file": "sy-shu1.mp3"
+    },
+    "sy-shu2": {
+      "say": "熟",
+      "file": "sy-shu2.mp3"
+    },
+    "sy-shu3": {
+      "say": "鼠",
+      "file": "sy-shu3.mp3"
+    },
+    "sy-shu4": {
+      "say": "树",
+      "file": "sy-shu4.mp3"
+    },
+    "sy-shui3": {
+      "say": "水",
+      "file": "sy-shui3.mp3"
+    },
+    "sy-suo3": {
+      "say": "锁",
+      "file": "sy-suo3.mp3"
+    },
+    "sy-ta1": {
+      "say": "他",
+      "file": "sy-ta1.mp3"
+    },
+    "sy-tang1": {
+      "say": "汤",
+      "file": "sy-tang1.mp3"
+    },
+    "sy-tang2": {
+      "say": "糖",
+      "file": "sy-tang2.mp3"
+    },
+    "sy-tang3": {
+      "say": "躺",
+      "file": "sy-tang3.mp3"
+    },
+    "sy-tang4": {
+      "say": "烫",
+      "file": "sy-tang4.mp3"
+    },
+    "sy-tian1": {
+      "say": "天",
+      "file": "sy-tian1.mp3"
+    },
+    "sy-tie1": {
+      "say": "贴",
+      "file": "sy-tie1.mp3"
+    },
+    "sy-tou2": {
+      "say": "头",
+      "file": "sy-tou2.mp3"
+    },
+    "sy-tu1": {
+      "say": "突",
+      "file": "sy-tu1.mp3"
+    },
+    "sy-tu2": {
+      "say": "图",
+      "file": "sy-tu2.mp3"
+    },
+    "sy-tu3": {
+      "say": "土",
+      "file": "sy-tu3.mp3"
+    },
+    "sy-tu4": {
+      "say": "兔",
+      "file": "sy-tu4.mp3"
+    },
+    "sy-wan1": {
+      "say": "弯",
+      "file": "sy-wan1.mp3"
+    },
+    "sy-wan2": {
+      "say": "玩",
+      "file": "sy-wan2.mp3"
+    },
+    "sy-wan3": {
+      "say": "碗",
+      "file": "sy-wan3.mp3"
+    },
+    "sy-wan4": {
+      "say": "万",
+      "file": "sy-wan4.mp3"
+    },
+    "sy-wang3": {
+      "say": "网",
+      "file": "sy-wang3.mp3"
+    },
+    "sy-xi3": {
+      "say": "洗",
+      "file": "sy-xi3.mp3"
+    },
+    "sy-xie1": {
+      "say": "些",
+      "file": "sy-xie1.mp3"
+    },
+    "sy-xie2": {
+      "say": "鞋",
+      "file": "sy-xie2.mp3"
+    },
+    "sy-xie3": {
+      "say": "写",
+      "file": "sy-xie3.mp3"
+    },
+    "sy-xie4": {
+      "say": "谢",
+      "file": "sy-xie4.mp3"
+    },
+    "sy-xin1": {
+      "say": "心",
+      "file": "sy-xin1.mp3"
+    },
+    "sy-xing1": {
+      "say": "星",
+      "file": "sy-xing1.mp3"
+    },
+    "sy-xiong2": {
+      "say": "熊",
+      "file": "sy-xiong2.mp3"
+    },
+    "sy-xu1": {
+      "say": "需",
+      "file": "sy-xu1.mp3"
+    },
+    "sy-xue2": {
+      "say": "学",
+      "file": "sy-xue2.mp3"
+    },
+    "sy-xue3": {
+      "say": "雪",
+      "file": "sy-xue3.mp3"
+    },
+    "sy-yang2": {
+      "say": "羊",
+      "file": "sy-yang2.mp3"
+    },
+    "sy-you1": {
+      "say": "优",
+      "file": "sy-you1.mp3"
+    },
+    "sy-you2": {
+      "say": "游",
+      "file": "sy-you2.mp3"
+    },
+    "sy-you3": {
+      "say": "有",
+      "file": "sy-you3.mp3"
+    },
+    "sy-you4": {
+      "say": "又",
+      "file": "sy-you4.mp3"
+    },
+    "sy-zhu1": {
+      "say": "猪",
+      "file": "sy-zhu1.mp3"
+    },
+    "sy-zhu2": {
+      "say": "竹",
+      "file": "sy-zhu2.mp3"
+    },
+    "sy-zhu3": {
+      "say": "煮",
+      "file": "sy-zhu3.mp3"
+    },
+    "sy-zhu4": {
+      "say": "住",
+      "file": "sy-zhu4.mp3"
+    },
+    "sy-zhuo1": {
+      "say": "桌",
+      "file": "sy-zhuo1.mp3"
+    },
+    "sy-zu1": {
+      "say": "租",
+      "file": "sy-zu1.mp3"
+    },
+    "sy-zu2": {
+      "say": "足",
+      "file": "sy-zu2.mp3"
+    },
+    "sy-zu3": {
+      "say": "组",
+      "file": "sy-zu3.mp3"
+    },
+    "sy-zuo4": {
+      "say": "坐",
+      "file": "sy-zuo4.mp3"
+    },
+    "zt-zhi": {
+      "say": "知",
+      "file": "zt-zhi.mp3"
+    },
+    "zt-chi": {
+      "say": "吃",
+      "file": "zt-chi.mp3"
+    },
+    "zt-shi": {
+      "say": "诗",
+      "file": "zt-shi.mp3"
+    },
+    "zt-ri": {
+      "say": "日",
+      "file": "zt-ri.mp3"
+    },
+    "zt-zi": {
+      "say": "资",
+      "file": "zt-zi.mp3"
+    },
+    "zt-ci": {
+      "say": "疵",
+      "file": "zt-ci.mp3"
+    },
+    "zt-si": {
+      "say": "丝",
+      "file": "zt-si.mp3"
+    },
+    "zt-yi": {
+      "say": "衣",
+      "file": "zt-yi.mp3"
+    },
+    "zt-wu": {
+      "say": "乌",
+      "file": "zt-wu.mp3"
+    },
+    "zt-yu": {
+      "say": "迂",
+      "file": "zt-yu.mp3"
+    },
+    "zt-ye": {
+      "say": "耶",
+      "file": "zt-ye.mp3"
+    },
+    "zt-yue": {
+      "say": "约",
+      "file": "zt-yue.mp3"
+    },
+    "zt-yuan": {
+      "say": "冤",
+      "file": "zt-yuan.mp3"
+    },
+    "zt-yin": {
+      "say": "因",
+      "file": "zt-yin.mp3"
+    },
+    "zt-yun": {
+      "say": "晕",
+      "file": "zt-yun.mp3",
+      "candidates": [
+        "晕",
+        "云"
+      ]
+    },
+    "zt-ying": {
+      "say": "鹰",
+      "file": "zt-ying.mp3"
+    },
+    "ln-welcome": {
+      "say": "欢迎来到拼音星球！",
+      "file": "ln-welcome.mp3"
+    },
+    "ln-game-listen": {
+      "say": "听一听，选出你听到的拼音。",
+      "file": "ln-game-listen.mp3"
+    },
+    "ln-game-tone": {
+      "say": "听一听，这是第几声？",
+      "file": "ln-game-tone.mp3"
+    },
+    "ln-game-blend": {
+      "say": "听一听，把飞船舱对接成这个音节。",
+      "file": "ln-game-blend.mp3"
+    },
+    "ln-right1": {
+      "say": "答对啦！",
+      "file": "ln-right1.mp3"
+    },
+    "ln-right2": {
+      "say": "真棒！",
+      "file": "ln-right2.mp3"
+    },
+    "ln-right3": {
+      "say": "你真厉害！",
+      "file": "ln-right3.mp3"
+    },
+    "ln-retry": {
+      "say": "再试一次！",
+      "file": "ln-retry.mp3"
+    },
+    "ln-star1": {
+      "say": "太棒了！",
+      "file": "ln-star1.mp3"
+    },
+    "ln-star2": {
+      "say": "拿到星星啦！",
+      "file": "ln-star2.mp3"
+    },
+    "ln-unlock-planet": {
+      "say": "新星球解锁啦！",
+      "file": "ln-unlock-planet.mp3"
+    },
+    "ln-unlock-radar": {
+      "say": "聪耳雷达开放啦！",
+      "file": "ln-unlock-radar.mp3"
+    },
+    "ln-unlock-launch": {
+      "say": "拼读发射台开放啦！",
+      "file": "ln-unlock-launch.mp3"
+    },
+    "ln-station": {
+      "say": "欢迎来到空间站，我们一起复习吧！",
+      "file": "ln-station.mp3"
+    },
+    "ln-bye": {
+      "say": "今天玩得真开心，下次再来哦！",
+      "file": "ln-bye.mp3"
+    }
+  }
+}

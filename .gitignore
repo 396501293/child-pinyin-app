@@ -7,3 +7,8 @@ package-lock.json
 .env
 .env.local
 .raw-assets/
+
+# 语音生成（gen-voice.sh）：本地 Python 环境与听审候选音，不入库
+scripts/.venv/
+scripts/audio-qa/
+scripts/qa-listen.html
