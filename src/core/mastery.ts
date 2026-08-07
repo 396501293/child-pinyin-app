@@ -38,6 +38,52 @@ export function masteryWeight(st: FactState): number {
 export const stateOf = (states: Record<string, FactState>, key: string): FactState =>
   states[key] ?? S0;
 
+// ── 自由练习结算（fork 自 TimesTableSession.answer/commit 的规则内核，纯函数化）──
+// s 每会话每条目至多变动 1 级（cd 单位是「会话」，间隔重复的分级只在跨会话推进）：
+// 首答定档（对 onFirstCorrect / 错 onWrong）；此后同条目重复只作保温——答对不再加分
+// （无速成）、答错不再扣分（无惩罚）；曾答错的条目本会话再答对 → onRetryCorrect（cd=1）。
+// M5 的雷达/发射台会话应经这里更新掌握度，不得在 UI 手搓状态机。
+
+export interface MasterySession {
+  readonly states: Record<ItemKey, FactState>; // 工作副本
+  readonly resolved: ReadonlySet<ItemKey>;     // 本会话 s 已定档的条目
+  readonly wrongOnce: ReadonlySet<ItemKey>;    // 本会话答错过的条目
+}
+
+export const startMasterySession = (persisted: Record<string, FactState>): MasterySession => ({
+  states: Object.fromEntries(Object.entries(persisted).map(([k, v]) => [k, { ...v }])),
+  resolved: new Set(),
+  wrongOnce: new Set(),
+});
+
+// 每次作答调用（含原地重试的每一次）；纯函数，返回新 MasterySession。
+export function applyMasteryAnswer(m: MasterySession, key: ItemKey, correct: boolean): MasterySession {
+  const st = stateOf(m.states, key);
+  const states = { ...m.states };
+  const resolved = new Set(m.resolved);
+  const wrongOnce = new Set(m.wrongOnce);
+  if (correct) {
+    if (!resolved.has(key)) { states[key] = onFirstCorrect(st); resolved.add(key); }
+    else if (wrongOnce.has(key)) states[key] = onRetryCorrect(st); // 收尾于「这次对了」
+    else return m; // 纯保温重复，s/cd 不变
+  } else {
+    if (!resolved.has(key)) { states[key] = onWrong(st); resolved.add(key); }
+    wrongOnce.add(key);
+  }
+  return { states, resolved, wrongOnce };
+}
+
+// 会话结束结算：全体已落盘条目 cd−1（floor 0，间隔时钟走一格）、sessions+1；
+// 切片其余字段（streak/total 等）原样保留。纯函数，恰在每会话结束调用一次。
+export function settleSession<T extends { items: Record<string, FactState>; sessions: number }>(
+  slice: T,
+  states: Record<string, FactState>,
+): T {
+  const items: Record<string, FactState> = {};
+  for (const [k, st] of Object.entries(states)) items[k] = { s: st.s, cd: Math.max(st.cd - 1, 0) };
+  return { ...slice, items, sessions: slice.sessions + 1 };
+}
+
 export function weightedPick<T>(pool: readonly T[], w: (x: T) => number, rng: Rng): T {
   if (pool.length === 0) throw new Error('weightedPick: empty pool');
   const total = pool.reduce((s, x) => s + w(x), 0);

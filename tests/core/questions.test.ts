@@ -14,6 +14,7 @@ import {
   buildRadarQuestion,
   buildStation,
   questionItem,
+  taughtUpTo,
 } from '../../src/core/questions';
 import type { Question } from '../../src/core/questions';
 import type { FactState } from '../../src/core/types';
@@ -214,5 +215,26 @@ describe('questionItem：埋点/掌握度条目 key', () => {
     if (p3.kind === 'blend') expect(questionItem(p3)).toBe(syllableKey(p3.target.text));
     const tv = buildPractice(LESSONS[0], 3, seeded(1))[0]; // L1 带调元音认读：ǎ 不是字母单元
     expect(questionItem(tv).startsWith('S:')).toBe(true);
+  });
+});
+
+describe('taughtUpTo（累计已教单元，边界 fixture）', () => {
+  test('L3：声母恰为 y,w,b,p,m,f；韵母恰为 6 个单韵母', () => {
+    expect(taughtUpTo(3)).toEqual({
+      initials: ['y', 'w', 'b', 'p', 'm', 'f'],
+      finals: ['a', 'o', 'e', 'i', 'u', 'ü'],
+    });
+  });
+
+  test('L8 收齐全部 23 个声母；L9 起才见复韵母', () => {
+    expect(taughtUpTo(8).initials).toHaveLength(23);
+    expect(new Set(taughtUpTo(8).initials)).toEqual(new Set(ALL_INITIALS));
+    expect(taughtUpTo(8).finals).toEqual(['a', 'o', 'e', 'i', 'u', 'ü']);
+    expect(taughtUpTo(9).finals).toEqual(['a', 'o', 'e', 'i', 'u', 'ü', 'ai', 'ei', 'ui']);
+  });
+
+  test('L13 收齐全部 24 个韵母', () => {
+    expect(new Set(taughtUpTo(13).finals)).toEqual(new Set(ALL_FINALS));
+    expect(taughtUpTo(13).initials).toHaveLength(23);
   });
 });

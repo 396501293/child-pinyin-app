@@ -7,9 +7,12 @@ import { recordAnswer } from './insight';
 import { planetCleared, planetOf, starsFor, unlockAfterClear } from './progression';
 import { questionItem } from './questions';
 import type { Question } from './questions';
+import { shuffle } from './rand';
 import type { Progress, Rng, Star } from './types';
 
-export interface LessonMeta { node: NodeId; practice: 1 | 2 | 3 } // 空间站会话 practice 无意义，传 1
+// node 必须经 curriculum.nodeOfLesson(lesson.id) 映射（L9-13 因 r1 占 node 9 而错位 +1）——
+// 拿 lesson.id 直接当 node，L9+ 的星星会被静默写进 stations.r1。空间站会话 practice 无意义，传 1。
+export interface LessonMeta { node: NodeId; practice: 1 | 2 | 3 }
 
 interface Entry { q: Question; remeet: boolean }
 interface LogRow { item: string; ok: boolean; picked?: string } // 每次「首答」一行，供 insight
@@ -38,13 +41,25 @@ export class LessonSession {
   isDone(): boolean { return this.idx >= this.queue.length; }
   current(): Question | null { return this.isDone() ? null : this.queue[this.idx].q; }
 
+  // 再见面的题克隆并重洗选项（Blend 逐段重洗）：防孩子靠「记位置」而非听音答对重现题。
+  private reshuffled(q: Question): Question {
+    if (q.kind === 'blend') {
+      return { ...q, stages: q.stages.map((st) => ({ ...st, options: shuffle([...st.options], this.rng) })) };
+    }
+    return { ...q, options: shuffle([...q.options], this.rng) };
+  }
+
   // 首次答错 → 在 本题序号 + rand(3,5) 处再出一次（越界则会话末尾追加兜底）。
   private scheduleRemeet(q: Question): void {
     const pos = this.idx + 3 + Math.floor(this.rng() * 3); // +3..5
-    if (pos >= this.queue.length) this.queue.push({ q, remeet: true });
-    else this.queue.splice(pos, 0, { q, remeet: true });
+    const entry: Entry = { q: this.reshuffled(q), remeet: true };
+    if (pos >= this.queue.length) this.queue.push(entry);
+    else this.queue.splice(pos, 0, entry);
   }
 
+  // 判定语义：每「次呈现」一题一判——多段的 Blend 由 UI 逐段收集，任一段选错即整题
+  // answer(false, picked=该段错选单元)；只有全部段一次通过才 answer(true)。
+  // 答错不推进（原地重试），仅每条目的「首答」计星/埋点/触发再见面。
   answer(correct: boolean, picked?: string): { advance: boolean } {
     if (this.isDone()) return { advance: false };
     const entry = this.queue[this.idx];

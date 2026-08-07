@@ -18,7 +18,9 @@ const ALL_UNITS = [...ALL_INITIALS, ...ALL_FINALS];
 const UNIT_SET = new Set(ALL_UNITS);
 
 /**
- * 挑 count 个干扰项：先取答案的易混单元，不够再从课内池补，仍不够从全部单元补。
+ * 挑 count 个干扰项：先取答案的易混单元，不够再从课内池补，仍不够从 fallback 池补
+ * （缺省全部单元；调用方可传 ALL_INITIALS/ALL_FINALS 之类的类别池，从构造上保证
+ * 干扰项不跨类——拼读对接的声母/韵母段用此参数）。
  * 保证：不含答案、互不重复、恰好 count 个。
  */
 export function pickDistractors(
@@ -26,6 +28,7 @@ export function pickDistractors(
   lessonPool: readonly string[],
   rng: Rng,
   count = 2,
+  fallback: readonly string[] = ALL_UNITS,
 ): string[] {
   const picks: string[] = [];
   const take = (candidates: readonly string[]) => {
@@ -36,7 +39,7 @@ export function pickDistractors(
   };
   take(CONFUSABLE[answer] ?? []);
   take(lessonPool);
-  take(ALL_UNITS);
+  take(fallback);
   if (picks.length < count) {
     throw new Error(`pickDistractors: cannot find ${count} distractors for '${answer}'`);
   }

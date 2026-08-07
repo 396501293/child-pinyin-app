@@ -98,6 +98,62 @@ describe('再见面（+3..5 强制重现）', () => {
     expect(s.isDone()).toBe(true);
   });
 
+  test('再见面的题是重洗过选项的克隆：选项集合不变、原题对象不被改、顺序会变', () => {
+    let reordered = 0;
+    for (let seed = 1; seed <= 100; seed++) {
+      const original = lp('b'); // options ['b','x1','x2']
+      const s = new LessonSession(
+        [original, lp('p'), lp('m'), lp('f'), lp('d'), lp('t')],
+        { node: 3, practice: 1 },
+        seeded(seed),
+      );
+      s.answer(false, 'x'); // b 首错 → 插入再见面
+      s.answer(true);
+      let remeet: ListenPick | null = null;
+      while (!s.isDone()) {
+        const q = s.current();
+        if (q && q.kind === 'listen-pick' && q.answer === 'b') { remeet = q; break; }
+        s.answer(true);
+      }
+      expect(remeet).not.toBeNull();
+      expect(remeet).not.toBe(original); // 克隆，非同一对象
+      expect(new Set(remeet!.options)).toEqual(new Set(original.options)); // 集合不变
+      expect(original.options).toEqual(['b', 'x1', 'x2']); // 原题未被就地改
+      if (remeet!.options.join() !== original.options.join()) reordered++;
+      while (!s.isDone()) s.answer(true);
+    }
+    expect(reordered).toBeGreaterThan(30); // 统计性：3 项重洗 ~5/6 概率换序
+  });
+
+  test('Blend 再见面逐段重洗：各段选项集合不变', () => {
+    const blend: Question = {
+      kind: 'blend',
+      clip: 'sy-ba4',
+      target: { initial: 'b', final: 'a', tone: 4, base: 'ba', text: 'bà' },
+      stages: [
+        { role: 'initial', answer: 'b', options: ['b', 'd', 'p'] },
+        { role: 'final', answer: 'a', options: ['a', 'o', 'e'] },
+      ],
+    };
+    const s = new LessonSession([blend, lp('p'), lp('m'), lp('f')], { node: 3, practice: 1 }, seeded(9));
+    s.answer(false, 'd');
+    s.answer(true);
+    let remeet: Question | null = null;
+    while (!s.isDone()) {
+      const q = s.current();
+      if (q && q.kind === 'blend') { remeet = q; break; }
+      s.answer(true);
+    }
+    expect(remeet).not.toBeNull();
+    expect(remeet).not.toBe(blend);
+    if (remeet && remeet.kind === 'blend') {
+      expect(remeet.stages.map((st) => st.role)).toEqual(['initial', 'final']);
+      expect(new Set(remeet.stages[0].options)).toEqual(new Set(['b', 'd', 'p']));
+      expect(new Set(remeet.stages[1].options)).toEqual(new Set(['a', 'o', 'e']));
+    }
+    expect(blend.kind === 'blend' && blend.stages[0].options).toEqual(['b', 'd', 'p']); // 原题不动
+  });
+
   test('再见面不计入星级分母，firstTry 也不加分', () => {
     const s = new LessonSession(queueOf('b', 'p', 'm', 'f', 'd'), { node: 3, practice: 1 }, seeded(6));
     s.answer(false, 'x'); // b 错

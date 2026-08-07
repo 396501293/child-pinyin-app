@@ -4,6 +4,7 @@ import {
   ALL_INITIALS,
   LESSONS,
   STATIONS,
+  nodeOfLesson,
   nodeToContent,
 } from '../../src/core/curriculum';
 import { parseSyllable, toneMark } from '../../src/core/pinyin';
@@ -220,5 +221,17 @@ describe('STATIONS and nodeToContent', () => {
   it('rejects out-of-range nodes', () => {
     expect(() => nodeToContent(0)).toThrow();
     expect(() => nodeToContent(16)).toThrow();
+  });
+
+  it('nodeOfLesson：与 nodeToContent 互逆（L9-13 因 r1 错位 +1）', () => {
+    for (const lesson of LESSONS) {
+      const n = nodeOfLesson(lesson.id);
+      const content = nodeToContent(n);
+      expect(content.kind).toBe('lesson');
+      if (content.kind === 'lesson') expect(content.lesson.id).toBe(lesson.id);
+    }
+    expect(nodeOfLesson(8)).toBe(8);
+    expect(nodeOfLesson(9)).toBe(10); // 陷阱位：9 是空间站 r1
+    expect(nodeOfLesson(13)).toBe(14);
   });
 });

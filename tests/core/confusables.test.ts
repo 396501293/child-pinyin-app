@@ -96,6 +96,17 @@ describe('pickDistractors', () => {
     }
   });
 
+  it('category-restricted fallback: with an empty lesson pool picks stay inside it', () => {
+    for (let s = 1; s <= 50; s++) {
+      // 'm' 无易混项、课内池空 → 全部落到 fallback 池；不得越出声母类
+      const picks = pickDistractors('m', [], seeded(s), 2, ALL_INITIALS);
+      expect(picks).toHaveLength(2);
+      for (const p of picks) expect(ALL_INITIALS).toContain(p);
+      const finals = pickDistractors('a', [], seeded(s), 2, ALL_FINALS);
+      for (const p of finals) expect(ALL_FINALS).toContain(p);
+    }
+  });
+
   it('spreads picks across the pool over many seeds (uses the rng)', () => {
     const seen = new Set<string>();
     for (let s = 1; s <= 200; s++) {

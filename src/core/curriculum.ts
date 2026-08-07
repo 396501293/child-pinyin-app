@@ -167,6 +167,12 @@ export const STATIONS: ReadonlyArray<Station> = [
 
 export type NodeId = number; // 1..15 = [L1..L8, R1, L9..L13, R2]
 
+// lesson.id → NodeId：L9-13 因空间站 r1 占 node 9 而整体错位 +1。
+// 凡需要 node（LessonMeta、解锁链）的地方一律经此映射，
+// 不得拿 lesson.id 直接当 node——L9+ 会静默把星星写进 stations.r1。
+export const nodeOfLesson = (lessonId: number): NodeId =>
+  lessonId <= 8 ? lessonId : lessonId + 1;
+
 export function nodeToContent(
   n: NodeId,
 ): { kind: 'lesson'; lesson: Lesson } | { kind: 'station'; station: Station } {

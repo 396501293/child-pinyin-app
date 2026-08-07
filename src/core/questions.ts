@@ -13,6 +13,9 @@ import type { FactState, Rng } from './types';
 export interface ListenPick { kind: 'listen-pick'; clip: string; answer: string; options: string[] }
 export interface TonePick { kind: 'tone-pick'; clip: string; base: string; answer: string; options: string[] }
 export interface BlendStage { role: 'initial' | 'medial' | 'final'; answer: string; options: string[] }
+// 多段对接的判定语义（M4/M5 UI 契约）：逐段选择，任一段选错 = 本题首答错——
+// 立即 LessonSession.answer(false, picked=该段的错选单元)，该段原地重试；
+// 全部段一次通过才 answer(true)。answer 每题至多一次 false（后续重试仍 false 但不重复计）。
 export interface Blend { kind: 'blend'; clip: string; target: Syllable; stages: BlendStage[] }
 export type Question = ListenPick | TonePick | Blend;
 
@@ -27,8 +30,8 @@ export function questionItem(q: Question): string {
   return LETTER_UNITS.has(q.answer) ? letterKey(q.answer) : syllableKey(q.answer);
 }
 
-// 截至某课（含）已教的声母/韵母——拼读干扰项只从中取，保证不越进度、不跨类。
-function taughtUpTo(lessonId: number): { initials: string[]; finals: string[] } {
+// 截至某课（含）已教的声母/韵母——拼读干扰项优先从中取，保证不越进度、不跨类。
+export function taughtUpTo(lessonId: number): { initials: string[]; finals: string[] } {
   const initials: string[] = [];
   const finals: string[] = [];
   for (const l of LESSONS) {
@@ -57,13 +60,19 @@ function blendQuestion(text: string, lessonId: number, rng: Rng): Blend {
   const taught = taughtUpTo(lessonId);
   const stages: BlendStage[] = [];
   if (target.initial !== '') {
-    const options = shuffle([target.initial, ...pickDistractors(target.initial, taught.initials, rng)], rng);
+    const options = shuffle(
+      [target.initial, ...pickDistractors(target.initial, taught.initials, rng, 2, ALL_INITIALS)],
+      rng,
+    );
     stages.push({ role: 'initial', answer: target.initial, options });
   }
   if (target.medial !== undefined) {
     stages.push({ role: 'medial', answer: target.medial, options: shuffle([...MEDIALS], rng) });
   }
-  const options = shuffle([target.final, ...pickDistractors(target.final, taught.finals, rng)], rng);
+  const options = shuffle(
+    [target.final, ...pickDistractors(target.final, taught.finals, rng, 2, ALL_FINALS)],
+    rng,
+  );
   stages.push({ role: 'final', answer: target.final, options });
   return { kind: 'blend', clip: clipForSyllable(target), target, stages };
 }
@@ -88,6 +97,7 @@ function tonedVowelQuiz(vowel: string, tone: Tone, vowels: readonly string[], rn
 
 // 练1 = 每个新字母 ×2；练2 = 每个声调底座 × 4 声；练3 = 每个拼读目标 ×1
 //（L1-2 无 blends → 每个元音 × 4 声的带调认读）。全部洗牌。
+// 练1→练2→练3 的顺序 gating 是 UI（M4）职责，core 不强制——传哪个 practice 就出哪套题。
 export function buildPractice(lesson: Lesson, practice: 1 | 2 | 3, rng: Rng): Question[] {
   if (practice === 1) {
     const qs = lesson.newLetters.flatMap((u) => [

@@ -2,12 +2,15 @@ import { describe, expect, test } from 'vitest';
 import {
   MAX_NEW_PER_SESSION,
   S0,
+  applyMasteryAnswer,
   letterKey,
   masteryWeight,
   onFirstCorrect,
   onRetryCorrect,
   onWrong,
   planSession,
+  settleSession,
+  startMasterySession,
   stateOf,
   syllableKey,
   unitOfKey,
@@ -132,5 +135,64 @@ describe('planSession（性质，多种子）', () => {
 
   test('空池返回空', () => {
     expect(planSession([], {}, 12, seeded(1))).toEqual([]);
+  });
+});
+
+describe('自由练习结算（applyMasteryAnswer / settleSession）', () => {
+  test('startMasterySession 深拷贝：改工作副本不碰持久化态', () => {
+    const persisted: Record<string, FactState> = { 'L:b': { s: 2, cd: 1 } };
+    const m = startMasterySession(persisted);
+    const m2 = applyMasteryAnswer(m, 'L:b', true);
+    expect(m2.states['L:b']).toEqual({ s: 3, cd: 3 });
+    expect(persisted['L:b']).toEqual({ s: 2, cd: 1 });
+  });
+
+  test('首答对 → onFirstCorrect；同会话重复答对不再加分（每会话 s 至多变 1 级）', () => {
+    let m = startMasterySession({});
+    m = applyMasteryAnswer(m, 'L:b', true);
+    expect(m.states['L:b']).toEqual({ s: 1, cd: 1 });
+    m = applyMasteryAnswer(m, 'L:b', true); // 纯保温重复
+    expect(m.states['L:b']).toEqual({ s: 1, cd: 1 });
+  });
+
+  test('首答错 → onWrong 定档；随后答对 → onRetryCorrect（cd=1，不回补 s）', () => {
+    let m = startMasterySession({ 'L:b': { s: 2, cd: 0 } });
+    m = applyMasteryAnswer(m, 'L:b', false);
+    expect(m.states['L:b']).toEqual({ s: 1, cd: 0 });
+    m = applyMasteryAnswer(m, 'L:b', false); // 原地重试再错：已定档，不再扣分
+    expect(m.states['L:b']).toEqual({ s: 1, cd: 0 });
+    m = applyMasteryAnswer(m, 'L:b', true); // 收尾于「这次对了」
+    expect(m.states['L:b']).toEqual({ s: 1, cd: 1 });
+  });
+
+  test('先对后错（同会话再抽到）：s 不再变动，仅答错后的答对给 cd=1', () => {
+    let m = startMasterySession({});
+    m = applyMasteryAnswer(m, 'L:b', true);   // 定档 s1 cd1
+    m = applyMasteryAnswer(m, 'L:b', false);  // 已定档：s 不扣
+    expect(m.states['L:b']).toEqual({ s: 1, cd: 1 });
+    m = applyMasteryAnswer(m, 'L:b', true);   // 曾错过 → 保温复见
+    expect(m.states['L:b']).toEqual({ s: 1, cd: 1 });
+  });
+
+  test('纯函数：applyMasteryAnswer 不改入参', () => {
+    const m = startMasterySession({ 'L:b': { s: 1, cd: 0 } });
+    applyMasteryAnswer(m, 'L:b', false);
+    expect(m.states['L:b']).toEqual({ s: 1, cd: 0 });
+    expect(m.resolved.size).toBe(0);
+  });
+
+  test('settleSession：全体 cd−1 floor 0、sessions+1、切片其余字段保留、纯', () => {
+    const slice: { items: Record<string, FactState>; sessions: number; streak: number; total: number } =
+      { items: { 'L:b': { s: 1, cd: 0 } }, sessions: 4, streak: 7, total: 40 };
+    const states: Record<string, FactState> = { 'L:b': { s: 2, cd: 2 }, 'L:p': { s: 3, cd: 0 } };
+    const settled = settleSession(slice, states);
+    expect(settled).toEqual({
+      items: { 'L:b': { s: 2, cd: 1 }, 'L:p': { s: 3, cd: 0 } },
+      sessions: 5,
+      streak: 7,
+      total: 40,
+    });
+    expect(slice.sessions).toBe(4); // 入参未被就地修改
+    expect(states['L:b']).toEqual({ s: 2, cd: 2 });
   });
 });

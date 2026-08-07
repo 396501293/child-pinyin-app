@@ -11,6 +11,7 @@ export type Star = 0 | 1 | 2 | 3;
 export interface FactState { s: 0 | 1 | 2 | 3; cd: number }
 
 // 每颗星球：学（learned）+ 练1/练2/练3 三颗星。
+// 练1→练2→练3 的顺序 gating 是 UI（M4）职责，core 不强制（commit 接受任意练格独立写星）。
 export interface PlanetProgress { learned: boolean; stars: [Star, Star, Star] }
 
 export interface Progress {

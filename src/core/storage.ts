@@ -12,7 +12,9 @@ export interface StorageLike {
 }
 
 const KEY = 'pinyin_planet_v1';
+// 备份键为全档案共享（fork 原样）：损坏本就罕见，后写覆盖可接受。
 const CORRUPT_KEY = 'pinyin_planet_v1_corrupt';
+const MAX_NODE = 15; // 与 progression.MAX_NODE 一致（不 import，保持 storage 零业务依赖）
 
 // ── 多档案（三娃）──────────────────────────────────────────────
 // 档案 0 沿用 KEY（单档案用户零迁移）；档案 1/2 分片 `${KEY}_p{i}`。
@@ -151,6 +153,8 @@ export function loadProgress(store: StorageLike = safeStore()): Progress {
   return {
     ...d,
     ...parsed,
+    // clamp 到 [1,15]：坏 blob（0/负数/NaN/超界）不至于把地图锁死在节点 1 或指向不存在的节点
+    unlocked: Math.min(MAX_NODE, Math.max(1, Number(parsed.unlocked) || 1)),
     planets: { ...d.planets, ...parsed.planets },
     stations: { ...d.stations, ...parsed.stations },
     radar: { ...d.radar, ...parsed.radar },

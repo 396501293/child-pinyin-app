@@ -1,5 +1,6 @@
 // fork 自数学夜航 storage.test.ts，适配 Progress 形状与 key 'pinyin_planet_v1'（无 v1 迁移）。
 import { expect, test } from 'vitest';
+import { MAX_NODE } from '../../src/core/progression';
 import { defaultProgress, loadProgress, saveProgress } from '../../src/core/storage';
 
 const fakeStore = (init: Record<string, string> = {}) => {
@@ -79,6 +80,16 @@ test('形状不对（version 不是 1）→ 备份 + 重置', () => {
   const s = fakeStore({ pinyin_planet_v1: blob });
   expect(loadProgress(s)).toEqual(defaultProgress());
   expect(s.dump().pinyin_planet_v1_corrupt).toBe(blob);
+});
+
+test('坏 blob 的 unlocked 被 clamp 到 [1,15]', () => {
+  const load = (unlocked: unknown) =>
+    loadProgress(fakeStore({ pinyin_planet_v1: JSON.stringify({ version: 1, unlocked }) }));
+  expect(load(99).unlocked).toBe(MAX_NODE); // 超界拉回满级（同时守卫 storage 内常数与 progression 不漂移）
+  expect(load(0).unlocked).toBe(1);     // 0 会把地图锁死在节点 1 之外
+  expect(load(-3).unlocked).toBe(1);
+  expect(load('abc').unlocked).toBe(1); // NaN
+  expect(load(7).unlocked).toBe(7);     // 合法值原样
 });
 
 test('storage 抛错 → 会话期内存兜底可读回', () => {
