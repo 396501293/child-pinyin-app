@@ -1,0 +1,112 @@
+/* ══ 舞台缩放容器结构 fork 自姊妹项目同名结构（详见设计文档 docs/superpowers/specs）══
+   本文件只搭骨架：reset + 设计令牌 + 舞台缩放容器 + 竖屏遮罩。
+   真正的画面（星球地图/学习/练习/结算等）留给后续里程碑（M4/M5）逐屏补齐样式。 */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body,
+h1,
+h2,
+h3,
+p,
+figure {
+  margin: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+:root {
+  /* ══ 拼音星球第一版设计令牌：明亮扁平卡通太空风 ══
+     与姊妹项目的暗色像素风区分——背景仍是「太空」，但用高明度、高饱和的糖果色，
+     而非近黑的深色调。具体数值后续里程碑（M4）按实际美术走查再调。 */
+
+  /* 舞台背景渐变：明快的天蓝→宝蓝，像绘本里的白天太空，而非深夜像素风 */
+  --color-bg-start: #4fa8f0;
+  --color-bg-end: #2b5fce;
+
+  /* 视口留边（stage 之外的 letterbox 底色）：与 PWA manifest 的 background_color 呼应 */
+  --color-letterbox: #eaf6ff;
+
+  /* 深字色 / 白字层级 */
+  --color-text-dark: #1b3a6b;
+  --color-white-100: #fff;
+  --color-white-85: rgba(255, 255, 255, 0.85);
+
+  /* 糖果强调色（按钮/星球/反馈用，具体分配留给后续里程碑） */
+  --candy-pink: #ff6fa5;
+  --candy-yellow: #ffd166;
+  --candy-mint: #3ddc97;
+  --candy-purple: #9b7ede;
+  --candy-orange: #ff9f55;
+
+  /* 圆角尺度：明亮卡通风走大圆角（与姊妹项目像素风的直角相反） */
+  --r-sm: 8px;
+  --r-base: 16px;
+  --r-lg: 24px;
+  --r-pill: 999px;
+}
+
+body {
+  font-family: -apple-system, 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+  background: var(--color-letterbox);
+}
+
+/* ── Stage 缩放容器 ── */
+.pp-viewport {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-letterbox);
+}
+.pp-stage {
+  position: relative;
+  flex: none;
+  width: 1024px;
+  height: 768px;
+  transform-origin: center center;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--color-bg-start), var(--color-bg-end));
+  color: var(--color-white-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── 竖屏遮罩 ── */
+.pp-rotate {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  background: linear-gradient(180deg, var(--color-bg-start), var(--color-bg-end));
+  color: var(--color-white-100);
+  text-align: center;
+  padding: 0 40px;
+}
+.pp-rotate-icon {
+  font-size: 92px;
+}
+.pp-rotate-text {
+  font-size: 40px;
+  font-weight: 700;
+}
+
+/* ── M0 占位标题（后续里程碑替换为真实地图/学习屏） ── */
+.pp-placeholder-title {
+  font-size: 64px;
+  font-weight: 700;
+}
