@@ -1,6 +1,10 @@
-/* ══ 舞台缩放容器结构 fork 自姊妹项目同名结构（详见设计文档 docs/superpowers/specs）══
-   本文件只搭骨架：reset + 设计令牌 + 舞台缩放容器 + 竖屏遮罩。
-   真正的画面（星球地图/学习/练习/结算等）留给后续里程碑（M4/M5）逐屏补齐样式。 */
+/* ══ 拼音星球 · 明亮扁平卡通太空主题 ═══════════════════════════════════════════
+   设计语言（M4 定稿）：
+   - 「糖果绘本太空」：高明度长春花蓝天空 + 底部奶油晨光，绝非姊妹项目的暗夜像素风
+   - 奶油色大圆角卡片 + 实心下坠投影（玩具按钮：按下去真的会「沉」2-4px）
+   - 全部美术代码画（SVG/CSS），拼音永远是画面的主角（Andika，100-160px 级）
+   - 中文 UI 走系统栈（PingFang SC），拼音唯一入口 .pp-py
+   文件按屏幕/组件分节，与 src/ui 目录一一对应。 */
 
 *,
 *::before,
@@ -23,34 +27,51 @@ body {
 }
 
 :root {
-  /* ══ 拼音星球第一版设计令牌：明亮扁平卡通太空风 ══
-     与姊妹项目的暗色像素风区分——背景仍是「太空」，但用高明度、高饱和的糖果色，
-     而非近黑的深色调。具体数值后续里程碑（M4）按实际美术走查再调。 */
-
-  /* 舞台背景渐变：明快的天蓝→宝蓝，像绘本里的白天太空，而非深夜像素风 */
-  --color-bg-start: #4fa8f0;
-  --color-bg-end: #2b5fce;
-
-  /* 视口留边（stage 之外的 letterbox 底色）：与 PWA manifest 的 background_color 呼应 */
+  /* ── 天空 ── */
+  --sky-top: #4a63d8;      /* 深长春花蓝（friendly deep-sky，不发黑） */
+  --sky-mid: #6e93ec;
+  --sky-low: #9cc5f6;
+  --sky-cream: #ffefd3;    /* 地平线奶油晨光 */
   --color-letterbox: #eaf6ff;
 
-  /* 深字色 / 白字层级 */
-  --color-text-dark: #1b3a6b;
+  /* ── 卡片与文字 ── */
+  --cream: #fff9ef;        /* 卡片奶油底 */
+  --cream-shade: #e8d9bd;  /* 卡片下坠投影 */
+  --ink: #2a3b66;          /* 深藏青字色（在奶油上） */
+  --ink-soft: #6b7ba6;
   --color-white-100: #fff;
   --color-white-85: rgba(255, 255, 255, 0.85);
+  --color-white-55: rgba(255, 255, 255, 0.55);
 
-  /* 糖果强调色（按钮/星球/反馈用，具体分配留给后续里程碑） */
+  /* ── 糖果强调色（+ 各自的「下坠」深一档） ── */
   --candy-pink: #ff6fa5;
-  --candy-yellow: #ffd166;
+  --candy-pink-deep: #d14c82;
+  --candy-yellow: #ffc93c;
+  --candy-yellow-deep: #e8a20c;
   --candy-mint: #3ddc97;
-  --candy-purple: #9b7ede;
+  --candy-mint-deep: #23aa71;
+  --candy-sky: #4fc3f7;
+  --candy-sky-deep: #2e96c9;
+  --candy-grape: #9b7ede;
+  --candy-grape-deep: #7557bb;
   --candy-orange: #ff9f55;
+  --candy-orange-deep: #e07a2e;
 
-  /* 圆角尺度：明亮卡通风走大圆角（与姊妹项目像素风的直角相反） */
-  --r-sm: 8px;
-  --r-base: 16px;
-  --r-lg: 24px;
+  /* ── 四线三格 ── */
+  --flg-line: #86aede;
+  --flg-line-mid: #ef93ab; /* 中格两线偏红（课本惯例） */
+  --flg-band: rgba(255, 201, 60, 0.14);
+
+  /* ── 圆角 ── */
+  --r-sm: 10px;
+  --r-base: 18px;
+  --r-lg: 26px;
   --r-pill: 999px;
+}
+
+body {
+  font-family: -apple-system, 'PingFang SC', 'Hiragino Sans GB', sans-serif;
+  background: var(--color-letterbox);
 }
 
 /* ── 拼音专用字体：SIL Andika（识字教学字形：单层 a/g，调号全覆盖）。
@@ -64,11 +85,6 @@ body {
   font-display: block;
 }
 
-body {
-  font-family: -apple-system, 'PingFang SC', 'Hiragino Sans GB', sans-serif;
-  background: var(--color-letterbox);
-}
-
 /* 拼音语境统一入口：只有 .pp-py 用 Andika；中文 UI 走系统栈。
    font-synthesis:none——子集只含 Regular，禁止浏览器伪造粗体（会毁掉字形教学价值）。 */
 .pp-py {
@@ -76,7 +92,7 @@ body {
   font-synthesis: none;
 }
 
-/* ── Stage 缩放容器 ── */
+/* ── Stage 缩放容器 ─────────────────────────────────────────────────────── */
 .pp-viewport {
   position: fixed;
   inset: 0;
@@ -85,6 +101,8 @@ body {
   align-items: center;
   justify-content: center;
   background: var(--color-letterbox);
+  user-select: none;
+  -webkit-user-select: none;
 }
 .pp-stage {
   position: relative;
@@ -93,14 +111,107 @@ body {
   height: 768px;
   transform-origin: center center;
   overflow: hidden;
-  background: linear-gradient(180deg, var(--color-bg-start), var(--color-bg-end));
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 40%, var(--sky-low) 72%, var(--sky-cream) 100%);
   color: var(--color-white-100);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+}
+/* 星星点点（多层 radial-gradient，零素材）+ 两团糖果星云 */
+.pp-stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(2.5px 2.5px at 8% 12%, rgba(255, 255, 255, 0.9) 45%, transparent 55%),
+    radial-gradient(2px 2px at 23% 32%, rgba(255, 255, 255, 0.7) 45%, transparent 55%),
+    radial-gradient(3px 3px at 37% 9%, rgba(255, 244, 194, 0.9) 45%, transparent 55%),
+    radial-gradient(2px 2px at 52% 24%, rgba(255, 255, 255, 0.65) 45%, transparent 55%),
+    radial-gradient(2.5px 2.5px at 67% 7%, rgba(255, 255, 255, 0.85) 45%, transparent 55%),
+    radial-gradient(2px 2px at 79% 30%, rgba(255, 244, 194, 0.75) 45%, transparent 55%),
+    radial-gradient(3px 3px at 92% 15%, rgba(255, 255, 255, 0.8) 45%, transparent 55%),
+    radial-gradient(2px 2px at 14% 55%, rgba(255, 255, 255, 0.5) 45%, transparent 55%),
+    radial-gradient(2.5px 2.5px at 45% 48%, rgba(255, 255, 255, 0.55) 45%, transparent 55%),
+    radial-gradient(2px 2px at 88% 52%, rgba(255, 255, 255, 0.5) 45%, transparent 55%),
+    radial-gradient(160px 110px at 15% 26%, rgba(255, 143, 179, 0.16), transparent 70%),
+    radial-gradient(200px 130px at 86% 38%, rgba(155, 126, 222, 0.18), transparent 70%);
 }
 
-/* ── 竖屏遮罩 ── */
+/* 通用触控纪律 */
+button {
+  font-family: inherit;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  background: none;
+  color: inherit;
+}
+
+/* ── 通用玩具按钮 ───────────────────────────────────────────────────────── */
+.pp-btn {
+  font-size: 30px;
+  font-weight: 700;
+  padding: 18px 40px;
+  border-radius: var(--r-lg);
+  color: var(--color-white-100);
+  background: var(--candy-pink);
+  box-shadow: 0 6px 0 var(--candy-pink-deep);
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.pp-btn:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 var(--candy-pink-deep);
+}
+.pp-btn--ghost {
+  background: var(--cream);
+  color: var(--ink);
+  box-shadow: 0 6px 0 var(--cream-shade);
+}
+.pp-btn--ghost:active {
+  box-shadow: 0 2px 0 var(--cream-shade);
+}
+
+/* 角落返回键：小而低调（孩子的注意力属于题面） */
+.pp-back {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--r-pill);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-white-100);
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 4px 0 rgba(31, 46, 96, 0.18);
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.pp-back:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 rgba(31, 46, 96, 0.18);
+}
+
+/* 大 CTA（学屏「去练习」） */
+.pp-cta {
+  font-size: 38px;
+  font-weight: 900;
+  padding: 20px 64px;
+  border-radius: var(--r-pill);
+  color: var(--color-white-100);
+  background: var(--candy-mint);
+  box-shadow: 0 7px 0 var(--candy-mint-deep);
+  animation: pp-cta-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.pp-cta:active {
+  transform: translateY(5px);
+  box-shadow: 0 2px 0 var(--candy-mint-deep);
+}
+@keyframes pp-cta-in {
+  from { transform: scale(0.4); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ── 竖屏遮罩 ──────────────────────────────────────────────────────────── */
 .pp-rotate {
   position: fixed;
   inset: 0;
@@ -110,7 +221,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 28px;
-  background: linear-gradient(180deg, var(--color-bg-start), var(--color-bg-end));
+  background: linear-gradient(180deg, var(--sky-top), var(--sky-mid));
   color: var(--color-white-100);
   text-align: center;
   padding: 0 40px;
@@ -123,8 +234,869 @@ body {
   font-weight: 700;
 }
 
-/* ── M0 占位标题（后续里程碑替换为真实地图/学习屏） ── */
-.pp-placeholder-title {
-  font-size: 64px;
+/* ── 选人屏 ────────────────────────────────────────────────────────────── */
+.pp-profile {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+}
+.pp-profile-title {
+  font-size: 46px;
+  font-weight: 900;
+  text-shadow: 0 3px 0 rgba(31, 46, 96, 0.25);
+}
+.pp-profile-cards {
+  display: flex;
+  gap: 36px;
+}
+.pp-profile-card {
+  width: 250px;
+  padding: 30px 20px 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  background: var(--cream);
+  border-radius: var(--r-lg);
+  box-shadow: 0 8px 0 var(--cream-shade);
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.pp-profile-card:active {
+  transform: translateY(5px);
+  box-shadow: 0 3px 0 var(--cream-shade);
+}
+.pp-profile-name {
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.pp-profile-sub {
+  font-size: 22px;
+  color: var(--ink-soft);
+}
+
+/* ── 星系航线图 ────────────────────────────────────────────────────────── */
+.pp-map {
+  position: absolute;
+  inset: 0;
+}
+.pp-map-top {
+  position: absolute;
+  top: 26px;
+  left: 40px;
+  right: 40px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  z-index: 2;
+}
+.pp-map-title {
+  font-size: 44px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-shadow: 0 3px 0 rgba(31, 46, 96, 0.3);
+}
+.pp-map-stars {
+  margin-left: auto;
+  font-size: 26px;
+  font-weight: 800;
+  color: #8a5e00;
+  background: var(--candy-yellow);
+  padding: 10px 24px;
+  border-radius: var(--r-pill);
+  box-shadow: 0 4px 0 var(--candy-yellow-deep);
+}
+.pp-map-path {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* 节点：left/top 由组件按蛇形几何内联；本体水平居中、行星中心对齐路径线 */
+.pp-node {
+  position: absolute;
+  width: 168px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-50%, -58px);
+}
+.pp-node-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 116px;
+  height: 116px;
+  border-radius: var(--r-pill);
+}
+.pp-node.is-locked .pp-planet {
+  filter: grayscale(0.75) brightness(0.82) opacity(0.6);
+}
+.pp-node.is-locked .pp-node-label {
+  opacity: 0.5;
+}
+.pp-node-lock {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  font-size: 30px;
+  filter: drop-shadow(0 2px 2px rgba(31, 46, 96, 0.4));
+}
+.pp-node.is-available .pp-node-btn {
+  animation: pp-node-pulse 1.8s ease-in-out infinite;
+}
+@keyframes pp-node-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.55); }
+  55% { box-shadow: 0 0 0 18px rgba(255, 255, 255, 0); }
+}
+.pp-node.is-cleared .pp-planet {
+  filter: drop-shadow(0 0 14px rgba(255, 214, 92, 0.75));
+}
+.pp-node-rocket {
+  position: absolute;
+  top: -26px;
+  left: 50%;
+  margin-left: -17px;
+  font-size: 34px;
+  filter: drop-shadow(0 3px 3px rgba(31, 46, 96, 0.35));
+  animation: pp-rocket-bob 1.6s ease-in-out infinite;
+}
+@keyframes pp-rocket-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-9px); }
+}
+.pp-node-label {
+  margin-top: 2px;
+  font-size: 25px;
   font-weight: 700;
+  color: var(--color-white-100);
+  /* 下两行节点落在奶油晨光上，纯白字会被吃掉——阴影给足才能全图可读 */
+  text-shadow: 0 2px 5px rgba(31, 46, 96, 0.55);
+  white-space: nowrap;
+}
+
+/* 星排（通用小组件） */
+.pp-starrow {
+  display: inline-flex;
+  gap: 3px;
+}
+.pp-star path {
+  fill: rgba(255, 255, 255, 0.35);
+  stroke: rgba(31, 46, 96, 0.25);
+  stroke-width: 1.2;
+}
+.pp-star.is-on path {
+  fill: var(--candy-yellow);
+  stroke: var(--candy-yellow-deep);
+}
+
+/* 左下：自由练习/图鉴入口（M5 接线，先占位） */
+.pp-map-entries {
+  position: absolute;
+  left: 28px;
+  bottom: 20px;
+  display: flex;
+  gap: 14px;
+}
+.pp-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--color-white-100);
+  /* 深色底而非白色底：入口横在奶油晨光带上，白底会整块糊掉 */
+  background: rgba(31, 46, 96, 0.28);
+  padding: 10px 20px;
+  border-radius: var(--r-base);
+}
+.pp-entry.is-soon {
+  opacity: 0.62;
+  cursor: default;
+}
+.pp-entry-soon {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-white-55);
+}
+
+/* 右下齿轮：长按 1.5s 开设置 */
+.pp-gear {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  width: 64px;
+  height: 64px;
+  border-radius: var(--r-pill);
+  font-size: 30px;
+  background: rgba(31, 46, 96, 0.24);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 星球面板（选课弹层） */
+.pp-panel-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: rgba(31, 46, 96, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pp-panel {
+  position: relative;
+  display: flex;
+  gap: 30px;
+  width: 700px;
+  padding: 36px 40px;
+  background: var(--cream);
+  border-radius: 30px;
+  box-shadow: 0 10px 0 var(--cream-shade);
+  color: var(--ink);
+  animation: pp-pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes pp-pop-in {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.pp-panel-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--r-pill);
+  font-size: 26px;
+  color: var(--ink-soft);
+  background: rgba(42, 59, 102, 0.08);
+}
+.pp-panel-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 170px;
+}
+.pp-panel-lesson {
+  font-size: 22px;
+  color: var(--ink-soft);
+}
+.pp-panel-title {
+  font-size: 42px;
+  color: var(--ink);
+}
+.pp-panel-rows {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  justify-content: center;
+}
+.pp-panel-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 72px;
+  padding: 0 26px;
+  font-size: 27px;
+  font-weight: 700;
+  color: var(--ink);
+  background: #fdf1da;
+  border-radius: var(--r-base);
+  box-shadow: 0 5px 0 var(--cream-shade);
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.pp-panel-row:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 var(--cream-shade);
+}
+.pp-panel-row--learn {
+  background: var(--candy-sky);
+  color: var(--color-white-100);
+  box-shadow: 0 5px 0 var(--candy-sky-deep);
+}
+.pp-panel-row--learn:active {
+  box-shadow: 0 2px 0 var(--candy-sky-deep);
+}
+.pp-panel-row.is-locked {
+  opacity: 0.5;
+  box-shadow: none;
+  cursor: default;
+}
+.pp-panel-row.is-locked:active {
+  transform: none;
+}
+.pp-panel-row-tail {
+  font-size: 21px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+/* ── 四线三格 ─────────────────────────────────────────────────────────── */
+.pp-flg {
+  display: block;
+}
+.pp-flg-mid {
+  fill: var(--flg-band);
+}
+.pp-flg-line {
+  stroke: var(--flg-line);
+  stroke-width: 2.5;
+}
+.pp-flg-line--mid {
+  stroke: var(--flg-line-mid);
+  stroke-width: 3;
+}
+.pp-flg-text {
+  fill: var(--ink);
+}
+
+/* ── 学一学 ───────────────────────────────────────────────────────────── */
+.pp-learn {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 40px 20px;
+}
+.pp-screen-top {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72px;
+}
+.pp-screen-top .pp-back {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+.pp-screen-title {
+  font-size: 34px;
+  font-weight: 900;
+  text-shadow: 0 2px 0 rgba(31, 46, 96, 0.3);
+}
+.pp-screen-title-py {
+  font-size: 40px;
+}
+.pp-learn-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 22px;
+  margin-top: 18px;
+}
+.pp-learn-card {
+  position: relative;
+  padding: 14px 18px;
+  background: var(--cream);
+  border-radius: var(--r-lg);
+  box-shadow: 0 7px 0 var(--cream-shade);
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.pp-learn-card:active {
+  transform: translateY(4px) scale(0.985);
+  box-shadow: 0 2px 0 var(--cream-shade);
+}
+.pp-learn-check {
+  position: absolute;
+  top: -14px;
+  right: -12px;
+  font-size: 34px;
+  filter: drop-shadow(0 2px 2px rgba(31, 46, 96, 0.3));
+  animation: pp-pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.pp-learn-whole {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.pp-learn-whole-tag {
+  font-size: 22px;
+  font-weight: 700;
+  color: #5c3f91;
+  background: rgba(255, 255, 255, 0.82);
+  padding: 5px 22px;
+  border-radius: var(--r-pill);
+}
+.pp-learn-cards--whole {
+  margin-top: 10px;
+}
+.pp-learn-cards--whole .pp-learn-card {
+  background: #f4ecff;
+  box-shadow: 0 7px 0 #cdbde8;
+}
+.pp-learn-cards--whole .pp-learn-card:active {
+  box-shadow: 0 2px 0 #cdbde8;
+}
+.pp-learn-foot {
+  margin-top: auto;
+  min-height: 108px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pp-learn-hint {
+  font-size: 27px;
+  color: var(--color-white-85);
+  text-shadow: 0 2px 0 rgba(31, 46, 96, 0.25);
+}
+
+/* ── 练习屏 ───────────────────────────────────────────────────────────── */
+.pp-practice {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 22px 40px 26px;
+}
+.pp-practice-back {
+  position: absolute;
+  left: 22px;
+  top: 22px;
+  z-index: 2;
+}
+.pp-trail {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 34px;
+}
+.pp-trail-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.4);
+}
+.pp-trail-dot.is-done {
+  background: var(--candy-yellow);
+  box-shadow: 0 0 6px rgba(255, 201, 60, 0.8);
+}
+.pp-trail-rocket {
+  font-size: 26px;
+  line-height: 1;
+  filter: drop-shadow(0 2px 2px rgba(31, 46, 96, 0.35));
+}
+.pp-prompt {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  margin-top: 14px;
+}
+.pp-replay {
+  width: 104px;
+  height: 104px;
+  border-radius: var(--r-pill);
+  font-size: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--candy-sky);
+  box-shadow: 0 7px 0 var(--candy-sky-deep);
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.pp-replay:active {
+  transform: translateY(4px);
+  box-shadow: 0 3px 0 var(--candy-sky-deep);
+}
+.pp-prompt-text {
+  font-size: 33px;
+  font-weight: 800;
+  text-shadow: 0 2px 0 rgba(31, 46, 96, 0.3);
+}
+
+/* 选项卡片（PinyinCards）：触摸目标 listen ≥ 246px 方卡、tone ≥ 196px 宽卡 */
+.pp-cards {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 34px;
+  flex: 1;
+}
+.pp-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cream);
+  border-radius: 28px;
+  box-shadow: 0 9px 0 var(--cream-shade);
+  color: var(--ink);
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.pp-card:active {
+  transform: translateY(5px);
+  box-shadow: 0 3px 0 var(--cream-shade);
+}
+.pp-card--listen {
+  min-width: 246px;
+  min-height: 246px;
+  padding: 20px 34px;
+}
+.pp-card--listen .pp-card-text {
+  font-size: 108px;
+}
+.pp-cards--tone {
+  gap: 24px;
+}
+.pp-card--tone {
+  min-width: 196px;
+  min-height: 210px;
+  padding: 16px 26px;
+}
+.pp-card--tone .pp-card-text {
+  font-size: 84px;
+}
+.pp-card--stage {
+  min-width: 178px;
+  min-height: 150px;
+  padding: 12px 26px;
+}
+.pp-card--stage .pp-card-text {
+  font-size: 72px;
+}
+.pp-card-text {
+  line-height: 1.15;
+}
+/* 排除态：静止半透明（惩罚不存在，只是「这个不是」） */
+.pp-card--excluded {
+  opacity: 0.35;
+  cursor: default;
+}
+.pp-card--excluded:active {
+  transform: none;
+  box-shadow: 0 9px 0 var(--cream-shade);
+}
+/* 刚点错那一项：轻抖两下 */
+.pp-card--shake {
+  animation: pp-shake 0.5s ease-in-out;
+}
+@keyframes pp-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-12px); }
+  40% { transform: translateX(11px); }
+  60% { transform: translateX(-8px); }
+  80% { transform: translateX(6px); }
+}
+/* 答对闪亮：正确卡跳一下换薄荷绿 */
+.pp-card--correct {
+  background: var(--candy-mint);
+  box-shadow: 0 9px 0 var(--candy-mint-deep);
+  animation: pp-correct-bounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.pp-card--correct .pp-card-text {
+  color: var(--color-white-100);
+}
+@keyframes pp-correct-bounce {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.09); }
+  100% { transform: scale(1); }
+}
+
+/* ── 拼读对接（blend 题面） ────────────────────────────────────────────── */
+.pp-blend {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.pp-blend .pp-cards {
+  flex: none;
+}
+.pp-blend .pp-flg {
+  background: var(--cream);
+  border-radius: var(--r-base);
+  box-shadow: 0 6px 0 var(--cream-shade);
+}
+.pp-ship {
+  display: flex;
+  align-items: center;
+}
+.pp-ship-flame {
+  margin-right: -6px;
+  animation: pp-flame 0.7s ease-in-out infinite alternate;
+}
+@keyframes pp-flame {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0.88); }
+}
+.pp-ship-nose {
+  margin-left: -4px;
+}
+.pp-ship-pod {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 118px;
+  height: 96px;
+  margin: 0 5px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.16);
+}
+.pp-ship-pod.is-waiting {
+  opacity: 0.55;
+  border: 3px dashed rgba(255, 255, 255, 0.4);
+}
+.pp-ship-pod.is-active {
+  border: 4px dashed var(--color-white-100);
+  background: rgba(255, 255, 255, 0.28);
+  animation: pp-pod-pulse 1.1s ease-in-out infinite;
+}
+@keyframes pp-pod-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.07); }
+}
+.pp-ship-pod.is-docked {
+  animation: pp-dock-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.pp-ship-pod--initial.is-docked {
+  background: var(--candy-pink);
+  box-shadow: 0 5px 0 var(--candy-pink-deep);
+}
+.pp-ship-pod--medial.is-docked {
+  background: var(--candy-yellow);
+  box-shadow: 0 5px 0 var(--candy-yellow-deep);
+}
+.pp-ship-pod--final.is-docked {
+  background: var(--candy-mint);
+  box-shadow: 0 5px 0 var(--candy-mint-deep);
+}
+@keyframes pp-dock-in {
+  from { transform: scale(0.6); }
+  to { transform: scale(1); }
+}
+.pp-ship-pod-text {
+  font-size: 52px;
+  color: var(--color-white-100);
+}
+.pp-ship-pod-label {
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--color-white-85);
+}
+
+/* ── 反馈遮罩（点击护盾） ──────────────────────────────────────────────── */
+.pp-feedback-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(31, 46, 96, 0.12);
+}
+.pp-feedback-card {
+  font-size: 56px;
+  font-weight: 900;
+  padding: 30px 70px;
+  border-radius: 32px;
+  animation: pp-pop-in 0.28s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.pp-feedback-card--right {
+  color: var(--color-white-100);
+  background: var(--candy-mint);
+  box-shadow: 0 9px 0 var(--candy-mint-deep);
+}
+.pp-feedback-card--wrong {
+  color: var(--ink);
+  background: var(--cream);
+  box-shadow: 0 9px 0 var(--cream-shade);
+}
+
+/* ── 结算屏 ───────────────────────────────────────────────────────────── */
+.pp-result {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pp-result-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 620px;
+  padding: 34px 40px 36px;
+  background: var(--cream);
+  border-radius: 34px;
+  box-shadow: 0 12px 0 var(--cream-shade);
+  color: var(--ink);
+  animation: pp-pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.pp-result-hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 190px;
+  height: 172px;
+}
+/* 放射光环：conic 条纹圆盘缓转（庆祝但不刺眼） */
+.pp-result-burst {
+  position: absolute;
+  width: 186px;
+  height: 186px;
+  border-radius: var(--r-pill);
+  background: conic-gradient(
+    rgba(255, 201, 60, 0.35) 0 20deg, transparent 20deg 40deg,
+    rgba(255, 201, 60, 0.35) 40deg 60deg, transparent 60deg 80deg,
+    rgba(255, 201, 60, 0.35) 80deg 100deg, transparent 100deg 120deg,
+    rgba(255, 201, 60, 0.35) 120deg 140deg, transparent 140deg 160deg,
+    rgba(255, 201, 60, 0.35) 160deg 180deg, transparent 180deg 200deg,
+    rgba(255, 201, 60, 0.35) 200deg 220deg, transparent 220deg 240deg,
+    rgba(255, 201, 60, 0.35) 240deg 260deg, transparent 260deg 280deg,
+    rgba(255, 201, 60, 0.35) 280deg 300deg, transparent 300deg 320deg,
+    rgba(255, 201, 60, 0.35) 320deg 340deg, transparent 340deg 360deg
+  );
+  animation: pp-burst-spin 14s linear infinite;
+}
+@keyframes pp-burst-spin {
+  to { transform: rotate(360deg); }
+}
+.pp-result-title {
+  font-size: 36px;
+  font-weight: 900;
+}
+.pp-result-title-py {
+  font-size: 42px;
+}
+.pp-result-stars {
+  display: flex;
+  gap: 14px;
+  margin: 4px 0;
+}
+.pp-result-star path {
+  fill: #e6e9f4;
+  stroke: #c6cede;
+  stroke-width: 1;
+}
+.pp-result-star.is-on {
+  animation: pp-star-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.pp-result-star.is-on path {
+  fill: var(--candy-yellow);
+  stroke: var(--candy-yellow-deep);
+  stroke-width: 1.4;
+}
+@keyframes pp-star-pop {
+  0% { transform: scale(0) rotate(-40deg); }
+  70% { transform: scale(1.25) rotate(8deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+.pp-result-sub {
+  font-size: 27px;
+  color: var(--ink-soft);
+}
+.pp-result-unlock {
+  font-size: 27px;
+  font-weight: 800;
+  color: #8a5e00;
+  background: var(--candy-yellow);
+  padding: 10px 30px;
+  border-radius: var(--r-pill);
+  box-shadow: 0 4px 0 var(--candy-yellow-deep);
+  animation: pp-pop-in 0.4s 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+.pp-result-actions {
+  display: flex;
+  gap: 24px;
+  margin-top: 14px;
+}
+
+/* ── 家长设置 ─────────────────────────────────────────────────────────── */
+.pp-set-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: rgba(31, 46, 96, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pp-set-card {
+  position: relative;
+  width: 560px;
+  max-height: 640px;
+  overflow-y: auto;
+  padding: 34px 40px 30px;
+  background: var(--cream);
+  border-radius: 30px;
+  box-shadow: 0 10px 0 var(--cream-shade);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.pp-set-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--r-pill);
+  font-size: 24px;
+  color: var(--ink-soft);
+  background: rgba(42, 59, 102, 0.08);
+}
+.pp-set-title {
+  font-size: 30px;
+  font-weight: 900;
+  text-align: center;
+  margin-bottom: 4px;
+}
+.pp-set-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.pp-set-label {
+  font-size: 23px;
+  flex: none;
+}
+.pp-set-slider {
+  flex: 1;
+  accent-color: var(--candy-pink);
+  height: 36px;
+}
+.pp-set-vol {
+  font-size: 21px;
+  color: var(--ink-soft);
+  min-width: 58px;
+  text-align: right;
+}
+.pp-set-action {
+  font-size: 22px;
+  font-weight: 600;
+  padding: 14px 20px;
+  border-radius: var(--r-base);
+  color: var(--ink);
+  background: #fdf1da;
+  box-shadow: 0 4px 0 var(--cream-shade);
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.pp-set-action:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--cream-shade);
+}
+.pp-set-action.is-confirm {
+  color: var(--color-white-100);
+  background: #e85f51;
+  box-shadow: 0 4px 0 #b8402f;
 }
