@@ -136,6 +136,54 @@ describe('LESSONS', () => {
     expect(LESSONS[1].toneSets).toEqual(['i', 'u', 'ü']);
   });
 
+  const isCJK = (ch: string): boolean => ch >= '一' && ch <= '鿿';
+
+  it('lessons 3+ carry aligned carrier chars; lessons 1-2 carry none (音频走 tv-*)', () => {
+    for (const lesson of LESSONS) {
+      if (lesson.id <= 2) {
+        expect(lesson.toneSetCarriers).toBeUndefined();
+        expect(lesson.blendCarriers).toBeUndefined();
+        continue;
+      }
+      // toneSetCarriers：与 toneSets 一一对齐，每项恰 4 个汉字（1-4 声载字）
+      expect(lesson.toneSetCarriers, `lesson ${lesson.id}`).toBeDefined();
+      expect(lesson.toneSetCarriers).toHaveLength(lesson.toneSets.length);
+      for (const carriers of lesson.toneSetCarriers!) {
+        expect([...carriers]).toHaveLength(4);
+        for (const ch of carriers) expect(isCJK(ch), `'${ch}' in '${carriers}'`).toBe(true);
+      }
+      // blendCarriers：与 blends 一一对齐，每项 1 个汉字
+      expect(lesson.blendCarriers, `lesson ${lesson.id}`).toBeDefined();
+      expect(lesson.blendCarriers).toHaveLength(lesson.blends.length);
+      for (const ch of lesson.blendCarriers!) {
+        expect([...ch]).toHaveLength(1);
+        expect(isCJK(ch), `'${ch}'`).toBe(true);
+      }
+    }
+  });
+
+  it('同一音节在全课程中的载字一致（sy-* clip 每 id 只配一次音）', () => {
+    const carrierById = new Map<string, string>();
+    const claim = (id: string, char: string) => {
+      const prev = carrierById.get(id);
+      if (prev !== undefined) expect(prev, `carrier conflict for ${id}`).toBe(char);
+      carrierById.set(id, char);
+    };
+    for (const lesson of LESSONS) {
+      lesson.toneSets.forEach((base, i) => {
+        const carriers = lesson.toneSetCarriers?.[i];
+        if (!carriers) return;
+        [...carriers].forEach((ch, t) => claim(`${base}${t + 1}`, ch));
+      });
+      lesson.blends.forEach((blend, i) => {
+        const ch = lesson.blendCarriers?.[i];
+        if (!ch) return;
+        const p = parseSyllable(blend);
+        claim(`${p.base}${p.tone}`, ch);
+      });
+    }
+  });
+
   it('wholeRead union across lessons is exactly the 16 整体认读', () => {
     const union = LESSONS.flatMap((lesson) => lesson.wholeRead ?? []);
     expect(union).toHaveLength(16);
