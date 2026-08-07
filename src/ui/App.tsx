@@ -5,24 +5,31 @@
 //   - blend 全段通过后播拼读序列（可长于 1.1s），护盾 held 到序列播完再推进（seqGen 守护）
 //   - exitToMap teardown：clearTimer + stopVoice + 会话作废，杜绝离屏后定时器复活
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { nodeToContent } from '../core/curriculum';
+import { markCollectionSeen, newlyUnlocked, unlockedItems } from '../core/collection';
+import { LESSONS, nodeToContent } from '../core/curriculum';
 import type { Lesson, NodeId } from '../core/curriculum';
+import { isStreakMilestone, settleFreeSlice, streakOnCorrect, streakOnWrong } from '../core/freePlay';
 import { LessonSession } from '../core/lessonFlow';
-import { launchpadUnlocked, MAX_NODE, planetOf, radarUnlocked } from '../core/progression';
-import { buildPractice, buildStation } from '../core/questions';
+import { applyMasteryAnswer, startMasterySession } from '../core/mastery';
+import type { MasterySession } from '../core/mastery';
+import { launchpadPool, launchpadUnlocked, MAX_NODE, planetOf, radarPool, radarUnlocked, totalStars } from '../core/progression';
+import { buildLaunchpadQuestion, buildPractice, buildRadarQuestion, buildStation, questionItem } from '../core/questions';
 import type { Blend, Question } from '../core/questions';
 import { addProfile, defaultProgress, loadProgress, profileMeta, saveProgress, setActiveProfile } from '../core/storage';
-import type { Progress } from '../core/types';
+import type { PlanetProgress, Progress } from '../core/types';
 import { clipForLetter, clipForWholeRead } from '../audio/manifest';
 import type { ClipId } from '../audio/manifest';
 import { RIGHT_LINES, VOICE } from '../audio/lines';
 import { playClip, playSeq, setClipVolume, stopVoice, warmLesson } from '../audio/voice';
-import type { Screen, Session } from './session';
+import type { FreeSession, Screen, Session } from './session';
 import { sfx } from './sound';
 import { useStageScale } from './scale';
+import { Collection } from './screens/Collection';
 import { GalaxyMap } from './screens/GalaxyMap';
+import { Launchpad } from './screens/Launchpad';
 import { Learn } from './screens/Learn';
 import { Practice } from './screens/Practice';
+import { Radar } from './screens/Radar';
 import { Result } from './screens/Result';
 import { RotateOverlay } from './components/RotateOverlay';
 import { SettingsModal } from './components/SettingsModal';
@@ -83,7 +90,10 @@ export function App() {
   const [progress, setProgressState] = useState<Progress>(() => loadProgress());
   const [screen, setScreen] = useState<Screen>('map');
   const [session, setSession] = useState<Session | null>(null);
+  const [freeSession, setFreeSession] = useState<FreeSession | null>(null);
   const [learnNode, setLearnNode] = useState<NodeId | null>(null);
+  const [collectionNew, setCollectionNew] = useState<string[]>([]);
+  const [toast, setToast] = useState<{ id: number; text: string } | null>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const scale = useStageScale();
   const portrait = usePortrait();
@@ -118,6 +128,10 @@ export function App() {
   progressRef.current = progress;
   // 会话真身（ref-truth）：出题队列/再见面/星级记账都在这里，Session 只镜像。
   const lessonRef = useRef<LessonSession | null>(null);
+  // 自由练习真身：抽样池 + 掌握度工作副本（每答替换 mastery，退出 settleFreeSlice）。
+  const freePlayRef = useRef<{ pool: string[]; mastery: MasterySession } | null>(null);
+  const freeRef = useRef<FreeSession | null>(freeSession);
+  freeRef.current = freeSession;
   // 拼读序列的时代计数：exitToMap/重开会话时 ++，令在途 playSeq().then 安静放弃。
   const seqGenRef = useRef(0);
 
@@ -128,6 +142,15 @@ export function App() {
     }
   };
   useEffect(() => () => clearTimer(), []);
+
+  // 回图小结 toast（自由练习退出「答了 N 题」）：2.6s 自动消失，卸载清定时器。
+  const toastTimerRef = useRef<number | undefined>(undefined);
+  useEffect(() => () => window.clearTimeout(toastTimerRef.current), []);
+  const showToast = (text: string) => {
+    window.clearTimeout(toastTimerRef.current);
+    setToast({ id: Date.now(), text });
+    toastTimerRef.current = window.setTimeout(() => setToast(null), 2600);
+  };
 
   // 启动即应用持久化音量（滑杆变更走 updateSettings）。
   useEffect(() => { setClipVolume(progressRef.current.settings.clipVolume); }, []);
@@ -237,16 +260,18 @@ export function App() {
     const unlockedNext = next.unlocked > prev.unlocked;
     const radarNew = !radarUnlocked(prev) && radarUnlocked(next);
     const launchNew = !launchpadUnlocked(prev) && launchpadUnlocked(next);
+    // 图鉴「新伙伴」横幅：星星跨过门槛且图鉴里还没看过（揭示动画留给图鉴到访）
+    const newItems = newlyUnlocked(next, totalStars(prev), totalStars(next)).map((c) => c.name);
     updateProgress(next);
     lessonRef.current = null; // 已结算，杜绝二次 commit
     sfx.chord();
     const lines: ClipId[] = [stars >= 3 ? VOICE.star1 : VOICE.star2];
     if (unlockedNext) lines.push(VOICE.unlockPlanet);
-    if (radarNew) lines.push(VOICE.unlockRadar); // M5 屏未接，但解锁时刻属于本次结算
+    if (radarNew) lines.push(VOICE.unlockRadar); // 解锁台词只在此结算时刻播（M5 屏内不重播）
     if (launchNew) lines.push(VOICE.unlockLaunch);
     seqGenRef.current++;
     void playSeq(lines);
-    setSession({ ...s, feedback: null, resultStars: stars, resultUnlockedNext: unlockedNext });
+    setSession({ ...s, feedback: null, resultStars: stars, resultUnlockedNext: unlockedNext, resultNewItems: newItems });
     setScreen('result');
   };
 
@@ -343,6 +368,198 @@ export function App() {
     startPractice(s.node, s.practice);
   };
 
+  // ── 自由练习（雷达/发射台）────────────────────────────────────────────────
+  // 无尽流（fork 自数学夜航 endless）：一次一题按掌握度加权抽样，无队列无星级，
+  // 退出是唯一终点。掌握度经 mastery.ts 状态机（startMasterySession/applyMasteryAnswer/
+  // settleFreeSlice），UI 不手搓规则；连击铁律「只被答错清零、退出不清」在 core/freePlay。
+
+  const buildFreeQuestion = (mode: 'radar' | 'launchpad', pool: string[], m: MasterySession): Question =>
+    mode === 'radar'
+      ? buildRadarQuestion(pool, m.states, Math.random)
+      : buildLaunchpadQuestion(pool, m.states, Math.random);
+
+  const startFree = (mode: 'radar' | 'launchpad') => {
+    const p = progressRef.current;
+    const pool = mode === 'radar' ? radarPool(p) : launchpadPool(p);
+    if (pool.length === 0) return; // 门槛未过（入口已禁用，防御）
+    clearTimer();
+    seqGenRef.current++;
+    const mastery = startMasterySession((mode === 'radar' ? p.radar : p.launchpad).items);
+    const q = buildFreeQuestion(mode, pool, mastery);
+    freePlayRef.current = { pool, mastery };
+    warmQueue([q]);
+    void playSeq([mode === 'radar' ? VOICE.gameListen : VOICE.gameBlend, clipOf(q)]);
+    setFreeSession({
+      mode,
+      current: q,
+      answered: 0,
+      firstTry: 0,
+      wrongThis: false,
+      feedback: null,
+      excluded: [],
+      stage: 0,
+      docked: [],
+      streak: mode === 'launchpad' ? p.launchpad.streak : 0,
+      milestone: null,
+    });
+    setScreen(mode);
+  };
+
+  // 答对推进：完成计数 +1，按最新掌握度抽下一题（每题新建，无「队列」概念）。
+  const advanceFree = () => {
+    const s = freeRef.current;
+    const fp = freePlayRef.current;
+    if (!s || !fp) return;
+    clearTimer();
+    const q = buildFreeQuestion(s.mode, fp.pool, fp.mastery);
+    if (q.kind === 'blend') warmQueue([q]);
+    void playClip(clipOf(q));
+    setFreeSession({
+      ...s,
+      current: q,
+      answered: s.answered + 1,
+      firstTry: s.firstTry + (s.wrongThis ? 0 : 1),
+      wrongThis: false,
+      feedback: null,
+      excluded: [],
+      lastWrong: undefined,
+      stage: 0,
+      docked: [],
+      milestone: null,
+    });
+  };
+
+  // 雷达批改（listen-pick）：与主线 answer 同一双分支节奏（对 1.1s 推进 / 错 0.9s 重试），
+  // 差异只在记账走 applyMasteryAnswer（resolved-once/重试 cd=1 纪律在 mastery 内）。
+  const answerFree = (picked: string) => {
+    const s = freeRef.current;
+    const fp = freePlayRef.current;
+    if (!s || !fp || s.feedback !== null) return;
+    const q = s.current;
+    if (q.kind === 'blend') { answerFreeBlendStage(picked); return; }
+    if (q.kind !== 'listen-pick') return;
+    clearTimer();
+    const item = questionItem(q);
+    if (picked === q.answer) {
+      fp.mastery = applyMasteryAnswer(fp.mastery, item, true);
+      sfx.right();
+      void playClip(RIGHT_LINES[Math.floor(Math.random() * RIGHT_LINES.length)]);
+      setFreeSession({ ...s, feedback: 'right' });
+      timerRef.current = window.setTimeout(advanceFree, 1100);
+    } else {
+      fp.mastery = applyMasteryAnswer(fp.mastery, item, false);
+      setFreeSession({ ...s, feedback: 'wrong', wrongThis: true, excluded: [...s.excluded, picked], lastWrong: picked });
+      timerRef.current = window.setTimeout(() => {
+        const prev = freeRef.current;
+        if (!prev || prev.feedback !== 'wrong') return;
+        setFreeSession({ ...prev, feedback: null, lastWrong: undefined });
+        void playClip(clipOf(q)); // 重听一遍再试
+      }, 900);
+    }
+  };
+
+  // 发射台拼读逐段批改（与主线 answerBlendStage 同构；题面/护盾/序列 idiom 一致，
+  // 记账换 mastery+连击——抽共享会给 M4 已稳的主线换骨架，接受此最小重复）。
+  // 连击随答落盘（fork 铁律：清零与 +1 都立即写 progress，强退不丢）。
+  const answerFreeBlendStage = (picked: string) => {
+    const s = freeRef.current;
+    const fp = freePlayRef.current;
+    if (!s || !fp || s.feedback !== null) return;
+    const q = s.current;
+    if (q.kind !== 'blend') return;
+    const st = q.stages[s.stage];
+    clearTimer();
+    const item = questionItem(q);
+    if (picked !== st.answer) {
+      fp.mastery = applyMasteryAnswer(fp.mastery, item, false);
+      const p = progressRef.current;
+      const cleared = streakOnWrong({ streak: p.launchpad.streak, bestStreak: p.launchpad.bestStreak });
+      if (cleared.streak !== p.launchpad.streak) {
+        updateProgress({ ...p, launchpad: { ...p.launchpad, ...cleared } });
+      }
+      setFreeSession({ ...s, streak: 0, wrongThis: true, feedback: 'wrong', excluded: [...s.excluded, picked], lastWrong: picked });
+      timerRef.current = window.setTimeout(() => {
+        const prev = freeRef.current;
+        if (!prev || prev.feedback !== 'wrong') return;
+        setFreeSession({ ...prev, feedback: null, lastWrong: undefined });
+        void playClip(clipOf(q)); // 重听整个音节再对接
+      }, 900);
+      return;
+    }
+    sfx.dock();
+    const docked = [...s.docked, picked];
+    if (s.stage + 1 < q.stages.length) {
+      setFreeSession({ ...s, docked, stage: s.stage + 1, excluded: [], lastWrong: undefined });
+      return;
+    }
+    // 整题完成：掌握度记一次对答（曾错过的条目由 mastery 自判 retry-correct）
+    fp.mastery = applyMasteryAnswer(fp.mastery, item, true);
+    let streak = s.streak;
+    let milestone: number | null = null;
+    if (!s.wrongThis) {
+      const p = progressRef.current;
+      const next = streakOnCorrect({ streak: p.launchpad.streak, bestStreak: p.launchpad.bestStreak });
+      updateProgress({ ...p, launchpad: { ...p.launchpad, ...next } });
+      streak = next.streak;
+      if (isStreakMilestone(streak)) {
+        milestone = streak;
+        sfx.star();
+      }
+    }
+    setFreeSession({ ...s, docked, streak, milestone, feedback: 'right' });
+    const gen = ++seqGenRef.current;
+    void playSeq(blendParts(q)).then(() => {
+      if (gen !== seqGenRef.current || freePlayRef.current !== fp) return;
+      advanceFree();
+    });
+  };
+
+  const replayFree = () => {
+    const s = freeRef.current;
+    if (s) void playClip(clipOf(s.current));
+  };
+
+  // 自由练习唯一终点：结算掌握度切片（cd−1、sessions+1、total 累计）→ 落盘 → 回图。
+  // 反馈遮罩挡住退出键（点击护盾契约），到这里不会有在途推进定时器与结算赛跑；
+  // freePlayRef 先置空杜绝二次结算。应用强退（刷新/杀进程）不结算——退出才是终点。
+  const finishFree = () => {
+    const s = freeRef.current;
+    const fp = freePlayRef.current;
+    clearTimer();
+    seqGenRef.current++;
+    stopVoice();
+    if (s && fp) {
+      freePlayRef.current = null;
+      const p = progressRef.current;
+      const next =
+        s.mode === 'radar'
+          ? { ...p, radar: settleFreeSlice(p.radar, fp.mastery.states, s.answered) }
+          : { ...p, launchpad: settleFreeSlice(p.launchpad, fp.mastery.states, s.answered) };
+      updateProgress(next);
+      if (s.answered > 0) {
+        sfx.chord();
+        showToast(`太棒了，答了 ${s.answered} 题！`);
+      }
+    }
+    setFreeSession(null);
+    setScreen('map');
+  };
+
+  // ── 宇宙图鉴 ──────────────────────────────────────────────────────────────
+  // 进屏时算好「本次新点亮」名单（揭示动画用）并立即 markCollectionSeen 落盘——
+  // 「新」只揭示一次，早退也不重复弹（保持轻量，无确认流程）。
+  const startCollection = () => {
+    const p = progressRef.current;
+    const unlocked = unlockedItems(totalStars(p));
+    const fresh = unlocked.filter((c) => !p.collectionSeen.includes(c.id)).map((c) => c.id);
+    setCollectionNew(fresh);
+    if (fresh.length > 0) {
+      sfx.star();
+      updateProgress(markCollectionSeen(p, unlocked.map((c) => c.id)));
+    }
+    setScreen('collection');
+  };
+
   // ── 家长设置 ──────────────────────────────────────────────────────────────
   const updateSettings = (patch: Partial<Progress['settings']>) => {
     if (patch.clipVolume !== undefined) setClipVolume(patch.clipVolume);
@@ -353,16 +570,31 @@ export function App() {
     seqGenRef.current++;
     stopVoice();
     lessonRef.current = null;
+    freePlayRef.current = null; // 重置即弃：自由练习会话不结算（进度都清了）
     const d = defaultProgress();
     setClipVolume(d.settings.clipVolume);
     updateProgress(d);
     setSettingsOpen(false);
     setSession(null);
+    setFreeSession(null);
     setLearnNode(null);
     setScreen('map');
   };
   const unlockAll = () => {
     updateProgress({ ...progressRef.current, unlocked: MAX_NODE });
+    setSettingsOpen(false);
+  };
+  // 一键满星（开发调试用，仅 DEV 构建可见）：unlock-all 只推解锁链不给星，
+  // 雷达/发射台门槛要的是 planetCleared（三练都 ≥1★）——测门槛/图鉴须有此后门。
+  const fillAllStars = () => {
+    const planets: Record<number, PlanetProgress> = {};
+    for (const l of LESSONS) planets[l.id] = { learned: true, stars: [3, 3, 3] };
+    updateProgress({
+      ...progressRef.current,
+      planets,
+      stations: { r1: 3, r2: 3 },
+      unlocked: MAX_NODE,
+    });
     setSettingsOpen(false);
   };
 
@@ -391,8 +623,14 @@ export function App() {
             progress={progress}
             onStartLearn={startLearn}
             onStartPractice={startPractice}
+            onOpenRadar={() => startFree('radar')}
+            onOpenLaunchpad={() => startFree('launchpad')}
+            onOpenCollection={startCollection}
             onOpenSettings={() => setSettingsOpen(true)}
           />
+        )}
+        {screen === 'map' && toast && (
+          <div key={toast.id} class="pp-toast">{toast.text}</div>
         )}
         {screen === 'learn' && learnLesson && (
           <Learn
@@ -414,16 +652,27 @@ export function App() {
             lesson={resultLesson}
             practice={session.practice}
             unlockedNext={!!session.resultUnlockedNext}
+            newItems={session.resultNewItems ?? []}
             onRetry={retrySession}
             onBackToMap={exitToMap}
           />
         )}
+        {screen === 'radar' && freeSession && (
+          <Radar session={freeSession} onPick={answerFree} onReplay={replayFree} onExit={finishFree} />
+        )}
+        {screen === 'launchpad' && freeSession && (
+          <Launchpad session={freeSession} onPick={answerFree} onReplay={replayFree} onExit={finishFree} />
+        )}
+        {screen === 'collection' && (
+          <Collection stars={totalStars(progress)} newIds={collectionNew} onExit={exitToMap} />
+        )}
         {settingsOpen && (
           <SettingsModal
-            settings={progress.settings}
+            progress={progress}
             onUpdateSettings={updateSettings}
             onResetProgress={resetProgress}
             onUnlockAll={unlockAll}
+            onFillStars={fillAllStars}
             onAddProfile={doAddProfile}
             onSwitchProfile={doSwitchProfile}
             onClose={() => setSettingsOpen(false)}

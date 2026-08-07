@@ -407,7 +407,7 @@ button {
   stroke: var(--candy-yellow-deep);
 }
 
-/* 左下：自由练习/图鉴入口（M5 接线，先占位） */
+/* 左下：自由练习/图鉴入口（雷达/发射台按 progression 门槛，图鉴看星星数） */
 .pp-map-entries {
   position: absolute;
   left: 28px;
@@ -416,6 +416,7 @@ button {
   gap: 14px;
 }
 .pp-entry {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -428,14 +429,36 @@ button {
   padding: 10px 20px;
   border-radius: var(--r-base);
 }
-.pp-entry.is-soon {
+.pp-entry.is-locked {
   opacity: 0.62;
   cursor: default;
 }
-.pp-entry-soon {
+.pp-entry.is-open {
+  background: rgba(var(--ink-shadow-rgb), 0.42);
+  box-shadow: 0 4px 0 rgba(var(--ink-shadow-rgb), 0.5);
+  transition: transform 0.08s, box-shadow 0.08s;
+}
+.pp-entry.is-open:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 rgba(var(--ink-shadow-rgb), 0.5);
+}
+.pp-entry-hint {
   font-size: 15px;
   font-weight: 500;
   color: var(--color-white-55);
+}
+/* 图鉴有新收藏未看过：小角标 */
+.pp-entry-new {
+  position: absolute;
+  top: -10px;
+  right: -8px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--color-white-100);
+  background: var(--candy-pink);
+  padding: 2px 10px;
+  border-radius: var(--r-pill);
+  box-shadow: 0 2px 0 var(--candy-pink-deep);
 }
 
 /* 右下齿轮：长按 1.5s 开设置 */
@@ -1111,4 +1134,330 @@ button {
   color: var(--color-white-100);
   background: var(--danger);
   box-shadow: 0 4px 0 var(--danger-deep);
+}
+
+/* ── 家长层小结（M5：进度总览 / 自由练习 / 易错音）──────────────────────── */
+.pp-set-section {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 21px;
+  font-weight: 800;
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 2px dashed rgba(42, 59, 102, 0.15);
+}
+.pp-set-section-tail {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--candy-yellow-ink);
+}
+.pp-set-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.pp-set-grow {
+  display: grid;
+  grid-template-columns: 30px 1fr 44px 62px 62px 62px;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.pp-set-grow--head {
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+.pp-set-grow--head span {
+  text-align: center;
+}
+.pp-set-gnum {
+  font-size: 14px;
+  color: var(--ink-soft);
+  text-align: center;
+}
+.pp-set-gtitle {
+  font-size: 16px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.pp-set-gcell {
+  text-align: center;
+  color: rgba(42, 59, 102, 0.3);
+  letter-spacing: 1px;
+}
+.pp-set-gcell.is-on {
+  color: var(--candy-yellow-deep);
+  font-weight: 700;
+}
+.pp-set-gcell--wide {
+  grid-column: span 3;
+}
+.pp-set-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 16px;
+  color: var(--ink);
+}
+.pp-set-empty {
+  font-size: 16px;
+  color: var(--ink-soft);
+}
+.pp-set-errs {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.pp-set-err {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 16px;
+}
+.pp-set-errkind {
+  font-size: 13px;
+  color: var(--color-white-100);
+  background: var(--candy-grape);
+  padding: 1px 8px;
+  border-radius: var(--r-pill);
+  flex: none;
+}
+.pp-set-errpy {
+  font-size: 19px;
+  font-weight: 700;
+}
+.pp-set-errn {
+  margin-left: auto;
+  color: var(--ink-soft);
+  font-size: 15px;
+}
+.pp-set-detail {
+  font-size: 15px;
+  color: var(--ink-soft);
+}
+.pp-set-detail summary {
+  cursor: pointer;
+  font-size: 16px;
+}
+.pp-set-detail-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 2px 0 0 14px;
+}
+.pp-set-detail-mid {
+  font-size: 14px;
+}
+
+/* ── 自由练习共用（雷达/发射台顶部计数；外壳复用 .pp-practice）──────────── */
+.pp-free-top {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 40px;
+}
+.pp-free-count {
+  font-size: 25px;
+  font-weight: 800;
+  color: var(--color-white-100);
+  text-shadow: 0 2px 0 rgba(var(--ink-shadow-rgb), 0.3);
+}
+.pp-free-sub {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-white-55);
+}
+
+/* ── 聪耳雷达 ─────────────────────────────────────────────────────────── */
+.pp-radar-scope {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}
+.pp-radar-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--r-pill);
+  border: 5px solid rgba(255, 255, 255, 0.65);
+  animation: pp-radar-pulse 1.8s ease-out infinite;
+  pointer-events: none;
+}
+@keyframes pp-radar-pulse {
+  from { transform: scale(0.55); opacity: 0.9; }
+  to { transform: scale(1.18); opacity: 0; }
+}
+.pp-radar-replay {
+  width: 128px;
+  height: 128px;
+  font-size: 60px;
+}
+.pp-radar-prompt {
+  margin: 14px 0 18px;
+}
+
+/* ── 拼读发射台 ───────────────────────────────────────────────────────── */
+.pp-streak {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--color-white-55);
+  background: rgba(var(--ink-shadow-rgb), 0.24);
+  padding: 4px 16px;
+  border-radius: var(--r-pill);
+}
+.pp-streak.is-live {
+  color: var(--candy-yellow-ink);
+  background: var(--candy-yellow);
+  box-shadow: 0 3px 0 var(--candy-yellow-deep);
+}
+/* 发射条：小火箭随答对数向右飞（left 过渡；线是虚线航迹） */
+.pp-launch-strip {
+  position: relative;
+  width: 760px;
+  height: 40px;
+  margin-top: 4px;
+  border-bottom: 3px dashed rgba(255, 255, 255, 0.35);
+  flex: none;
+}
+.pp-launch-rocket {
+  position: absolute;
+  bottom: 2px;
+  font-size: 30px;
+  line-height: 1;
+  transform: rotate(45deg); /* 🚀 朝右飞 */
+  filter: drop-shadow(0 2px 2px rgba(var(--ink-shadow-rgb), 0.35));
+  transition: left 0.7s cubic-bezier(0.22, 1.4, 0.36, 1);
+}
+.pp-launch-prompt {
+  margin-top: 6px;
+}
+/* 连击里程碑横幅：飘在反馈遮罩（z10）之上，纯展示不挡点 */
+.pp-milestone {
+  position: absolute;
+  top: 17%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 12;
+  pointer-events: none;
+  font-size: 40px;
+  font-weight: 900;
+  color: var(--candy-yellow-ink);
+  background: var(--candy-yellow);
+  padding: 16px 44px;
+  border-radius: var(--r-lg);
+  box-shadow: 0 7px 0 var(--candy-yellow-deep);
+  animation: pp-pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ── 回图小结 toast（自由练习退出）─────────────────────────────────────── */
+.pp-toast {
+  position: absolute;
+  left: 50%;
+  bottom: 118px;
+  transform: translateX(-50%);
+  z-index: 15;
+  font-size: 23px;
+  font-weight: 700;
+  color: var(--color-white-100);
+  background: rgba(var(--ink-shadow-rgb), 0.78);
+  padding: 12px 30px;
+  border-radius: var(--r-pill);
+  animation: pp-pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  pointer-events: none;
+}
+
+/* ── 宇宙图鉴 ─────────────────────────────────────────────────────────── */
+.pp-collection {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 56px 24px;
+}
+.pp-coll-stars {
+  position: absolute;
+  right: 0;
+  top: 14px;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--candy-yellow-ink);
+  background: var(--candy-yellow);
+  padding: 6px 20px;
+  border-radius: var(--r-pill);
+  box-shadow: 0 4px 0 var(--candy-yellow-deep);
+}
+.pp-coll-grid {
+  width: 100%;
+  flex: 1;
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 16px;
+}
+.pp-coll-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 10px;
+  border-radius: var(--r-lg);
+}
+.pp-coll-card.is-open {
+  background: var(--cream);
+  box-shadow: 0 6px 0 var(--cream-shade);
+}
+.pp-coll-card.is-locked {
+  background: rgba(255, 255, 255, 0.14);
+  border: 3px dashed rgba(255, 255, 255, 0.3);
+}
+/* 剪影：整幅美术压成深色轮廓（保留形状悬念） */
+.pp-coll-card.is-locked .pp-coll-art {
+  filter: brightness(0);
+  opacity: 0.28;
+}
+.pp-coll-name {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.pp-coll-need {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-white-85);
+}
+/* 本次到访新点亮：pop 揭示（delay 由组件按序内联）+ 角标 */
+.pp-coll-card.is-new {
+  animation: pp-coll-pop 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@keyframes pp-coll-pop {
+  from { transform: scale(0.3); opacity: 0; }
+  60% { transform: scale(1.12); opacity: 1; }
+  to { transform: scale(1); opacity: 1; }
+}
+.pp-coll-newtag {
+  position: absolute;
+  top: -9px;
+  right: -6px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-white-100);
+  background: var(--candy-pink);
+  padding: 3px 12px;
+  border-radius: var(--r-pill);
+  box-shadow: 0 3px 0 var(--candy-pink-deep);
+}
+
+/* 结算屏「图鉴新伙伴」横幅：复用解锁横幅底座，压字号（名字可能较长） */
+.pp-result-newitem {
+  font-size: 22px;
 }

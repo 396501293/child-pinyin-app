@@ -3,9 +3,17 @@
 // 点星球开「星球面板」选 学/练1/练2/练3（顺序 gating 见 ui/gating.ts）；
 // 点空间站直接开复习会话。齿轮长按 1.5s 进家长设置（fork 自数学夜航 Map）。
 import { useEffect, useRef, useState } from 'preact/hooks';
+import { unlockedItems } from '../../core/collection';
 import type { Lesson, NodeId } from '../../core/curriculum';
 import { nodeToContent } from '../../core/curriculum';
-import { MAX_NODE, nodeState, planetOf, totalStars } from '../../core/progression';
+import {
+  launchpadUnlocked,
+  MAX_NODE,
+  nodeState,
+  planetOf,
+  radarUnlocked,
+  totalStars,
+} from '../../core/progression';
 import type { Progress } from '../../core/types';
 import { practiceLabel, practiceUnlocked } from '../gating';
 import { PlanetIcon, StationIcon } from '../components/PlanetIcon';
@@ -15,7 +23,32 @@ interface GalaxyMapProps {
   progress: Progress;
   onStartLearn: (node: NodeId) => void;
   onStartPractice: (node: NodeId, practice: 1 | 2 | 3) => void;
+  onOpenRadar: () => void;
+  onOpenLaunchpad: () => void;
+  onOpenCollection: () => void;
   onOpenSettings: () => void;
+}
+
+// 左下入口条目：解锁 → 可点玩具按钮；未解锁 → 置灰 🔒 + 开放条件提示
+//（复用原「敬请期待」占位的观感，hint 换成真实门槛）。badge = 图鉴有新收藏。
+function EntryChip({ open, label, hint, badge, onOpen }: {
+  open: boolean;
+  label: string;
+  hint: string;
+  badge?: boolean;
+  onOpen: () => void;
+}) {
+  return (
+    <button
+      class={'pp-entry' + (open ? ' is-open' : ' is-locked')}
+      disabled={!open}
+      onClick={open ? onOpen : undefined}
+    >
+      {open ? label : `🔒 ${label}`}
+      {!open && <span class="pp-entry-hint">{hint}</span>}
+      {open && badge && <span class="pp-entry-new">新!</span>}
+    </button>
+  );
 }
 
 // 蛇形路径几何：3 行 × 5 列，第 2 行反向。ROW_Y/COL_X 与 PATH_D 手工耦合——改动需同步。
@@ -80,7 +113,7 @@ function PlanetPanel({ lesson, node, progress, onClose, onStartLearn, onStartPra
   );
 }
 
-export function GalaxyMap({ progress, onStartLearn, onStartPractice, onOpenSettings }: GalaxyMapProps) {
+export function GalaxyMap({ progress, onStartLearn, onStartPractice, onOpenRadar, onOpenLaunchpad, onOpenCollection, onOpenSettings }: GalaxyMapProps) {
   const [selected, setSelected] = useState<NodeId | null>(null);
 
   // 齿轮长按 1.5s 才打开设置（防孩子误触）：pointerdown 起计时，抬起/移出取消。
@@ -160,14 +193,27 @@ export function GalaxyMap({ progress, onStartLearn, onStartPractice, onOpenSetti
         );
       })}
 
-      {/* 左下：自由练习/图鉴入口（M5 接线；先亮出存在感但不可点） */}
+      {/* 左下：自由练习/图鉴入口（门槛见 progression.radarUnlocked/launchpadUnlocked） */}
       <div class="pp-map-entries">
-        {['📡 聪耳雷达', '🚀 拼读发射台', '📖 宇宙图鉴'].map((label) => (
-          <button key={label} class="pp-entry is-soon" disabled>
-            {label}
-            <span class="pp-entry-soon">敬请期待</span>
-          </button>
-        ))}
+        <EntryChip
+          open={radarUnlocked(progress)}
+          label="📡 聪耳雷达"
+          hint="第 3 颗星球通关后开放"
+          onOpen={onOpenRadar}
+        />
+        <EntryChip
+          open={launchpadUnlocked(progress)}
+          label="🚀 拼读发射台"
+          hint="第 5 颗星球通关后开放"
+          onOpen={onOpenLaunchpad}
+        />
+        <EntryChip
+          open={stars > 0}
+          label="📖 宇宙图鉴"
+          hint="拿到第 1 颗星开放"
+          badge={unlockedItems(stars).some((c) => !progress.collectionSeen.includes(c.id))}
+          onOpen={onOpenCollection}
+        />
       </div>
 
       {/* 右下齿轮：长按 1.5s 打开家长设置 */}
