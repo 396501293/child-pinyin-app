@@ -10,6 +10,8 @@ import { LruCache } from './lru';
 export const clipUrl = (baseUrl: string, file: string): string => `${baseUrl}audio/${file}`;
 
 let ctx: AudioContext | null = null;
+let master: GainNode | null = null; // 主音量结点（家长设置 clipVolume；App 启动/滑杆变更时 setClipVolume）
+let clipVolume = 1;
 const buffers = new LruCache<ClipId, AudioBuffer>(80); // 80 × ~0.3MB PCM ≈ 25MB 上限
 const inflight = new Map<ClipId, Promise<AudioBuffer>>(); // play/warm 并发去重
 let current: AudioBufferSourceNode | null = null;
@@ -17,12 +19,23 @@ let generation = 0; // stopVoice/interrupt 递增，令在途 playSeq 安静退�
 
 function ac(): AudioContext | null {
   try {
-    ctx ??= new AudioContext();
+    if (!ctx) {
+      ctx = new AudioContext();
+      master = ctx.createGain();
+      master.gain.value = clipVolume;
+      master.connect(ctx.destination);
+    }
     if (ctx.state === 'suspended') void ctx.resume();
     return ctx;
   } catch {
     return null; // 无 WebAudio 环境（旧 WebView/测试）：交给 Web Speech 降级
   }
+}
+
+/** clip 音量 [0,1]（settings.clipVolume）。ctx 未建时先记账，建时应用。 */
+export function setClipVolume(v: number): void {
+  clipVolume = Math.min(1, Math.max(0, v));
+  if (master) master.gain.value = clipVolume;
 }
 
 /** App 启动时调用一次：注册一次性 pointerdown 解锁 + 回前台重 resume。 */
@@ -70,7 +83,7 @@ export async function playClip(id: ClipId, opts: { interrupt?: boolean } = {}): 
     await new Promise<void>((resolve) => {
       const src = c.createBufferSource();
       src.buffer = buf;
-      src.connect(c.destination);
+      src.connect(master ?? c.destination);
       src.onended = () => {
         if (current === src) current = null;
         resolve();
