@@ -33,3 +33,11 @@ export function newlyUnlocked(p: Progress, prevStars: number, nowStars: number):
     (c) => prevStars < c.threshold && c.threshold <= nowStars && !p.collectionSeen.includes(c.id),
   );
 }
+
+// 图鉴到访：把（已解锁的）收藏记为「看过」。幂等；无新增时返回原对象——
+// 调用方可据引用相等跳过落盘。纯函数，不改入参。
+export function markCollectionSeen(p: Progress, ids: readonly string[]): Progress {
+  const fresh = ids.filter((id) => !p.collectionSeen.includes(id));
+  if (fresh.length === 0) return p;
+  return { ...p, collectionSeen: [...p.collectionSeen, ...fresh] };
+}

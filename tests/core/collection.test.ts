@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { COLLECTION, newlyUnlocked, unlockedItems } from '../../src/core/collection';
+import { COLLECTION, markCollectionSeen, newlyUnlocked, unlockedItems } from '../../src/core/collection';
 import { defaultProgress } from '../../src/core/types';
 
 describe('图鉴目录', () => {
@@ -56,5 +56,25 @@ describe('newlyUnlocked（拿星后的新收藏）', () => {
     const p = defaultProgress();
     p.collectionSeen = [COLLECTION[0].id];
     expect(newlyUnlocked(p, 0, COLLECTION[1].threshold)).toEqual([COLLECTION[1]]);
+  });
+});
+
+describe('markCollectionSeen（图鉴到访记账）', () => {
+  test('新增未看过的 id，保留已有顺序', () => {
+    const p = { ...defaultProgress(), collectionSeen: ['stardust'] };
+    const out = markCollectionSeen(p, ['stardust', 'moon-bunny']);
+    expect(out.collectionSeen).toEqual(['stardust', 'moon-bunny']);
+  });
+
+  test('幂等：全部已看过时返回原对象（引用相等，可跳过落盘）', () => {
+    const p = { ...defaultProgress(), collectionSeen: ['stardust', 'moon-bunny'] };
+    expect(markCollectionSeen(p, ['moon-bunny'])).toBe(p);
+    expect(markCollectionSeen(p, [])).toBe(p);
+  });
+
+  test('纯：不改入参', () => {
+    const p = { ...defaultProgress(), collectionSeen: ['stardust'] };
+    markCollectionSeen(p, ['rocket-fin']);
+    expect(p.collectionSeen).toEqual(['stardust']);
   });
 });
