@@ -53,9 +53,27 @@ body {
   --r-pill: 999px;
 }
 
+/* ── 拼音专用字体：SIL Andika（识字教学字形：单层 a/g，调号全覆盖）。
+   子集见 scripts/subset-andika.sh；font-display:block——拼音是内容本体，
+   宁可白等 ~0.1s 也不能先闪出错误字形（FOUT 的 a/g 双层形对初学者是干扰）。 */
+@font-face {
+  font-family: 'Andika Pinyin';
+  src: url('./assets/fonts/andika-pinyin.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
 body {
   font-family: -apple-system, 'PingFang SC', 'Hiragino Sans GB', sans-serif;
   background: var(--color-letterbox);
+}
+
+/* 拼音语境统一入口：只有 .pp-py 用 Andika；中文 UI 走系统栈。
+   font-synthesis:none——子集只含 Regular，禁止浏览器伪造粗体（会毁掉字形教学价值）。 */
+.pp-py {
+  font-family: 'Andika Pinyin', 'Andika', sans-serif;
+  font-synthesis: none;
 }
 
 /* ── Stage 缩放容器 ── */
