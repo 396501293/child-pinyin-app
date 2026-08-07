@@ -66,6 +66,11 @@ describe('toneMark', () => {
     expect(toneMark('nü', 3)).toBe('nǚ');
   });
 
+  it('throws when the base has no vowel to mark', () => {
+    expect(() => toneMark('zh', 1)).toThrow();
+    expect(() => toneMark('', 2)).toThrow();
+  });
+
   it('every output is NFC', () => {
     const cases: Array<[string, Tone]> = [
       ['ma', 1], ['po', 2], ['de', 3], ['di', 4], ['lu', 1], ['lü', 2],
@@ -121,6 +126,18 @@ describe('composeSyllable', () => {
 
   it('tone 0 produces an unmarked text', () => {
     expect(composeSyllable('m', undefined, 'a', 0).text).toBe('ma');
+  });
+
+  it('throws on an empty final', () => {
+    expect(() => composeSyllable('b', undefined, '', 1)).toThrow();
+  });
+
+  it('normalizes NFD input before the de-dot rule (NFD 的 ü 不得漏去点)', () => {
+    const nfdU = 'ü'.normalize('NFD');
+    expect(nfdU).not.toBe('ü');
+    expect(composeSyllable('j', undefined, nfdU, 1).text).toBe('jū');
+    expect(composeSyllable('j', undefined, nfdU, 1).base).toBe('ju');
+    expect(composeSyllable('l', undefined, nfdU, 4).text).toBe('lǜ');
   });
 
   it('outputs NFC text and base', () => {
@@ -202,6 +219,11 @@ describe('parseSyllable', () => {
   it('throws on garbage input', () => {
     expect(() => parseSyllable('xyz9')).toThrow();
     expect(() => parseSyllable('')).toThrow();
+  });
+
+  it('throws on multiple tone marks', () => {
+    expect(() => parseSyllable('hǎǒ')).toThrow();
+    expect(() => parseSyllable('àí')).toThrow();
   });
 
   it('round-trips every curriculum blend', () => {

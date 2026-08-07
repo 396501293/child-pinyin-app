@@ -4,7 +4,7 @@ import { shuffle } from './rand';
 import type { Rng } from './types';
 
 // 形近（b/d/p/q）、音近（n/l、平翘舌、前后鼻音）混淆对。
-export const CONFUSABLE: Record<string, string[]> = {
+export const CONFUSABLE: Readonly<Record<string, readonly string[]>> = {
   b: ['d', 'p'], d: ['b', 'q'], p: ['q', 'b'], q: ['p', 'd'],
   n: ['l'], l: ['n'], f: ['t'], t: ['f'],
   z: ['zh'], zh: ['z'], c: ['ch'], ch: ['c'], s: ['sh'], sh: ['s'],
@@ -23,12 +23,12 @@ const UNIT_SET = new Set(ALL_UNITS);
  */
 export function pickDistractors(
   answer: string,
-  lessonPool: string[],
+  lessonPool: readonly string[],
   rng: Rng,
   count = 2,
 ): string[] {
   const picks: string[] = [];
-  const take = (candidates: string[]) => {
+  const take = (candidates: readonly string[]) => {
     for (const c of shuffle([...candidates], rng)) {
       if (picks.length >= count) return;
       if (c !== answer && !picks.includes(c) && UNIT_SET.has(c)) picks.push(c);

@@ -52,13 +52,14 @@ const DEDOT_INITIALS = new Set(['j', 'q', 'x']);
 
 export function composeSyllable(
   initial: string,
-  medial: string | undefined,
+  medial: '' | 'i' | 'u' | 'ü' | undefined,
   final: string,
   tone: Tone,
 ): Syllable {
   if (final === '') throw new Error('composeSyllable: empty final');
-  const m = medial === '' ? undefined : (medial as Syllable['medial']);
-  let written = (m ?? '') + final;
+  const m = medial === '' ? undefined : medial;
+  // 先归一化到 NFC，避免 NFD 形式的 ü（u + 组合分音符）漏过下面的去点正则。
+  let written = ((m ?? '') + final).normalize('NFC');
   // 拼写规则：j/q/x 后的 ü 行省写两点（ju qu xu / jue / juan / jun）。
   if (DEDOT_INITIALS.has(initial)) written = written.replace(/ü/g, 'u');
   const base = (initial + written).normalize('NFC');
@@ -74,10 +75,19 @@ const INITIALS_BY_LENGTH = [
   'j', 'q', 'x', 'r', 'z', 'c', 's', 'y', 'w',
 ];
 
+// 声母用到的全部辅音字母，由声母表推导（避免手写字符串重复失同步）。
+const CONSONANT_LETTERS = new Set(INITIALS_BY_LENGTH.join(''));
+
 // ie/üe/iu/ui 是复韵母（标准普通话），首字母虽是 i/u/ü 但不拆介母。
 // iu/ui 已被「介母后必须跟 a/o/e」排除，这里只需显式排除 ie/üe。
 const COMPOUND_NOT_MEDIAL = new Set(['ie', 'üe']);
 
+/**
+ * 反解析显示形（'guā' → g+u+a+1）。
+ * 契约：只校验「字符合法性」（合法声母字母/元音/调号），不校验「音节合法性」——
+ * 构造出的假音节（如 'zǎng'）同样能解析。仅供可信的课程数据校验与往返测试使用，
+ * M3 不得拿它校验用户输入。
+ */
 export function parseSyllable(text: string): Syllable {
   const nfc = text.normalize('NFC');
   // 1) 去调：找带调元音，还原并记录调号。
@@ -89,7 +99,7 @@ export function parseSyllable(text: string): Syllable {
       if (tone !== 0) throw new Error(`parseSyllable: multiple tone marks in '${text}'`);
       tone = hit.tone;
       base += hit.vowel;
-    } else if (VOWELS.has(ch) || 'bpmfdtnlgkhjqxzcsryw'.includes(ch)) {
+    } else if (VOWELS.has(ch) || CONSONANT_LETTERS.has(ch)) {
       base += ch;
     } else {
       throw new Error(`parseSyllable: unexpected character '${ch}' in '${text}'`);

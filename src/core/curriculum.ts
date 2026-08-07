@@ -7,29 +7,29 @@
 // - 每条 blend 都是有常用字读音的真实音节（M2 用汉字载体配音，选字见各行注释）。
 
 export interface Lesson {
-  id: number;             // 1..13
-  title: string;          // 'a o e'
-  newLetters: string[];   // 本课新授单元
-  toneSets: string[];     // 练2 底座：每个按 1-4 声齐练
-  blends: string[];       // 练3 拼读目标（带调 NFC 文本）
-  wholeRead?: string[];   // 本课引入的整体认读
+  readonly id: number;                    // 1..13
+  readonly title: string;                 // 'a o e'
+  readonly newLetters: readonly string[]; // 本课新授单元
+  readonly toneSets: readonly string[];   // 练2 底座：每个按 1-4 声齐练
+  readonly blends: readonly string[];     // 练3 拼读目标（带调 NFC 文本）
+  readonly wholeRead?: readonly string[]; // 本课引入的整体认读
 }
 
-export const ALL_INITIALS: string[] = [
+export const ALL_INITIALS: readonly string[] = [
   'b', 'p', 'm', 'f', 'd', 't', 'n', 'l',
   'g', 'k', 'h', 'j', 'q', 'x',
   'zh', 'ch', 'sh', 'r', 'z', 'c', 's',
   'y', 'w',
 ]; // 23 声母（含 y w）
 
-export const ALL_FINALS: string[] = [
+export const ALL_FINALS: readonly string[] = [
   'a', 'o', 'e', 'i', 'u', 'ü',
   'ai', 'ei', 'ui', 'ao', 'ou', 'iu', 'ie', 'üe', 'er',
   'an', 'en', 'in', 'un', 'ün',
   'ang', 'eng', 'ing', 'ong',
 ]; // 24 韵母
 
-export const LESSONS: Lesson[] = [
+export const LESSONS: ReadonlyArray<Lesson> = [
   {
     id: 1,
     title: 'a o e',
@@ -130,12 +130,12 @@ export const LESSONS: Lesson[] = [
 ];
 
 export interface Station {
-  id: 'r1' | 'r2';
-  afterLesson: 8 | 13;
-  coversLessons: number[];
+  readonly id: 'r1' | 'r2';
+  readonly afterLesson: 8 | 13;
+  readonly coversLessons: readonly number[];
 }
 
-export const STATIONS: Station[] = [
+export const STATIONS: ReadonlyArray<Station> = [
   { id: 'r1', afterLesson: 8, coversLessons: [1, 2, 3, 4, 5, 6, 7, 8] },
   { id: 'r2', afterLesson: 13, coversLessons: [9, 10, 11, 12, 13] },
 ];

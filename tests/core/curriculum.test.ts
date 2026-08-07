@@ -38,6 +38,12 @@ describe('unit inventories', () => {
       expect(ALL_FINALS).toContain(f);
     }
   });
+
+  it('parseSyllable recognizes every initial in ALL_INITIALS (两处声母表一致性)', () => {
+    for (const initial of ALL_INITIALS) {
+      expect(parseSyllable(toneMark(initial + 'a', 1)).initial).toBe(initial);
+    }
+  });
 });
 
 describe('LESSONS', () => {
