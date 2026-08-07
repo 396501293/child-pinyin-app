@@ -48,6 +48,7 @@ body {
   --candy-pink-deep: #d14c82;
   --candy-yellow: #ffc93c;
   --candy-yellow-deep: #e8a20c;
+  --candy-yellow-ink: #8a5e00; /* 黄底上的可读深字色（星星计数/解锁横幅） */
   --candy-mint: #3ddc97;
   --candy-mint-deep: #23aa71;
   --candy-sky: #4fc3f7;
@@ -57,13 +58,24 @@ body {
   --candy-orange: #ff9f55;
   --candy-orange-deep: #e07a2e;
 
+  /* 奶油深一档（面板行/设置按钮的次级底色） */
+  --cream-deep: #fdf1da;
+  /* 整体认读的淡紫系（区别于常规奶油卡） */
+  --lavender: #f4ecff;
+  --lavender-shade: #cdbde8;
+  --lavender-ink: #5c3f91;
+  /* 危险操作确认态（重置/添加档案二次确认） */
+  --danger: #e85f51;
+  --danger-deep: #b8402f;
+  /* 深藏青投影/遮罩的 RGB 基（配不同透明度用 rgba(var(--ink-shadow-rgb), α)） */
+  --ink-shadow-rgb: 31, 46, 96;
+
   /* ── 四线三格 ── */
   --flg-line: #86aede;
   --flg-line-mid: #ef93ab; /* 中格两线偏红（课本惯例） */
   --flg-band: rgba(255, 201, 60, 0.14);
 
   /* ── 圆角 ── */
-  --r-sm: 10px;
   --r-base: 18px;
   --r-lg: 26px;
   --r-pill: 999px;
@@ -182,12 +194,12 @@ button {
   font-weight: 700;
   color: var(--color-white-100);
   background: rgba(255, 255, 255, 0.22);
-  box-shadow: 0 4px 0 rgba(31, 46, 96, 0.18);
+  box-shadow: 0 4px 0 rgba(var(--ink-shadow-rgb), 0.18);
   transition: transform 0.08s, box-shadow 0.08s;
 }
 .pp-back:active {
   transform: translateY(3px);
-  box-shadow: 0 1px 0 rgba(31, 46, 96, 0.18);
+  box-shadow: 0 1px 0 rgba(var(--ink-shadow-rgb), 0.18);
 }
 
 /* 大 CTA（学屏「去练习」） */
@@ -247,7 +259,7 @@ button {
 .pp-profile-title {
   font-size: 46px;
   font-weight: 900;
-  text-shadow: 0 3px 0 rgba(31, 46, 96, 0.25);
+  text-shadow: 0 3px 0 rgba(var(--ink-shadow-rgb), 0.25);
 }
 .pp-profile-cards {
   display: flex;
@@ -298,13 +310,13 @@ button {
   font-size: 44px;
   font-weight: 900;
   letter-spacing: 2px;
-  text-shadow: 0 3px 0 rgba(31, 46, 96, 0.3);
+  text-shadow: 0 3px 0 rgba(var(--ink-shadow-rgb), 0.3);
 }
 .pp-map-stars {
   margin-left: auto;
   font-size: 26px;
   font-weight: 800;
-  color: #8a5e00;
+  color: var(--candy-yellow-ink);
   background: var(--candy-yellow);
   padding: 10px 24px;
   border-radius: var(--r-pill);
@@ -345,7 +357,7 @@ button {
   right: 4px;
   bottom: 4px;
   font-size: 30px;
-  filter: drop-shadow(0 2px 2px rgba(31, 46, 96, 0.4));
+  filter: drop-shadow(0 2px 2px rgba(var(--ink-shadow-rgb), 0.4));
 }
 .pp-node.is-available .pp-node-btn {
   animation: pp-node-pulse 1.8s ease-in-out infinite;
@@ -363,7 +375,7 @@ button {
   left: 50%;
   margin-left: -17px;
   font-size: 34px;
-  filter: drop-shadow(0 3px 3px rgba(31, 46, 96, 0.35));
+  filter: drop-shadow(0 3px 3px rgba(var(--ink-shadow-rgb), 0.35));
   animation: pp-rocket-bob 1.6s ease-in-out infinite;
 }
 @keyframes pp-rocket-bob {
@@ -376,7 +388,7 @@ button {
   font-weight: 700;
   color: var(--color-white-100);
   /* 下两行节点落在奶油晨光上，纯白字会被吃掉——阴影给足才能全图可读 */
-  text-shadow: 0 2px 5px rgba(31, 46, 96, 0.55);
+  text-shadow: 0 2px 5px rgba(var(--ink-shadow-rgb), 0.55);
   white-space: nowrap;
 }
 
@@ -387,7 +399,7 @@ button {
 }
 .pp-star path {
   fill: rgba(255, 255, 255, 0.35);
-  stroke: rgba(31, 46, 96, 0.25);
+  stroke: rgba(var(--ink-shadow-rgb), 0.25);
   stroke-width: 1.2;
 }
 .pp-star.is-on path {
@@ -412,7 +424,7 @@ button {
   font-weight: 700;
   color: var(--color-white-100);
   /* 深色底而非白色底：入口横在奶油晨光带上，白底会整块糊掉 */
-  background: rgba(31, 46, 96, 0.28);
+  background: rgba(var(--ink-shadow-rgb), 0.28);
   padding: 10px 20px;
   border-radius: var(--r-base);
 }
@@ -435,7 +447,7 @@ button {
   height: 64px;
   border-radius: var(--r-pill);
   font-size: 30px;
-  background: rgba(31, 46, 96, 0.24);
+  background: rgba(var(--ink-shadow-rgb), 0.24);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -446,7 +458,7 @@ button {
   position: absolute;
   inset: 0;
   z-index: 5;
-  background: rgba(31, 46, 96, 0.45);
+  background: rgba(var(--ink-shadow-rgb), 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -510,7 +522,7 @@ button {
   font-size: 27px;
   font-weight: 700;
   color: var(--ink);
-  background: #fdf1da;
+  background: var(--cream-deep);
   border-radius: var(--r-base);
   box-shadow: 0 5px 0 var(--cream-shade);
   transition: transform 0.08s, box-shadow 0.08s;
@@ -585,7 +597,7 @@ button {
 .pp-screen-title {
   font-size: 34px;
   font-weight: 900;
-  text-shadow: 0 2px 0 rgba(31, 46, 96, 0.3);
+  text-shadow: 0 2px 0 rgba(var(--ink-shadow-rgb), 0.3);
 }
 .pp-screen-title-py {
   font-size: 40px;
@@ -615,7 +627,7 @@ button {
   top: -14px;
   right: -12px;
   font-size: 34px;
-  filter: drop-shadow(0 2px 2px rgba(31, 46, 96, 0.3));
+  filter: drop-shadow(0 2px 2px rgba(var(--ink-shadow-rgb), 0.3));
   animation: pp-pop-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 .pp-learn-whole {
@@ -628,7 +640,7 @@ button {
 .pp-learn-whole-tag {
   font-size: 22px;
   font-weight: 700;
-  color: #5c3f91;
+  color: var(--lavender-ink);
   background: rgba(255, 255, 255, 0.82);
   padding: 5px 22px;
   border-radius: var(--r-pill);
@@ -637,11 +649,11 @@ button {
   margin-top: 10px;
 }
 .pp-learn-cards--whole .pp-learn-card {
-  background: #f4ecff;
-  box-shadow: 0 7px 0 #cdbde8;
+  background: var(--lavender);
+  box-shadow: 0 7px 0 var(--lavender-shade);
 }
 .pp-learn-cards--whole .pp-learn-card:active {
-  box-shadow: 0 2px 0 #cdbde8;
+  box-shadow: 0 2px 0 var(--lavender-shade);
 }
 .pp-learn-foot {
   margin-top: auto;
@@ -653,7 +665,7 @@ button {
 .pp-learn-hint {
   font-size: 27px;
   color: var(--color-white-85);
-  text-shadow: 0 2px 0 rgba(31, 46, 96, 0.25);
+  text-shadow: 0 2px 0 rgba(var(--ink-shadow-rgb), 0.25);
 }
 
 /* ── 练习屏 ───────────────────────────────────────────────────────────── */
@@ -690,7 +702,7 @@ button {
 .pp-trail-rocket {
   font-size: 26px;
   line-height: 1;
-  filter: drop-shadow(0 2px 2px rgba(31, 46, 96, 0.35));
+  filter: drop-shadow(0 2px 2px rgba(var(--ink-shadow-rgb), 0.35));
 }
 .pp-prompt {
   display: flex;
@@ -717,7 +729,7 @@ button {
 .pp-prompt-text {
   font-size: 33px;
   font-weight: 800;
-  text-shadow: 0 2px 0 rgba(31, 46, 96, 0.3);
+  text-shadow: 0 2px 0 rgba(var(--ink-shadow-rgb), 0.3);
 }
 
 /* 选项卡片（PinyinCards）：触摸目标 listen ≥ 246px 方卡、tone ≥ 196px 宽卡 */
@@ -899,7 +911,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(31, 46, 96, 0.12);
+  background: rgba(var(--ink-shadow-rgb), 0.12);
 }
 .pp-feedback-card {
   font-size: 56px;
@@ -1007,7 +1019,7 @@ button {
 .pp-result-unlock {
   font-size: 27px;
   font-weight: 800;
-  color: #8a5e00;
+  color: var(--candy-yellow-ink);
   background: var(--candy-yellow);
   padding: 10px 30px;
   border-radius: var(--r-pill);
@@ -1025,7 +1037,7 @@ button {
   position: absolute;
   inset: 0;
   z-index: 20;
-  background: rgba(31, 46, 96, 0.5);
+  background: rgba(var(--ink-shadow-rgb), 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1087,7 +1099,7 @@ button {
   padding: 14px 20px;
   border-radius: var(--r-base);
   color: var(--ink);
-  background: #fdf1da;
+  background: var(--cream-deep);
   box-shadow: 0 4px 0 var(--cream-shade);
   transition: transform 0.08s, box-shadow 0.08s;
 }
@@ -1097,6 +1109,6 @@ button {
 }
 .pp-set-action.is-confirm {
   color: var(--color-white-100);
-  background: #e85f51;
-  box-shadow: 0 4px 0 #b8402f;
+  background: var(--danger);
+  box-shadow: 0 4px 0 var(--danger-deep);
 }

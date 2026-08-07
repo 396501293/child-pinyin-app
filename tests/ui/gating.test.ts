@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { LESSONS } from '../../src/core/curriculum';
 import type { PlanetProgress, Star } from '../../src/core/types';
-import { allVisited, learnUnits, practiceUnlocked } from '../../src/ui/gating';
+import { allVisited, learnUnits, practiceLabel, practiceUnlocked } from '../../src/ui/gating';
 
 const planet = (learned: boolean, stars: [Star, Star, Star]): PlanetProgress => ({ learned, stars });
 
@@ -41,5 +41,18 @@ describe('learnUnits / allVisited（学屏计数）', () => {
 
   it('每一课的 learnUnits 非空（学屏永远有卡可点）', () => {
     for (const l of LESSONS) expect(learnUnits(l).length).toBeGreaterThan(0);
+  });
+});
+
+describe('practiceLabel（面板/结算共用的练习名）', () => {
+  it('练1/练2 名称固定', () => {
+    expect(practiceLabel(LESSONS[0], 1)).toBe('听一听');
+    expect(practiceLabel(LESSONS[0], 2)).toBe('辨四声');
+  });
+
+  it('练3 按有无拼读目标切换：L1-2 无 blends → 认一认，L3+ → 拼一拼', () => {
+    expect(practiceLabel(LESSONS[0], 3)).toBe('认一认'); // a o e
+    expect(practiceLabel(LESSONS[1], 3)).toBe('认一认'); // i u ü y w
+    for (const l of LESSONS.slice(2)) expect(practiceLabel(l, 3)).toBe('拼一拼');
   });
 });

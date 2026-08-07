@@ -18,3 +18,11 @@ export const learnUnits = (lesson: Lesson): string[] => [
 
 export const allVisited = (units: readonly string[], visited: ReadonlySet<string>): boolean =>
   units.every((u) => visited.has(u));
+
+// 练习名称（面板行/结算标题共用）。练3 按课程内容切换：L1-2 无 blends，
+// 出的是带调元音认读题（questions.buildPractice 的替代题型）→ 「认一认」。
+const PRACTICE_NAMES = ['听一听', '辨四声', '拼一拼'] as const;
+export function practiceLabel(lesson: Lesson, practice: 1 | 2 | 3): string {
+  if (practice === 3 && lesson.blends.length === 0) return '认一认';
+  return PRACTICE_NAMES[practice - 1];
+}

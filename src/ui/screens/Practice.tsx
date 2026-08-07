@@ -2,6 +2,7 @@
 //   listen-pick：3 张大拼音卡；tone-pick：4 张四声宽卡；blend：对接飞船逐段选。
 // dumb 组件：题目/反馈/排除全由 session 镜像与回调驱动（fork 自数学夜航 Quiz）。
 // 退出键小而靠角（数学夜航模式：直接退出无确认，会话作废由 App 负责 teardown）。
+import type { Question } from '../../core/questions';
 import type { Session } from '../session';
 import { PinyinCards } from '../components/PinyinCard';
 import { DockingShip } from '../components/DockingShip';
@@ -15,7 +16,7 @@ interface PracticeProps {
   onExit: () => void;
 }
 
-const PROMPT: Record<string, string> = {
+const PROMPT: Record<Question['kind'], string> = {
   'listen-pick': '听一听，是哪一个？',
   'tone-pick': '听一听，是第几声？',
   blend: '把飞船拼出来！',

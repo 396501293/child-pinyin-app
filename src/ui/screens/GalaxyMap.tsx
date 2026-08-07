@@ -7,7 +7,7 @@ import type { Lesson, NodeId } from '../../core/curriculum';
 import { nodeToContent } from '../../core/curriculum';
 import { MAX_NODE, nodeState, planetOf, totalStars } from '../../core/progression';
 import type { Progress } from '../../core/types';
-import { practiceUnlocked } from '../gating';
+import { practiceLabel, practiceUnlocked } from '../gating';
 import { PlanetIcon, StationIcon } from '../components/PlanetIcon';
 import { StarRow, starsToRow } from '../components/StarRow';
 
@@ -31,8 +31,6 @@ function nodePos(n: NodeId): { x: number; y: number } {
   const col = i % 5;
   return { x: COL_X[row === 1 ? 4 - col : col], y: ROW_Y[row] };
 }
-
-const PRACTICE_LABEL = ['听一听', '辨四声', '拼一拼'] as const;
 
 // 星球面板（选中某课程星球时弹出）：学 + 三练，各带星与锁。
 function PlanetPanel({ lesson, node, progress, onClose, onStartLearn, onStartPractice }: {
@@ -61,7 +59,7 @@ function PlanetPanel({ lesson, node, progress, onClose, onStartLearn, onStartPra
           </button>
           {practices.map((p) => {
             const open = practiceUnlocked(planet, p);
-            const label = p === 3 && lesson.blends.length === 0 ? '认一认' : PRACTICE_LABEL[p - 1];
+            const label = practiceLabel(lesson, p);
             return (
               <button
                 key={p}

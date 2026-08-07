@@ -8,9 +8,9 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { nodeToContent } from '../core/curriculum';
 import type { Lesson, NodeId } from '../core/curriculum';
 import { LessonSession } from '../core/lessonFlow';
-import { launchpadUnlocked, planetOf, radarUnlocked } from '../core/progression';
+import { launchpadUnlocked, MAX_NODE, planetOf, radarUnlocked } from '../core/progression';
 import { buildPractice, buildStation } from '../core/questions';
-import type { Question } from '../core/questions';
+import type { Blend, Question } from '../core/questions';
 import { addProfile, defaultProgress, loadProgress, profileMeta, saveProgress, setActiveProfile } from '../core/storage';
 import type { Progress } from '../core/types';
 import { clipForLetter, clipForWholeRead } from '../audio/manifest';
@@ -47,18 +47,36 @@ function usePortrait(): boolean {
 // clipFor*（性质测试保证）——此处集中收窄一次。
 const clipOf = (q: Question): ClipId => q.clip as ClipId;
 
+// 拼读序列「声母 —（介母）— 韵母 — 整音节」的 clip 列表（对接成功播放 + 预热共用）。
+function blendParts(q: Blend): ClipId[] {
+  const ids: ClipId[] = [];
+  if (q.target.initial !== '') ids.push(clipForLetter(q.target.initial));
+  if (q.target.medial !== undefined) ids.push(clipForLetter(q.target.medial));
+  ids.push(clipForLetter(q.target.final), clipOf(q));
+  return ids;
+}
+
 // 预热一轮练习会用到的 clips（题音 + blend 部件音 + 夸奖语），失败不响。
 function warmQueue(queue: Question[]): void {
   const ids = new Set<ClipId>(RIGHT_LINES);
   for (const q of queue) {
     ids.add(clipOf(q));
-    if (q.kind === 'blend') {
-      if (q.target.initial !== '') ids.add(clipForLetter(q.target.initial));
-      if (q.target.medial !== undefined) ids.add(clipForLetter(q.target.medial));
-      ids.add(clipForLetter(q.target.final));
-    }
+    if (q.kind === 'blend') for (const id of blendParts(q)) ids.add(id);
   }
   warmLesson([...ids]);
+}
+
+// sessionStorage 访问助手：getter 本身在禁 cookie/嵌入式 webview 下会抛
+// SecurityError，可选链挡不住——统一 try/catch（对齐 storage.ts safeStore 约定）。
+// 失败静默降级：代价只是每次启动都出选人屏。
+function sessionGet(k: string): string | null {
+  try { return globalThis.sessionStorage?.getItem(k) ?? null; } catch { return null; }
+}
+function sessionSet(k: string, v: string | null): void {
+  try {
+    if (v === null) globalThis.sessionStorage?.removeItem(k);
+    else globalThis.sessionStorage?.setItem(k, v);
+  } catch { /* 私密模式/SecurityError */ }
 }
 
 export function App() {
@@ -73,10 +91,10 @@ export function App() {
   // 选人屏（多档案）：≥2 档案且本次会话未选过 → 启动先选人。
   // 选同一档案直接进入；选其他档案切 active 后整页重载（干净重置全部会话态）。
   const [needPick, setNeedPick] = useState(
-    () => profileMeta().count > 1 && !globalThis.sessionStorage?.getItem('pp_profile_picked'),
+    () => profileMeta().count > 1 && !sessionGet('pp_profile_picked'),
   );
   const pickProfile = (i: number) => {
-    try { globalThis.sessionStorage?.setItem('pp_profile_picked', '1'); } catch { /* 私密模式 */ }
+    sessionSet('pp_profile_picked', '1');
     void playClip(VOICE.welcome); // 点选即手势：AudioContext 已解锁，欢迎语合法
     if (i === profileMeta().active) { setNeedPick(false); return; }
     setActiveProfile(i);
@@ -87,7 +105,7 @@ export function App() {
     setSettingsOpen(false);
   };
   const doSwitchProfile = () => {
-    try { globalThis.sessionStorage?.removeItem('pp_profile_picked'); } catch { /* 私密模式 */ }
+    sessionSet('pp_profile_picked', null);
     location.reload();
   };
 
@@ -294,12 +312,8 @@ export function App() {
     // 最后一段对接成功 → 整题作答（首答对错已在段错时定档）
     ls.answer(true);
     setSession({ ...s, docked, feedback: 'right' });
-    const parts: ClipId[] = [];
-    if (q.target.initial !== '') parts.push(clipForLetter(q.target.initial));
-    if (q.target.medial !== undefined) parts.push(clipForLetter(q.target.medial));
-    parts.push(clipForLetter(q.target.final), clipOf(q));
     const gen = ++seqGenRef.current;
-    void playSeq(parts).then(() => {
+    void playSeq(blendParts(q)).then(() => {
       // 序列被打断（退出/重开）或时代已变：安静放弃，不推进
       if (gen !== seqGenRef.current || lessonRef.current !== ls) return;
       advance();
@@ -348,7 +362,7 @@ export function App() {
     setScreen('map');
   };
   const unlockAll = () => {
-    updateProgress({ ...progressRef.current, unlocked: 15 });
+    updateProgress({ ...progressRef.current, unlocked: MAX_NODE });
     setSettingsOpen(false);
   };
 

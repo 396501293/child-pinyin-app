@@ -2,6 +2,7 @@
 // App 在进结算前算定并落盘（数学夜航纪律：结算数据不在 render 时算）。
 import type { Lesson } from '../../core/curriculum';
 import type { Star } from '../../core/types';
+import { practiceLabel } from '../gating';
 import { PlanetIcon, StationIcon } from '../components/PlanetIcon';
 
 interface ResultProps {
@@ -14,14 +15,12 @@ interface ResultProps {
   onBackToMap: () => void;
 }
 
-const SUB: Record<number, string> = {
+const SUB: Record<Star, string> = {
   3: '全对！你是拼音小达人！',
   2: '真棒！就差一点点全对！',
   1: '完成啦！再练一遍更棒！',
-  0: '再试一次吧！',
+  0: '再试一次吧！', // 防御性：完成即 ≥1★（progression.starsFor），0 仅在异常态出现
 };
-
-const PRACTICE_CN = ['听一听', '辨四声', '拼一拼'] as const;
 
 export function Result({ stars, station, lesson, practice, unlockedNext, onRetry, onBackToMap }: ResultProps) {
   return (
@@ -37,7 +36,7 @@ export function Result({ stars, station, lesson, practice, unlockedNext, onRetry
           {station ? '空间站复习完成！' : (
             <>
               <span class="pp-py pp-result-title-py">{lesson?.title}</span>
-              {` · ${practice === 3 && (lesson?.blends.length ?? 0) === 0 ? '认一认' : PRACTICE_CN[practice - 1]}完成！`}
+              {` · ${lesson ? practiceLabel(lesson, practice) : ''}完成！`}
             </>
           )}
         </div>
@@ -58,7 +57,8 @@ export function Result({ stars, station, lesson, practice, unlockedNext, onRetry
 
         <div class="pp-result-actions">
           <button class="pp-btn pp-btn--ghost" onClick={onRetry}>再来一次</button>
-          <button class="pp-btn pp-btn--primary" onClick={onBackToMap}>回星系 ▶</button>
+          {/* 基础 .pp-btn 即主按钮观感（糖果粉），无需修饰类 */}
+          <button class="pp-btn" onClick={onBackToMap}>回星系 ▶</button>
         </div>
       </div>
     </div>
