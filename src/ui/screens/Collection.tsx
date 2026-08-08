@@ -22,8 +22,8 @@ export function Collection({ stars, newIds, onExit }: CollectionProps) {
       <div class="pp-coll-grid">
         {COLLECTION.map((c) => {
           const open = c.threshold <= stars;
-          const isNew = newIds.includes(c.id);
-          const revealIndex = isNew ? newIds.indexOf(c.id) : 0;
+          const revealIndex = newIds.indexOf(c.id);
+          const isNew = revealIndex >= 0;
           return (
             <div
               key={c.id}

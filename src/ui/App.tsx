@@ -4,9 +4,11 @@
 //   - answer 双分支：答对 sfx+夸奖 clip+遮罩 1.1s 推进；答错排除+抖动、0.9s 清除原地重试
 //   - blend 全段通过后播拼读序列（可长于 1.1s），护盾 held 到序列播完再推进（seqGen 守护）
 //   - exitToMap teardown：clearTimer + stopVoice + 会话作废，杜绝离屏后定时器复活
+//   - ⚠️ 主线（answer/answerBlendStage）与自由练习（answerFree/answerFreeBlendStage）是
+//     镜像路径：改反馈节奏（ADVANCE_MS/RETRY_MS）、护盾契约或 seqGen 习语时两处同步
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { markCollectionSeen, newlyUnlocked, unlockedItems } from '../core/collection';
-import { LESSONS, nodeToContent } from '../core/curriculum';
+import { LESSONS, nodeToContent, STATIONS } from '../core/curriculum';
 import type { Lesson, NodeId } from '../core/curriculum';
 import { isStreakMilestone, settleFreeSlice, streakOnCorrect, streakOnWrong } from '../core/freePlay';
 import { LessonSession } from '../core/lessonFlow';
@@ -49,6 +51,11 @@ function usePortrait(): boolean {
   }, []);
   return portrait;
 }
+
+// 反馈节奏（毫秒）：答对护盾窗（夸奖语须在窗内念完）/ 答错清除窗。
+// 主线与自由练习两条镜像路径共用——改动即同时改动两处的手感。
+const ADVANCE_MS = 1100;
+const RETRY_MS = 900;
 
 // Question 接口的 clip 是 string（core 不依赖 manifest 类型），但值一律出自
 // clipFor*（性质测试保证）——此处集中收窄一次。
@@ -291,7 +298,7 @@ export function App() {
       sfx.right();
       void playClip(RIGHT_LINES[Math.floor(Math.random() * RIGHT_LINES.length)]);
       setSession({ ...s, feedback: 'right' });
-      timerRef.current = window.setTimeout(advance, 1100);
+      timerRef.current = window.setTimeout(advance, ADVANCE_MS);
     } else {
       ls.answer(false, picked);
       setSession({ ...s, feedback: 'wrong', excluded: [...s.excluded, picked], lastWrong: picked });
@@ -300,7 +307,7 @@ export function App() {
         if (!prevS || prevS.feedback !== 'wrong') return;
         setSession({ ...prevS, feedback: null, lastWrong: undefined });
         void playClip(clipOf(q)); // 重听一遍再试
-      }, 900);
+      }, RETRY_MS);
     }
   };
 
@@ -324,7 +331,7 @@ export function App() {
         if (!prevS || prevS.feedback !== 'wrong') return;
         setSession({ ...prevS, feedback: null, lastWrong: undefined });
         void playClip(clipOf(q)); // 重听整个音节再对接
-      }, 900);
+      }, RETRY_MS);
       return;
     }
     sfx.dock();
@@ -373,10 +380,11 @@ export function App() {
   // 退出是唯一终点。掌握度经 mastery.ts 状态机（startMasterySession/applyMasteryAnswer/
   // settleFreeSlice），UI 不手搓规则；连击铁律「只被答错清零、退出不清」在 core/freePlay。
 
-  const buildFreeQuestion = (mode: 'radar' | 'launchpad', pool: string[], m: MasterySession): Question =>
+  // exclude = 刚答过的条目：连出两道同题孩子会注意到（core 侧 pool 只剩 1 项时不过滤）。
+  const buildFreeQuestion = (mode: 'radar' | 'launchpad', pool: string[], m: MasterySession, exclude?: string): Question =>
     mode === 'radar'
-      ? buildRadarQuestion(pool, m.states, Math.random)
-      : buildLaunchpadQuestion(pool, m.states, Math.random);
+      ? buildRadarQuestion(pool, m.states, Math.random, exclude)
+      : buildLaunchpadQuestion(pool, m.states, Math.random, exclude);
 
   const startFree = (mode: 'radar' | 'launchpad') => {
     const p = progressRef.current;
@@ -411,7 +419,7 @@ export function App() {
     const fp = freePlayRef.current;
     if (!s || !fp) return;
     clearTimer();
-    const q = buildFreeQuestion(s.mode, fp.pool, fp.mastery);
+    const q = buildFreeQuestion(s.mode, fp.pool, fp.mastery, questionItem(s.current));
     if (q.kind === 'blend') warmQueue([q]);
     void playClip(clipOf(q));
     setFreeSession({
@@ -445,7 +453,7 @@ export function App() {
       sfx.right();
       void playClip(RIGHT_LINES[Math.floor(Math.random() * RIGHT_LINES.length)]);
       setFreeSession({ ...s, feedback: 'right' });
-      timerRef.current = window.setTimeout(advanceFree, 1100);
+      timerRef.current = window.setTimeout(advanceFree, ADVANCE_MS);
     } else {
       fp.mastery = applyMasteryAnswer(fp.mastery, item, false);
       setFreeSession({ ...s, feedback: 'wrong', wrongThis: true, excluded: [...s.excluded, picked], lastWrong: picked });
@@ -454,7 +462,7 @@ export function App() {
         if (!prev || prev.feedback !== 'wrong') return;
         setFreeSession({ ...prev, feedback: null, lastWrong: undefined });
         void playClip(clipOf(q)); // 重听一遍再试
-      }, 900);
+      }, RETRY_MS);
     }
   };
 
@@ -483,7 +491,7 @@ export function App() {
         if (!prev || prev.feedback !== 'wrong') return;
         setFreeSession({ ...prev, feedback: null, lastWrong: undefined });
         void playClip(clipOf(q)); // 重听整个音节再对接
-      }, 900);
+      }, RETRY_MS);
       return;
     }
     sfx.dock();
@@ -592,7 +600,7 @@ export function App() {
     updateProgress({
       ...progressRef.current,
       planets,
-      stations: { r1: 3, r2: 3 },
+      stations: Object.fromEntries(STATIONS.map((s) => [s.id, 3])) as Progress['stations'],
       unlocked: MAX_NODE,
     });
     setSettingsOpen(false);

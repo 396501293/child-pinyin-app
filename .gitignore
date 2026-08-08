@@ -13,3 +13,4 @@ scripts/.venv/
 scripts/audio-qa/
 scripts/qa-listen.html
 public/audio/*.tmp
+.claude/scheduled_tasks.lock

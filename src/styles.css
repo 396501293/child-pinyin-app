@@ -69,6 +69,8 @@ body {
   --danger-deep: #b8402f;
   /* 深藏青投影/遮罩的 RGB 基（配不同透明度用 rgba(var(--ink-shadow-rgb), α)） */
   --ink-shadow-rgb: 31, 46, 96;
+  /* 字色 --ink 的 RGB 基（奶油底上的淡墨分隔线/次级文字：rgba(var(--ink-rgb), α)） */
+  --ink-rgb: 42, 59, 102;
 
   /* ── 四线三格 ── */
   --flg-line: #86aede;
@@ -511,7 +513,7 @@ button {
   border-radius: var(--r-pill);
   font-size: 26px;
   color: var(--ink-soft);
-  background: rgba(42, 59, 102, 0.08);
+  background: rgba(var(--ink-rgb), 0.08);
 }
 .pp-panel-side {
   display: flex;
@@ -1088,7 +1090,7 @@ button {
   border-radius: var(--r-pill);
   font-size: 24px;
   color: var(--ink-soft);
-  background: rgba(42, 59, 102, 0.08);
+  background: rgba(var(--ink-rgb), 0.08);
 }
 .pp-set-title {
   font-size: 30px;
@@ -1145,7 +1147,7 @@ button {
   font-weight: 800;
   margin-top: 6px;
   padding-top: 10px;
-  border-top: 2px dashed rgba(42, 59, 102, 0.15);
+  border-top: 2px dashed rgba(var(--ink-rgb), 0.15);
 }
 .pp-set-section-tail {
   font-size: 17px;
@@ -1184,7 +1186,7 @@ button {
 }
 .pp-set-gcell {
   text-align: center;
-  color: rgba(42, 59, 102, 0.3);
+  color: rgba(var(--ink-rgb), 0.3);
   letter-spacing: 1px;
 }
 .pp-set-gcell.is-on {

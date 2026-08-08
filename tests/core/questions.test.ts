@@ -201,6 +201,33 @@ describe('自由练习单题（掌握度加权）', () => {
     for (let n = 0; n < 2000; n++) if (buildRadarQuestion(radarPool, states, rng).answer === 'b') hits++;
     expect(hits / 2000).toBeGreaterThan(0.3); // 均匀抽样是 1/12≈0.08，加权期望 ≈0.55
   });
+
+  test('exclude 杜绝相邻重复：模拟无尽流 1000 步无连续同题（雷达/发射台）', () => {
+    const rng = seeded(7);
+    let prevR = letterKey(buildRadarQuestion(radarPool, {}, rng).answer);
+    let prevL = syllableKey(buildLaunchpadQuestion(launchPool, {}, rng).target.text);
+    for (let n = 0; n < 1000; n++) {
+      const r = letterKey(buildRadarQuestion(radarPool, {}, rng, prevR).answer);
+      check(r !== prevR, () => `雷达第 ${n} 步与上题同条目 '${r}'`);
+      prevR = r;
+      const l = syllableKey(buildLaunchpadQuestion(launchPool, {}, rng, prevL).target.text);
+      check(l !== prevL, () => `发射台第 ${n} 步与上题同条目 '${l}'`);
+      prevL = l;
+    }
+  });
+
+  test('exclude 在池只剩 1 项时不过滤（唯一条目照常出题，不抛空池）', () => {
+    const solo = [letterKey('b')];
+    for (let s = 1; s <= 50; s++) {
+      const q = buildRadarQuestion(solo, {}, seeded(s), letterKey('b'));
+      expect(q.answer).toBe('b');
+    }
+  });
+
+  test('exclude 越池 key（防御）：pool >1 时过滤是 no-op，仍从全池出题', () => {
+    const q = buildRadarQuestion(radarPool, {}, seeded(3), 'L:不存在');
+    check(radarPool.includes(letterKey(q.answer)), () => `答案越池 '${q.answer}'`);
+  });
 });
 
 describe('questionItem：埋点/掌握度条目 key', () => {

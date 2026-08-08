@@ -135,13 +135,28 @@ export function buildStation(station: Station, rng: Rng): Question[] {
 }
 
 // ── 自由练习单题（掌握度加权抽样；pool 为 'L:*'/'S:*' key，见 progression 的池函数）──
+// exclude = 刚答过的条目（App 的 advanceFree 传入）：pool ≥2 时过滤，杜绝连续同题
+//（最小雷达池 12 项时裸抽约 7%/题 撞同题，孩子会注意到）；pool 只剩 1 项不过滤。
+// 干扰项池仍用全 pool——排除只作用于「这题考谁」，不影响选项分布。
+
+function pickItem(
+  pool: readonly string[],
+  states: Record<string, FactState>,
+  rng: Rng,
+  exclude?: string,
+): string {
+  const candidates =
+    exclude !== undefined && pool.length > 1 ? pool.filter((k) => k !== exclude) : pool;
+  return weightedPick(candidates, (k) => masteryWeight(stateOf(states, k)), rng);
+}
 
 export function buildRadarQuestion(
   pool: readonly string[],
   states: Record<string, FactState>,
   rng: Rng,
+  exclude?: string,
 ): ListenPick {
-  const key = weightedPick(pool, (k) => masteryWeight(stateOf(states, k)), rng);
+  const key = pickItem(pool, states, rng, exclude);
   return listenLetter(unitOfKey(key), pool.map(unitOfKey), rng);
 }
 
@@ -153,8 +168,9 @@ export function buildLaunchpadQuestion(
   pool: readonly string[],
   states: Record<string, FactState>,
   rng: Rng,
+  exclude?: string,
 ): Blend {
-  const key = weightedPick(pool, (k) => masteryWeight(stateOf(states, k)), rng);
+  const key = pickItem(pool, states, rng, exclude);
   const text = unitOfKey(key);
   return blendQuestion(text, BLEND_LESSON.get(text) ?? LESSONS[LESSONS.length - 1].id, rng);
 }

@@ -54,7 +54,7 @@ export function SettingsModal({ progress, onUpdateSettings, onResetProgress, onU
   const settings = progress.settings;
   const volumePct = Math.round(settings.clipVolume * 100);
   const errs = topErrors(progress, 5);
-  const recentErrors = [...progress.insight.errors].slice(-8).reverse();
+  const recentErrors = progress.insight.errors.slice(-8).reverse(); // slice 已拷贝，reverse 不碰原数组
   return (
     <div class="pp-set-mask" onClick={onClose}>
       {/* 阻止冒泡：点卡片内部不关闭 */}
