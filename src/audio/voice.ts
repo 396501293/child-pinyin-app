@@ -3,7 +3,7 @@
 // 解锁后定时器驱动的自动播放才合法；不裸用 <audio>.play()。
 // 任一 clip 失败（fetch/decode/ctx 不可用）：静默降级 Web Speech 念 say 文本。
 import { clipInfo, type ClipId } from './manifest';
-import { initTTS, speak, stopTTS, ttsAvailable } from './tts';
+import { initTTS, speak, stopTTS } from './tts';
 import { LruCache } from './lru';
 
 /** 纯函数（可测）：clip 文件 → 部署路径下的 URL。 */
@@ -121,9 +121,6 @@ export function stopVoice(): void {
 export function warmLesson(clipIds: ClipId[]): void {
   for (const id of clipIds) void load(id).catch(() => {});
 }
-
-export const voiceAvailable = (): boolean =>
-  typeof AudioContext !== 'undefined' || ttsAvailable();
 
 /** Web Speech 降级通道：clip 管线失败时念载字/台词。 */
 function say(text: string): void {

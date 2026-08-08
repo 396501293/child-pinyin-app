@@ -112,8 +112,13 @@ export function App() {
   );
   const pickProfile = (i: number) => {
     sessionSet('pp_profile_picked', '1');
-    void playClip(VOICE.welcome); // 点选即手势：AudioContext 已解锁，欢迎语合法
-    if (i === profileMeta().active) { setNeedPick(false); return; }
+    if (i === profileMeta().active) {
+      // 同档案：不重载，欢迎语能完整播完。点选即手势，AudioContext 已解锁，合法播放。
+      void playClip(VOICE.welcome);
+      setNeedPick(false);
+      return;
+    }
+    // 切档案：下面 location.reload() 会立刻掐断任何在播音频，播了也白播——不放。
     setActiveProfile(i);
     location.reload();
   };
@@ -439,6 +444,8 @@ export function App() {
 
   // 雷达批改（listen-pick）：与主线 answer 同一双分支节奏（对 1.1s 推进 / 错 0.9s 重试），
   // 差异只在记账走 applyMasteryAnswer（resolved-once/重试 cd=1 纪律在 mastery 内）。
+  // 有意不调 insight.recordAnswer——自由练习的错题不进家长「易错音」统计（口径仅主线，
+  // 见 SettingsModal 易错音标题旁注）；掌握度调度靠 mastery 内部状态自成一套，不依赖 insight。
   const answerFree = (picked: string) => {
     const s = freeRef.current;
     const fp = freePlayRef.current;

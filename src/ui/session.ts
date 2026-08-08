@@ -6,7 +6,7 @@ import type { Star } from '../core/types';
 // 独立成模块以避免 App ↔ Practice 的运行时循环导入（同姊妹项目 session.ts）。
 
 // M4 落地 profile/map/learn/practice/result 五屏；radar/launchpad/collection 是
-// M5 的自由练习与图鉴屏，类型先占位，App 的 switch 到 M5 再接。
+// M5 追加的自由练习（聪耳雷达/拼读发射台）与宇宙图鉴屏，均已在 App 的 switch 接好。
 export type Screen =
   | 'profile'
   | 'map'

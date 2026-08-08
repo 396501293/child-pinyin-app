@@ -125,8 +125,9 @@ export function SettingsModal({ progress, onUpdateSettings, onResetProgress, onU
           </span>
         </div>
 
-        {/* ── 易错音（近 14 天首答口径，见 insight.ts）── */}
-        <div class="pp-set-section">易错音（近 14 天）</div>
+        {/* ── 易错音（近 14 天首答口径，见 insight.ts；仅主线练习计入，自由练习不进 insight，
+            见 App.tsx answerFree 头注释）── */}
+        <div class="pp-set-section">易错音（近 14 天）<span class="pp-set-section-tail">（仅统计主线练习）</span></div>
         {errs.length === 0 ? (
           <div class="pp-set-empty">最近没有反复出错的拼音，很棒！</div>
         ) : (

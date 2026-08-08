@@ -1013,10 +1013,6 @@
     "ln-station": {
       "say": "欢迎来到空间站，我们一起复习吧！",
       "file": "ln-station.mp3"
-    },
-    "ln-bye": {
-      "say": "今天玩得真开心，下次再来哦！",
-      "file": "ln-bye.mp3"
     }
   }
 }

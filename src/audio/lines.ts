@@ -11,6 +11,7 @@ export const VOICE = {
   right1: 'ln-right1', //           答对啦！
   right2: 'ln-right2', //           真棒！
   right3: 'ln-right3', //           你真厉害！
+  // 定为不播——无挫败纪律下错误反馈仅视觉（见 FeedbackOverlay）；预留给未来学习场景。
   retry: 'ln-retry', //             再试一次！
   star1: 'ln-star1', //             太棒了！
   star2: 'ln-star2', //             拿到星星啦！
@@ -18,7 +19,6 @@ export const VOICE = {
   unlockRadar: 'ln-unlock-radar', //   聪耳雷达开放啦！
   unlockLaunch: 'ln-unlock-launch', // 拼读发射台开放啦！
   station: 'ln-station', //         欢迎来到空间站，我们一起复习吧！
-  bye: 'ln-bye', //                 今天玩得真开心，下次再来哦！
 } as const satisfies Record<string, ClipId>;
 
 export type VoiceLineId = (typeof VOICE)[keyof typeof VOICE];

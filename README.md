@@ -69,3 +69,10 @@ node scripts/gen-icons.mjs      # sharp 栅格化 192/512/180 三种尺寸
 2. 从主屏图标启动（全屏、横屏，1024×768 舞台缩放适配）。
 3. 首次联网加载完成后资源全部离线缓存，之后无网络可正常学练（含发音）。
 4. **家长设置**：星系图右下角**长按齿轮约 1.5 秒**打开（防儿童误触），可看进度与易错音统计、调语音音量、管理多档案；数据全部存在本机。
+
+## 待人工验收
+
+- **23 条候选音 clip 听审**：`bash scripts/gen-voice.sh` 重建听审页 → 打开 `scripts/qa-listen.html` → 过「候选对比」区逐条听 → 胜者写回 `src/data/audio-script.json` 对应 clip 的 `say` → `bash scripts/gen-voice.sh --force --only <clipId>` 重生成该条 → `pnpm test` → 提交更新后的 mp3。
+- **iPad 真机验收**：Safari 打开 `https://396501293.github.io/child-pinyin-app/` → 添加到主屏幕 → 从主屏图标全屏横屏启动 → 联网完整加载一遍 → 开飞行模式完整过第 1 颗星球（学 → 练1 → 练2 → 练3 → 拿星），确认全程发音可播。
+- **双 AudioContext 真机混音行为**：sfx（`src/ui/sound.ts`）与语音（`src/audio/voice.ts`）各持一个 AudioContext，互不共享增益/打断逻辑；iOS 上是否互相抢占尚待真机验收，见 `src/ui/sound.ts` 头注释。
+- **手感项**：长按齿轮开家长设置的触发手感、音量滑杆的持久化观感、双档案切换的选人屏体验，均待真机上过一遍。
