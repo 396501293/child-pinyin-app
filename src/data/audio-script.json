@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "voice": "zh-CN-XiaoxiaoNeural",
   "clips": {
     "sm-b": {
@@ -246,11 +246,13 @@
     },
     "tv-a1": {
       "say": "阿",
-      "file": "tv-a1.mp3"
+      "file": "tv-a1.mp3",
+      "source": "davinfifield"
     },
     "tv-a2": {
       "say": "á",
       "file": "tv-a2.mp3",
+      "source": "davinfifield",
       "candidates": [
         "á",
         "嗄",
@@ -260,6 +262,7 @@
     "tv-a3": {
       "say": "ǎ",
       "file": "tv-a3.mp3",
+      "source": "davinfifield",
       "candidates": [
         "ǎ",
         "啊"
@@ -268,6 +271,7 @@
     "tv-a4": {
       "say": "à",
       "file": "tv-a4.mp3",
+      "source": "davinfifield",
       "candidates": [
         "à",
         "啊"
@@ -276,6 +280,7 @@
     "tv-o1": {
       "say": "噢",
       "file": "tv-o1.mp3",
+      "source": "resynth",
       "candidates": [
         "噢",
         "喔",
@@ -285,6 +290,7 @@
     "tv-o2": {
       "say": "哦",
       "file": "tv-o2.mp3",
+      "source": "resynth",
       "candidates": [
         "哦",
         "ó"
@@ -293,6 +299,7 @@
     "tv-o3": {
       "say": "ǒ",
       "file": "tv-o3.mp3",
+      "source": "resynth",
       "candidates": [
         "ǒ",
         "哦"
@@ -301,6 +308,7 @@
     "tv-o4": {
       "say": "ò",
       "file": "tv-o4.mp3",
+      "source": "resynth",
       "candidates": [
         "ò",
         "哦"
@@ -309,6 +317,7 @@
     "tv-e1": {
       "say": "婀",
       "file": "tv-e1.mp3",
+      "source": "davinfifield",
       "candidates": [
         "婀",
         "ē"
@@ -316,11 +325,13 @@
     },
     "tv-e2": {
       "say": "鹅",
-      "file": "tv-e2.mp3"
+      "file": "tv-e2.mp3",
+      "source": "davinfifield"
     },
     "tv-e3": {
       "say": "ě",
       "file": "tv-e3.mp3",
+      "source": "davinfifield",
       "candidates": [
         "ě",
         "恶"
@@ -328,627 +339,783 @@
     },
     "tv-e4": {
       "say": "饿",
-      "file": "tv-e4.mp3"
+      "file": "tv-e4.mp3",
+      "source": "davinfifield"
     },
     "tv-i1": {
       "say": "衣",
-      "file": "tv-i1.mp3"
+      "file": "tv-i1.mp3",
+      "source": "davinfifield"
     },
     "tv-i2": {
       "say": "移",
-      "file": "tv-i2.mp3"
+      "file": "tv-i2.mp3",
+      "source": "davinfifield"
     },
     "tv-i3": {
       "say": "椅",
-      "file": "tv-i3.mp3"
+      "file": "tv-i3.mp3",
+      "source": "davinfifield"
     },
     "tv-i4": {
       "say": "意",
-      "file": "tv-i4.mp3"
+      "file": "tv-i4.mp3",
+      "source": "davinfifield"
     },
     "tv-u1": {
       "say": "乌",
-      "file": "tv-u1.mp3"
+      "file": "tv-u1.mp3",
+      "source": "davinfifield"
     },
     "tv-u2": {
       "say": "无",
-      "file": "tv-u2.mp3"
+      "file": "tv-u2.mp3",
+      "source": "davinfifield"
     },
     "tv-u3": {
       "say": "五",
-      "file": "tv-u3.mp3"
+      "file": "tv-u3.mp3",
+      "source": "davinfifield"
     },
     "tv-u4": {
       "say": "物",
-      "file": "tv-u4.mp3"
+      "file": "tv-u4.mp3",
+      "source": "davinfifield"
     },
     "tv-ü1": {
       "say": "迂",
-      "file": "tv-v1.mp3"
+      "file": "tv-v1.mp3",
+      "source": "davinfifield"
     },
     "tv-ü2": {
       "say": "鱼",
-      "file": "tv-v2.mp3"
+      "file": "tv-v2.mp3",
+      "source": "davinfifield"
     },
     "tv-ü3": {
       "say": "雨",
-      "file": "tv-v3.mp3"
+      "file": "tv-v3.mp3",
+      "source": "davinfifield"
     },
     "tv-ü4": {
       "say": "玉",
-      "file": "tv-v4.mp3"
+      "file": "tv-v4.mp3",
+      "source": "davinfifield"
     },
     "sy-ba1": {
       "say": "八",
-      "file": "sy-ba1.mp3"
+      "file": "sy-ba1.mp3",
+      "source": "davinfifield"
     },
     "sy-ba2": {
       "say": "拔",
-      "file": "sy-ba2.mp3"
+      "file": "sy-ba2.mp3",
+      "source": "davinfifield"
     },
     "sy-ba3": {
       "say": "把",
-      "file": "sy-ba3.mp3"
+      "file": "sy-ba3.mp3",
+      "source": "davinfifield"
     },
     "sy-ba4": {
       "say": "爸",
-      "file": "sy-ba4.mp3"
+      "file": "sy-ba4.mp3",
+      "source": "davinfifield"
     },
     "sy-bai1": {
       "say": "掰",
-      "file": "sy-bai1.mp3"
+      "file": "sy-bai1.mp3",
+      "source": "davinfifield"
     },
     "sy-bai2": {
       "say": "白",
-      "file": "sy-bai2.mp3"
+      "file": "sy-bai2.mp3",
+      "source": "davinfifield"
     },
     "sy-bai3": {
       "say": "百",
-      "file": "sy-bai3.mp3"
+      "file": "sy-bai3.mp3",
+      "source": "davinfifield"
     },
     "sy-bai4": {
       "say": "拜",
-      "file": "sy-bai4.mp3"
+      "file": "sy-bai4.mp3",
+      "source": "davinfifield"
     },
     "sy-bei1": {
       "say": "杯",
-      "file": "sy-bei1.mp3"
+      "file": "sy-bei1.mp3",
+      "source": "davinfifield"
     },
     "sy-bi3": {
       "say": "笔",
-      "file": "sy-bi3.mp3"
+      "file": "sy-bi3.mp3",
+      "source": "davinfifield"
     },
     "sy-ca1": {
       "say": "擦",
-      "file": "sy-ca1.mp3"
+      "file": "sy-ca1.mp3",
+      "source": "davinfifield"
     },
     "sy-cha2": {
       "say": "茶",
-      "file": "sy-cha2.mp3"
+      "file": "sy-cha2.mp3",
+      "source": "davinfifield"
     },
     "sy-ci1": {
       "say": "疵",
-      "file": "sy-ci1.mp3"
+      "file": "sy-ci1.mp3",
+      "source": "davinfifield"
     },
     "sy-ci2": {
       "say": "词",
-      "file": "sy-ci2.mp3"
+      "file": "sy-ci2.mp3",
+      "source": "davinfifield"
     },
     "sy-ci3": {
       "say": "此",
-      "file": "sy-ci3.mp3"
+      "file": "sy-ci3.mp3",
+      "source": "davinfifield"
     },
     "sy-ci4": {
       "say": "次",
-      "file": "sy-ci4.mp3"
+      "file": "sy-ci4.mp3",
+      "source": "davinfifield"
     },
     "sy-cuo4": {
       "say": "错",
-      "file": "sy-cuo4.mp3"
+      "file": "sy-cuo4.mp3",
+      "source": "davinfifield"
     },
     "sy-da4": {
       "say": "大",
-      "file": "sy-da4.mp3"
+      "file": "sy-da4.mp3",
+      "source": "davinfifield"
     },
     "sy-dai4": {
       "say": "带",
-      "file": "sy-dai4.mp3"
+      "file": "sy-dai4.mp3",
+      "source": "davinfifield"
     },
     "sy-dao4": {
       "say": "到",
-      "file": "sy-dao4.mp3"
+      "file": "sy-dao4.mp3",
+      "source": "davinfifield"
     },
     "sy-du2": {
       "say": "读",
-      "file": "sy-du2.mp3"
+      "file": "sy-du2.mp3",
+      "source": "davinfifield"
     },
     "sy-dui4": {
       "say": "对",
-      "file": "sy-dui4.mp3"
+      "file": "sy-dui4.mp3",
+      "source": "davinfifield"
     },
     "sy-er4": {
       "say": "二",
-      "file": "sy-er4.mp3"
+      "file": "sy-er4.mp3",
+      "source": "davinfifield"
     },
     "sy-feng1": {
       "say": "风",
-      "file": "sy-feng1.mp3"
+      "file": "sy-feng1.mp3",
+      "source": "davinfifield"
     },
     "sy-fu2": {
       "say": "服",
-      "file": "sy-fu2.mp3"
+      "file": "sy-fu2.mp3",
+      "source": "davinfifield"
     },
     "sy-gao1": {
       "say": "高",
-      "file": "sy-gao1.mp3"
+      "file": "sy-gao1.mp3",
+      "source": "davinfifield"
     },
     "sy-ge1": {
       "say": "哥",
-      "file": "sy-ge1.mp3"
+      "file": "sy-ge1.mp3",
+      "source": "davinfifield"
     },
     "sy-gou3": {
       "say": "狗",
-      "file": "sy-gou3.mp3"
+      "file": "sy-gou3.mp3",
+      "source": "davinfifield"
     },
     "sy-gua1": {
       "say": "瓜",
-      "file": "sy-gua1.mp3"
+      "file": "sy-gua1.mp3",
+      "source": "davinfifield"
     },
     "sy-guo4": {
       "say": "过",
-      "file": "sy-guo4.mp3"
+      "file": "sy-guo4.mp3",
+      "source": "davinfifield"
     },
     "sy-hai3": {
       "say": "海",
-      "file": "sy-hai3.mp3"
+      "file": "sy-hai3.mp3",
+      "source": "davinfifield"
     },
     "sy-hao3": {
       "say": "好",
-      "file": "sy-hao3.mp3"
+      "file": "sy-hao3.mp3",
+      "source": "davinfifield"
     },
     "sy-he2": {
       "say": "河",
-      "file": "sy-he2.mp3"
+      "file": "sy-he2.mp3",
+      "source": "davinfifield"
     },
     "sy-hu1": {
       "say": "呼",
-      "file": "sy-hu1.mp3"
+      "file": "sy-hu1.mp3",
+      "source": "davinfifield"
     },
     "sy-hu2": {
       "say": "湖",
-      "file": "sy-hu2.mp3"
+      "file": "sy-hu2.mp3",
+      "source": "davinfifield"
     },
     "sy-hu3": {
       "say": "虎",
-      "file": "sy-hu3.mp3"
+      "file": "sy-hu3.mp3",
+      "source": "davinfifield"
     },
     "sy-hu4": {
       "say": "户",
-      "file": "sy-hu4.mp3"
+      "file": "sy-hu4.mp3",
+      "source": "davinfifield"
     },
     "sy-huo3": {
       "say": "火",
-      "file": "sy-huo3.mp3"
+      "file": "sy-huo3.mp3",
+      "source": "davinfifield"
     },
     "sy-ji1": {
       "say": "鸡",
-      "file": "sy-ji1.mp3"
+      "file": "sy-ji1.mp3",
+      "source": "davinfifield"
     },
     "sy-jia1": {
       "say": "家",
-      "file": "sy-jia1.mp3"
+      "file": "sy-jia1.mp3",
+      "source": "davinfifield"
     },
     "sy-jie3": {
       "say": "姐",
-      "file": "sy-jie3.mp3"
+      "file": "sy-jie3.mp3",
+      "source": "davinfifield"
     },
     "sy-jin4": {
       "say": "进",
-      "file": "sy-jin4.mp3"
+      "file": "sy-jin4.mp3",
+      "source": "davinfifield"
     },
     "sy-ju2": {
       "say": "橘",
-      "file": "sy-ju2.mp3"
+      "file": "sy-ju2.mp3",
+      "source": "davinfifield"
     },
     "sy-ju4": {
       "say": "句",
-      "file": "sy-ju4.mp3"
+      "file": "sy-ju4.mp3",
+      "source": "davinfifield"
     },
     "sy-kai1": {
       "say": "开",
-      "file": "sy-kai1.mp3"
+      "file": "sy-kai1.mp3",
+      "source": "davinfifield"
     },
     "sy-ke4": {
       "say": "课",
-      "file": "sy-ke4.mp3"
+      "file": "sy-ke4.mp3",
+      "source": "davinfifield"
     },
     "sy-ku3": {
       "say": "苦",
-      "file": "sy-ku3.mp3"
+      "file": "sy-ku3.mp3",
+      "source": "davinfifield"
     },
     "sy-kun4": {
       "say": "困",
-      "file": "sy-kun4.mp3"
+      "file": "sy-kun4.mp3",
+      "source": "davinfifield"
     },
     "sy-la1": {
       "say": "拉",
-      "file": "sy-la1.mp3"
+      "file": "sy-la1.mp3",
+      "source": "davinfifield"
     },
     "sy-lai2": {
       "say": "来",
-      "file": "sy-lai2.mp3"
+      "file": "sy-lai2.mp3",
+      "source": "davinfifield"
     },
     "sy-leng3": {
       "say": "冷",
-      "file": "sy-leng3.mp3"
+      "file": "sy-leng3.mp3",
+      "source": "davinfifield"
     },
     "sy-liu4": {
       "say": "六",
-      "file": "sy-liu4.mp3"
+      "file": "sy-liu4.mp3",
+      "source": "davinfifield"
     },
     "sy-long2": {
       "say": "龙",
-      "file": "sy-long2.mp3"
+      "file": "sy-long2.mp3",
+      "source": "davinfifield"
     },
     "sy-lu4": {
       "say": "鹿",
-      "file": "sy-lu4.mp3"
+      "file": "sy-lu4.mp3",
+      "source": "davinfifield"
     },
     "sy-ma1": {
       "say": "妈",
-      "file": "sy-ma1.mp3"
+      "file": "sy-ma1.mp3",
+      "source": "davinfifield"
     },
     "sy-ma2": {
       "say": "麻",
-      "file": "sy-ma2.mp3"
+      "file": "sy-ma2.mp3",
+      "source": "davinfifield"
     },
     "sy-ma3": {
       "say": "马",
-      "file": "sy-ma3.mp3"
+      "file": "sy-ma3.mp3",
+      "source": "davinfifield"
     },
     "sy-ma4": {
       "say": "骂",
-      "file": "sy-ma4.mp3"
+      "file": "sy-ma4.mp3",
+      "source": "davinfifield"
     },
     "sy-man3": {
       "say": "满",
-      "file": "sy-man3.mp3"
+      "file": "sy-man3.mp3",
+      "source": "davinfifield"
     },
     "sy-mao1": {
       "say": "猫",
-      "file": "sy-mao1.mp3"
+      "file": "sy-mao1.mp3",
+      "source": "davinfifield"
     },
     "sy-men2": {
       "say": "门",
-      "file": "sy-men2.mp3"
+      "file": "sy-men2.mp3",
+      "source": "davinfifield"
     },
     "sy-meng4": {
       "say": "梦",
-      "file": "sy-meng4.mp3"
+      "file": "sy-meng4.mp3",
+      "source": "davinfifield"
     },
     "sy-mu4": {
       "say": "木",
-      "file": "sy-mu4.mp3"
+      "file": "sy-mu4.mp3",
+      "source": "davinfifield"
     },
     "sy-na2": {
       "say": "拿",
-      "file": "sy-na2.mp3"
+      "file": "sy-na2.mp3",
+      "source": "davinfifield"
     },
     "sy-niu2": {
       "say": "牛",
-      "file": "sy-niu2.mp3"
+      "file": "sy-niu2.mp3",
+      "source": "davinfifield"
     },
     "sy-nü3": {
       "say": "女",
-      "file": "sy-nv3.mp3"
+      "file": "sy-nv3.mp3",
+      "source": "davinfifield"
     },
     "sy-pang4": {
       "say": "胖",
-      "file": "sy-pang4.mp3"
+      "file": "sy-pang4.mp3",
+      "source": "davinfifield"
     },
     "sy-po2": {
       "say": "婆",
-      "file": "sy-po2.mp3"
+      "file": "sy-po2.mp3",
+      "source": "davinfifield"
     },
     "sy-qi1": {
       "say": "七",
-      "file": "sy-qi1.mp3"
+      "file": "sy-qi1.mp3",
+      "source": "davinfifield"
     },
     "sy-qi2": {
       "say": "旗",
-      "file": "sy-qi2.mp3"
+      "file": "sy-qi2.mp3",
+      "source": "davinfifield"
     },
     "sy-qi3": {
       "say": "起",
-      "file": "sy-qi3.mp3"
+      "file": "sy-qi3.mp3",
+      "source": "davinfifield"
     },
     "sy-qi4": {
       "say": "气",
-      "file": "sy-qi4.mp3"
+      "file": "sy-qi4.mp3",
+      "source": "davinfifield"
     },
     "sy-qu4": {
       "say": "去",
-      "file": "sy-qu4.mp3"
+      "file": "sy-qu4.mp3",
+      "source": "davinfifield"
     },
     "sy-que1": {
       "say": "缺",
-      "file": "sy-que1.mp3"
+      "file": "sy-que1.mp3",
+      "source": "davinfifield"
     },
     "sy-que4": {
       "say": "鹊",
-      "file": "sy-que4.mp3"
+      "file": "sy-que4.mp3",
+      "source": "davinfifield"
     },
     "sy-qun2": {
       "say": "裙",
-      "file": "sy-qun2.mp3"
+      "file": "sy-qun2.mp3",
+      "source": "davinfifield"
     },
     "sy-re4": {
       "say": "热",
-      "file": "sy-re4.mp3"
+      "file": "sy-re4.mp3",
+      "source": "davinfifield"
     },
     "sy-se4": {
       "say": "色",
-      "file": "sy-se4.mp3"
+      "file": "sy-se4.mp3",
+      "source": "davinfifield"
     },
     "sy-shan1": {
       "say": "山",
-      "file": "sy-shan1.mp3"
+      "file": "sy-shan1.mp3",
+      "source": "davinfifield"
     },
     "sy-she2": {
       "say": "蛇",
-      "file": "sy-she2.mp3"
+      "file": "sy-she2.mp3",
+      "source": "davinfifield"
     },
     "sy-shu1": {
       "say": "书",
-      "file": "sy-shu1.mp3"
+      "file": "sy-shu1.mp3",
+      "source": "davinfifield"
     },
     "sy-shu2": {
       "say": "熟",
-      "file": "sy-shu2.mp3"
+      "file": "sy-shu2.mp3",
+      "source": "davinfifield"
     },
     "sy-shu3": {
       "say": "鼠",
-      "file": "sy-shu3.mp3"
+      "file": "sy-shu3.mp3",
+      "source": "davinfifield"
     },
     "sy-shu4": {
       "say": "树",
-      "file": "sy-shu4.mp3"
+      "file": "sy-shu4.mp3",
+      "source": "davinfifield"
     },
     "sy-shui3": {
       "say": "水",
-      "file": "sy-shui3.mp3"
+      "file": "sy-shui3.mp3",
+      "source": "davinfifield"
     },
     "sy-suo3": {
       "say": "锁",
-      "file": "sy-suo3.mp3"
+      "file": "sy-suo3.mp3",
+      "source": "davinfifield"
     },
     "sy-ta1": {
       "say": "他",
-      "file": "sy-ta1.mp3"
+      "file": "sy-ta1.mp3",
+      "source": "davinfifield"
     },
     "sy-tang1": {
       "say": "汤",
-      "file": "sy-tang1.mp3"
+      "file": "sy-tang1.mp3",
+      "source": "davinfifield"
     },
     "sy-tang2": {
       "say": "糖",
-      "file": "sy-tang2.mp3"
+      "file": "sy-tang2.mp3",
+      "source": "davinfifield"
     },
     "sy-tang3": {
       "say": "躺",
-      "file": "sy-tang3.mp3"
+      "file": "sy-tang3.mp3",
+      "source": "davinfifield"
     },
     "sy-tang4": {
       "say": "烫",
-      "file": "sy-tang4.mp3"
+      "file": "sy-tang4.mp3",
+      "source": "davinfifield"
     },
     "sy-tian1": {
       "say": "天",
-      "file": "sy-tian1.mp3"
+      "file": "sy-tian1.mp3",
+      "source": "davinfifield"
     },
     "sy-tie1": {
       "say": "贴",
-      "file": "sy-tie1.mp3"
+      "file": "sy-tie1.mp3",
+      "source": "davinfifield"
     },
     "sy-tou2": {
       "say": "头",
-      "file": "sy-tou2.mp3"
+      "file": "sy-tou2.mp3",
+      "source": "davinfifield"
     },
     "sy-tu1": {
       "say": "突",
-      "file": "sy-tu1.mp3"
+      "file": "sy-tu1.mp3",
+      "source": "davinfifield"
     },
     "sy-tu2": {
       "say": "图",
-      "file": "sy-tu2.mp3"
+      "file": "sy-tu2.mp3",
+      "source": "davinfifield"
     },
     "sy-tu3": {
       "say": "土",
-      "file": "sy-tu3.mp3"
+      "file": "sy-tu3.mp3",
+      "source": "davinfifield"
     },
     "sy-tu4": {
       "say": "兔",
-      "file": "sy-tu4.mp3"
+      "file": "sy-tu4.mp3",
+      "source": "davinfifield"
     },
     "sy-wan1": {
       "say": "弯",
-      "file": "sy-wan1.mp3"
+      "file": "sy-wan1.mp3",
+      "source": "davinfifield"
     },
     "sy-wan2": {
       "say": "玩",
-      "file": "sy-wan2.mp3"
+      "file": "sy-wan2.mp3",
+      "source": "davinfifield"
     },
     "sy-wan3": {
       "say": "碗",
-      "file": "sy-wan3.mp3"
+      "file": "sy-wan3.mp3",
+      "source": "davinfifield"
     },
     "sy-wan4": {
       "say": "万",
-      "file": "sy-wan4.mp3"
+      "file": "sy-wan4.mp3",
+      "source": "davinfifield"
     },
     "sy-wang3": {
       "say": "网",
-      "file": "sy-wang3.mp3"
+      "file": "sy-wang3.mp3",
+      "source": "davinfifield"
     },
     "sy-xi3": {
       "say": "洗",
-      "file": "sy-xi3.mp3"
+      "file": "sy-xi3.mp3",
+      "source": "davinfifield"
     },
     "sy-xie1": {
       "say": "些",
-      "file": "sy-xie1.mp3"
+      "file": "sy-xie1.mp3",
+      "source": "davinfifield"
     },
     "sy-xie2": {
       "say": "鞋",
-      "file": "sy-xie2.mp3"
+      "file": "sy-xie2.mp3",
+      "source": "davinfifield"
     },
     "sy-xie3": {
       "say": "写",
-      "file": "sy-xie3.mp3"
+      "file": "sy-xie3.mp3",
+      "source": "davinfifield"
     },
     "sy-xie4": {
       "say": "谢",
-      "file": "sy-xie4.mp3"
+      "file": "sy-xie4.mp3",
+      "source": "davinfifield"
     },
     "sy-xin1": {
       "say": "心",
-      "file": "sy-xin1.mp3"
+      "file": "sy-xin1.mp3",
+      "source": "davinfifield"
     },
     "sy-xing1": {
       "say": "星",
-      "file": "sy-xing1.mp3"
+      "file": "sy-xing1.mp3",
+      "source": "davinfifield"
     },
     "sy-xiong2": {
       "say": "熊",
-      "file": "sy-xiong2.mp3"
+      "file": "sy-xiong2.mp3",
+      "source": "davinfifield"
     },
     "sy-xu1": {
       "say": "需",
-      "file": "sy-xu1.mp3"
+      "file": "sy-xu1.mp3",
+      "source": "davinfifield"
     },
     "sy-xue2": {
       "say": "学",
-      "file": "sy-xue2.mp3"
+      "file": "sy-xue2.mp3",
+      "source": "davinfifield"
     },
     "sy-xue3": {
       "say": "雪",
-      "file": "sy-xue3.mp3"
+      "file": "sy-xue3.mp3",
+      "source": "davinfifield"
     },
     "sy-yang2": {
       "say": "羊",
-      "file": "sy-yang2.mp3"
+      "file": "sy-yang2.mp3",
+      "source": "davinfifield"
     },
     "sy-you1": {
       "say": "优",
-      "file": "sy-you1.mp3"
+      "file": "sy-you1.mp3",
+      "source": "davinfifield"
     },
     "sy-you2": {
       "say": "游",
-      "file": "sy-you2.mp3"
+      "file": "sy-you2.mp3",
+      "source": "davinfifield"
     },
     "sy-you3": {
       "say": "有",
-      "file": "sy-you3.mp3"
+      "file": "sy-you3.mp3",
+      "source": "davinfifield"
     },
     "sy-you4": {
       "say": "又",
-      "file": "sy-you4.mp3"
+      "file": "sy-you4.mp3",
+      "source": "davinfifield"
     },
     "sy-zhu1": {
       "say": "猪",
-      "file": "sy-zhu1.mp3"
+      "file": "sy-zhu1.mp3",
+      "source": "davinfifield"
     },
     "sy-zhu2": {
       "say": "竹",
-      "file": "sy-zhu2.mp3"
+      "file": "sy-zhu2.mp3",
+      "source": "davinfifield"
     },
     "sy-zhu3": {
       "say": "煮",
-      "file": "sy-zhu3.mp3"
+      "file": "sy-zhu3.mp3",
+      "source": "davinfifield"
     },
     "sy-zhu4": {
       "say": "住",
-      "file": "sy-zhu4.mp3"
+      "file": "sy-zhu4.mp3",
+      "source": "davinfifield"
     },
     "sy-zhuo1": {
       "say": "桌",
-      "file": "sy-zhuo1.mp3"
+      "file": "sy-zhuo1.mp3",
+      "source": "davinfifield"
     },
     "sy-zu1": {
       "say": "租",
-      "file": "sy-zu1.mp3"
+      "file": "sy-zu1.mp3",
+      "source": "davinfifield"
     },
     "sy-zu2": {
       "say": "足",
-      "file": "sy-zu2.mp3"
+      "file": "sy-zu2.mp3",
+      "source": "davinfifield"
     },
     "sy-zu3": {
       "say": "组",
-      "file": "sy-zu3.mp3"
+      "file": "sy-zu3.mp3",
+      "source": "davinfifield"
     },
     "sy-zuo4": {
       "say": "坐",
-      "file": "sy-zuo4.mp3"
+      "file": "sy-zuo4.mp3",
+      "source": "davinfifield"
     },
     "zt-zhi": {
       "say": "知",
-      "file": "zt-zhi.mp3"
+      "file": "zt-zhi.mp3",
+      "source": "davinfifield"
     },
     "zt-chi": {
       "say": "吃",
-      "file": "zt-chi.mp3"
+      "file": "zt-chi.mp3",
+      "source": "davinfifield"
     },
     "zt-shi": {
       "say": "诗",
-      "file": "zt-shi.mp3"
+      "file": "zt-shi.mp3",
+      "source": "davinfifield"
     },
     "zt-ri": {
       "say": "日",
-      "file": "zt-ri.mp3"
+      "file": "zt-ri.mp3",
+      "source": "davinfifield"
     },
     "zt-zi": {
       "say": "资",
-      "file": "zt-zi.mp3"
+      "file": "zt-zi.mp3",
+      "source": "davinfifield"
     },
     "zt-ci": {
       "say": "疵",
-      "file": "zt-ci.mp3"
+      "file": "zt-ci.mp3",
+      "source": "davinfifield"
     },
     "zt-si": {
       "say": "丝",
-      "file": "zt-si.mp3"
+      "file": "zt-si.mp3",
+      "source": "davinfifield"
     },
     "zt-yi": {
       "say": "衣",
-      "file": "zt-yi.mp3"
+      "file": "zt-yi.mp3",
+      "source": "davinfifield"
     },
     "zt-wu": {
       "say": "乌",
-      "file": "zt-wu.mp3"
+      "file": "zt-wu.mp3",
+      "source": "davinfifield"
     },
     "zt-yu": {
       "say": "迂",
-      "file": "zt-yu.mp3"
+      "file": "zt-yu.mp3",
+      "source": "davinfifield"
     },
     "zt-ye": {
       "say": "耶",
-      "file": "zt-ye.mp3"
+      "file": "zt-ye.mp3",
+      "source": "davinfifield"
     },
     "zt-yue": {
       "say": "约",
-      "file": "zt-yue.mp3"
+      "file": "zt-yue.mp3",
+      "source": "davinfifield"
     },
     "zt-yuan": {
       "say": "冤",
-      "file": "zt-yuan.mp3"
+      "file": "zt-yuan.mp3",
+      "source": "davinfifield"
     },
     "zt-yin": {
       "say": "因",
-      "file": "zt-yin.mp3"
+      "file": "zt-yin.mp3",
+      "source": "davinfifield"
     },
     "zt-yun": {
       "say": "晕",
       "file": "zt-yun.mp3",
+      "source": "davinfifield",
       "candidates": [
         "晕",
         "云"
@@ -956,7 +1123,8 @@
     },
     "zt-ying": {
       "say": "鹰",
-      "file": "zt-ying.mp3"
+      "file": "zt-ying.mp3",
+      "source": "davinfifield"
     },
     "ln-welcome": {
       "say": "欢迎来到拼音星球！",

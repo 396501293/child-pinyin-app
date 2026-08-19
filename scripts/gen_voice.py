@@ -6,6 +6,11 @@
              不能放 public/——Vite 会整目录拷进 dist 并被 PWA 预缓存）
 - 听审页   → scripts/qa-listen.html         （file:// 打开，分组列出全部 clip）
 
+只处理 source 缺省（=tts）的 clip：带调音节（sy-/tv-/zt-）已换成
+davinfifield 人声数据集 / PSOLA 重合成（source: davinfifield / resynth，
+见 import_pinyin_dataset.py、resynth_tv_o.py），本脚本绝不覆盖这批文件——
+--force 也不例外，它们不是 TTS 能再生的。
+
 跳过条件 = 文件已存在 且 sidecar 状态（scripts/audio-qa/.texts.json，记录
 filename→已生成的 text+voice）与当前一致：听审后改了 say/voice 重跑会精准重生成，
 不会「跳过并沿用旧录音」。已有文件而无状态记录时视为与当前文本一致（首跑自举；
@@ -97,9 +102,13 @@ def build_qa_html(clips):
     def rows(items):
         out = []
         for clip_id, clip in items:
-            cand_mark = " ★有候选" if clip.get("candidates") else ""
+            source = clip.get("source", "tts")
+            if source != "tts":
+                mark = " 🎙人声库" if source == "davinfifield" else " 🎛重合成"
+            else:
+                mark = " ★有候选" if clip.get("candidates") else ""
             out.append(
-                f"<tr><td><code>{clip_id}</code>{cand_mark}</td>"
+                f"<tr><td><code>{clip_id}</code>{mark}</td>"
                 f"<td class='say'>{html.escape(clip['say'])}</td>"
                 f"<td>{audio('../public/audio/' + clip['file'])}</td></tr>"
             )
@@ -116,8 +125,8 @@ def build_qa_html(clips):
     cand_rows = []
     for clip_id, clip in clips.items():
         candidates = clip.get("candidates")
-        if not candidates:
-            continue
+        if not candidates or clip.get("source", "tts") != "tts":
+            continue  # 非 TTS 音源的候选已无意义（正式音来自人声库/重合成）
         takes = "".join(
             f"<div class='cand{' pick' if text == clip['say'] else ''}'>"
             f"<span>{index}. {html.escape(text)}{'（当前 say）' if text == clip['say'] else ''}</span>"
@@ -188,7 +197,11 @@ async def main():
     sem = asyncio.Semaphore(CONCURRENCY)
     stats = {"generated": 0, "skipped": 0, "failed": []}
     tasks = []
+    non_tts = 0
     for clip in selected.values():
+        if clip.get("source", "tts") != "tts":
+            non_tts += 1
+            continue
         tasks.append(
             gen_take(sem, voice, clip["say"], AUDIO_DIR / clip["file"], args.force, stats, state)
         )
@@ -204,8 +217,8 @@ async def main():
 
     total_bytes = sum(f.stat().st_size for f in AUDIO_DIR.glob("*.mp3"))
     print(
-        f"clips {len(selected)}/{len(clips)} 选中；生成 {stats['generated']}，"
-        f"跳过 {stats['skipped']}，失败 {len(stats['failed'])}；"
+        f"clips {len(selected)}/{len(clips)} 选中（其中 {non_tts} 条非 TTS 音源，不碰）；"
+        f"生成 {stats['generated']}，跳过 {stats['skipped']}，失败 {len(stats['failed'])}；"
         f"public/audio 共 {sum(1 for _ in AUDIO_DIR.glob('*.mp3'))} 个 mp3，"
         f"{total_bytes / 1024 / 1024:.2f} MB；听审页 {QA_HTML.relative_to(ROOT)}"
     )
