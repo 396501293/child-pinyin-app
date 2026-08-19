@@ -25,17 +25,20 @@ pnpm build      # 类型检查 + 生产构建 → dist/（含 PWA 预缓存清�
 
 三条生成管线都遵循同一哲学：**本地生成、产物提交、CI 只跑 Node**。平时无需执行，改了对应源数据再跑。
 
-### 语音（public/audio/*.mp3，230 条）
+### 语音（public/audio/*.mp3，229 条）
 
-音频唯一源是 `src/data/audio-script.json`（clipId → 汉字台词 + 文件名；技巧：让 TTS 念汉字而非拼音字母）。增改 clip 后：
+音频唯一源是 `src/data/audio-script.json`（clipId → 台词/载字 + 文件名 + 音源）。**两类音源**（clip 的 `source` 字段，缺省 = tts）：
+
+- **带调音节 168 条（sy-\*/tv-\*/zt-\*）＝人声**。edge-tts 念单字带句子语调而非 citation tone，声学审计（`scripts/tone_audit.py`，F0 轮廓判型）33/168 失败、上声大面积平掉——家长实测「一二三四声分不出来」，故整体换用公有领域人声数据集 [davinfifield/mp3-chinese-pinyin-sound](https://github.com/davinfifield/mp3-chinese-pinyin-sound)（Unlicense；许可与映射见 `docs/LICENSE-pinyin-audio.txt`），由 `scripts/import_pinyin_dataset.py` 导入（响度对齐台词、24kHz 48kbps）。数据集没有裸 o 音节，tv-o1..o4 由 `scripts/resynth_tv_o.py` 用 Praat PSOLA 按五度制轮廓重合成（source: resynth）。换后审计 0/168 失败。
+- **声母/韵母呼读音与台词 61 条（sm-\*/ym-\*/ln-\*）＝ TTS**（edge-tts，XiaoxiaoNeural）。增改后：
 
 ```bash
-bash scripts/gen-voice.sh              # edge-tts（微软在线 TTS），跳过已存在，可中断续跑
-bash scripts/gen-voice.sh --only sy-   # 只处理指定 id 前缀
-bash scripts/gen-voice.sh --force     # 全量重生成
+bash scripts/gen-voice.sh              # 跳过已存在，可中断续跑；非 TTS 音源永不覆盖（--force 也不）
+bash scripts/gen-voice.sh --only sm-   # 只处理指定 id 前缀
+bash scripts/gen-voice.sh --force      # TTS 部分全量重生成
 ```
 
-生成后用**听审页**人耳把关：浏览器直接打开 `scripts/qa-listen.html`（file:// 即可），逐条试听并从 candidates（`scripts/audio-qa/`，已 gitignore）里挑替换。`pnpm test` 的清单守卫会确保 audio-script.json ↔ 磁盘 mp3 一一对应。
+生成后两道把关：`scripts/.venv/bin/python scripts/tone_audit.py` 声学审计带调 clip（需 `pip install praat-parselmouth numpy`），再用**听审页**人耳过——浏览器直接打开 `scripts/qa-listen.html`（file:// 即可，🎙=人声库 🎛=重合成），TTS 条目可从 candidates（`scripts/audio-qa/`，已 gitignore）里挑替换。`pnpm test` 的清单守卫会确保 audio-script.json ↔ 磁盘 mp3 一一对应。
 
 ### 拼音字体子集（src/assets/fonts/andika-pinyin.woff2）
 
@@ -72,7 +75,7 @@ node scripts/gen-icons.mjs      # sharp 栅格化 192/512/180 三种尺寸
 
 ## 待人工验收
 
-- **23 条候选音 clip 听审**：`bash scripts/gen-voice.sh` 重建听审页 → 打开 `scripts/qa-listen.html` → 过「候选对比」区逐条听 → 胜者写回 `src/data/audio-script.json` 对应 clip 的 `say` → `bash scripts/gen-voice.sh --force --only <clipId>` 重生成该条 → `pnpm test` → 提交更新后的 mp3。
+- **音频抽听**（换人声数据集后）：打开 `scripts/qa-listen.html` 抽听——重点①tv-\* 24 条（练2 的直接素材，含 4 条重合成的 tv-o\*，听是否自然）；②声学审计的 6 条边缘阴平（sy-la1 / sy-xie1 / sy-xin1 / sy-you1 / zt-yuan / zt-yue，微升 1-2 半音，判定仍算平）；③剩余 TTS 的 sm-/ym- 各抽几条与人声音节对比音色/响度是否突兀。人声条目不满意没有 candidates 可换，需另寻音源。
 - **iPad 真机验收**：Safari 打开 `https://396501293.github.io/child-pinyin-app/` → 添加到主屏幕 → 从主屏图标全屏横屏启动 → 联网完整加载一遍 → 开飞行模式完整过第 1 颗星球（学 → 练1 → 练2 → 练3 → 拿星），确认全程发音可播。
 - **双 AudioContext 真机混音行为**：sfx（`src/ui/sound.ts`）与语音（`src/audio/voice.ts`）各持一个 AudioContext，互不共享增益/打断逻辑；iOS 上是否互相抢占尚待真机验收，见 `src/ui/sound.ts` 头注释。
 - **手感项**：长按齿轮开家长设置的触发手感、音量滑杆的持久化观感、双档案切换的选人屏体验，均待真机上过一遍。
