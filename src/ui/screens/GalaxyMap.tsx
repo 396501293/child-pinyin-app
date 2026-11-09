@@ -9,6 +9,8 @@ import { nodeToContent } from '../../core/curriculum';
 import {
   launchpadUnlocked,
   MAX_NODE,
+  moonState,
+  MAX_STARS,
   nodeState,
   planetOf,
   radarUnlocked,
@@ -23,6 +25,7 @@ interface GalaxyMapProps {
   progress: Progress;
   onStartLearn: (node: NodeId) => void;
   onStartPractice: (node: NodeId, practice: 1 | 2 | 3) => void;
+  onStartMoon: (lessonId: number) => void;
   onOpenRadar: () => void;
   onOpenLaunchpad: () => void;
   onOpenCollection: () => void;
@@ -66,14 +69,16 @@ function nodePos(n: NodeId): { x: number; y: number } {
 }
 
 // 星球面板（选中某课程星球时弹出）：学 + 三练，各带星与锁。
-function PlanetPanel({ lesson, node, progress, onClose, onStartLearn, onStartPractice }: {
+function PlanetPanel({ lesson, node, progress, onClose, onStartLearn, onStartPractice, onStartMoon }: {
   lesson: Lesson;
   node: NodeId;
   progress: Progress;
   onClose: () => void;
   onStartLearn: (node: NodeId) => void;
   onStartPractice: (node: NodeId, practice: 1 | 2 | 3) => void;
+  onStartMoon: (lessonId: number) => void;
 }) {
+  const moon = moonState(progress, lesson.id);
   const planet = planetOf(progress, lesson.id);
   const practices: Array<1 | 2 | 3> = [1, 2, 3];
   return (
@@ -107,13 +112,27 @@ function PlanetPanel({ lesson, node, progress, onClose, onStartLearn, onStartPra
               </button>
             );
           })}
+          {/* 词句卫星（二期，L3 起）：星球点亮后开放，不挡主航线 */}
+          {moon !== 'none' && (
+            <button
+              class={'pp-panel-row pp-panel-row--moon' + (moon === 'locked' ? ' is-locked' : '')}
+              disabled={moon === 'locked'}
+              onClick={moon === 'locked' ? undefined : () => onStartMoon(lesson.id)}
+            >
+              <span class="pp-panel-row-name">
+                {moon === 'locked' ? '🔒 ' : '🌙 '}词句卫星
+                {moon === 'locked' && <span class="pp-panel-row-tail">　点亮星球后开放</span>}
+              </span>
+              {moon !== 'locked' && <StarRow filled={starsToRow(progress.moons[lesson.id] ?? 0)} size={24} />}
+            </button>
+          )}
         </div>
       </div>
     </div>
   );
 }
 
-export function GalaxyMap({ progress, onStartLearn, onStartPractice, onOpenRadar, onOpenLaunchpad, onOpenCollection, onOpenSettings }: GalaxyMapProps) {
+export function GalaxyMap({ progress, onStartLearn, onStartPractice, onStartMoon, onOpenRadar, onOpenLaunchpad, onOpenCollection, onOpenSettings }: GalaxyMapProps) {
   const [selected, setSelected] = useState<NodeId | null>(null);
 
   // 齿轮长按 1.5s 才打开设置（防孩子误触）：pointerdown 起计时，抬起/移出取消。
@@ -145,7 +164,7 @@ export function GalaxyMap({ progress, onStartLearn, onStartPractice, onOpenRadar
       {/* 顶栏 */}
       <div class="pp-map-top">
         <div class="pp-map-title">拼音星球</div>
-        <div class="pp-map-stars">★ {stars} / 123</div>
+        <div class="pp-map-stars">★ {stars} / {MAX_STARS}</div>
       </div>
 
       {/* 蛇形航线 */}
@@ -173,6 +192,12 @@ export function GalaxyMap({ progress, onStartLearn, onStartPractice, onOpenRadar
                 <StationIcon size={n === frontier ? 100 : 88} />
               )}
               {state === 'locked' && <span class="pp-node-lock">🔒</span>}
+              {c.kind === 'lesson' && (() => {
+                const m = moonState(progress, c.lesson.id);
+                return m === 'available' || m === 'cleared' ? (
+                  <span class={`pp-node-moon is-${m}`} aria-hidden="true">🌙</span>
+                ) : null;
+              })()}
               {n === frontier && <span class="pp-node-rocket">🚀</span>}
             </button>
             <div class={c.kind === 'lesson' ? 'pp-py pp-node-label' : 'pp-node-label'}>
@@ -237,6 +262,7 @@ export function GalaxyMap({ progress, onStartLearn, onStartPractice, onOpenRadar
           onClose={() => setSelected(null)}
           onStartLearn={onStartLearn}
           onStartPractice={onStartPractice}
+          onStartMoon={onStartMoon}
         />
       )}
     </div>

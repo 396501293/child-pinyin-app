@@ -22,6 +22,10 @@ export const COLLECTION: readonly CollectionItem[] = [
   { id: 'ring-cat',       name: '土星环猫咪',   icon: '🐱', threshold: 96 },
   { id: 'galaxy-dolphin', name: '银河海豚',     icon: '🐬', threshold: 104 },
   { id: 'golden-saucer',  name: '金色飞碟',     icon: '🛸', threshold: 110 },
+  // 二期词句卫星追加（满星 123 → 156）：未画 SVG 的 id 由 CollectibleArt 兜底渲染 emoji
+  { id: 'moon-owl',       name: '月光猫头鹰',   icon: '🦉', threshold: 125 },
+  { id: 'word-whale',     name: '识字鲸鱼',     icon: '🐳', threshold: 140 },
+  { id: 'crown-planet',   name: '拼音小国王',   icon: '👑', threshold: 156 },
 ];
 
 export const unlockedItems = (totalStars: number): CollectionItem[] =>

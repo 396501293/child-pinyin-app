@@ -8,14 +8,14 @@
 //     镜像路径：改反馈节奏（ADVANCE_MS/RETRY_MS）、护盾契约或 seqGen 习语时两处同步
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { markCollectionSeen, newlyUnlocked, unlockedItems } from '../core/collection';
-import { LESSONS, nodeToContent, STATIONS } from '../core/curriculum';
+import { LESSONS, nodeOfLesson, nodeToContent, STATIONS } from '../core/curriculum';
 import type { Lesson, NodeId } from '../core/curriculum';
 import { isStreakMilestone, settleFreeSlice, streakOnCorrect, streakOnWrong } from '../core/freePlay';
 import { LessonSession } from '../core/lessonFlow';
 import { applyMasteryAnswer, startMasterySession } from '../core/mastery';
 import type { MasterySession } from '../core/mastery';
 import { launchpadPool, launchpadUnlocked, MAX_NODE, planetOf, radarPool, radarUnlocked, totalStars } from '../core/progression';
-import { buildLaunchpadQuestion, buildPractice, buildRadarQuestion, buildStation, questionItem } from '../core/questions';
+import { buildLaunchpadQuestion, buildMoon, buildPractice, buildRadarQuestion, buildStation, questionItem } from '../core/questions';
 import type { Blend, Question } from '../core/questions';
 import { addProfile, defaultProgress, loadProgress, profileMeta, saveProgress, setActiveProfile } from '../core/storage';
 import type { PlanetProgress, Progress } from '../core/types';
@@ -70,14 +70,22 @@ function blendParts(q: Blend): ClipId[] {
   return ids;
 }
 
-// 预热一轮练习会用到的 clips（题音 + blend 部件音 + 夸奖语），失败不响。
+// 预热一轮练习会用到的 clips（题音 + blend 部件音 + 点读音节 + 夸奖语），失败不响。
 function warmQueue(queue: Question[]): void {
   const ids = new Set<ClipId>(RIGHT_LINES);
   for (const q of queue) {
     ids.add(clipOf(q));
     if (q.kind === 'blend') for (const id of blendParts(q)) ids.add(id);
+    if (q.kind === 'read-along') for (const id of q.taps) if (id) ids.add(id);
   }
   warmLesson([...ids]);
+}
+
+// 进题时自动播的音：看拼音选图不播（考的是自己读）；点读题播题干台词；其余播题音。
+function entryAudio(q: Question): ClipId[] {
+  if (q.kind === 'pic-pick') return [];
+  if (q.kind === 'read-along') return [VOICE.gameRead];
+  return [clipOf(q)];
 }
 
 // sessionStorage 访问助手：getter 本身在禁 cookie/嵌入式 webview 下会抛
@@ -200,30 +208,33 @@ export function App() {
   };
 
   // ── 练习会话 ──────────────────────────────────────────────────────────────
-  const startPractice = (node: NodeId, practice: 1 | 2 | 3) => {
+  // moon = 词句卫星（课号）：node 传该课星球节点（结算屏图标/回跳用），星写 progress.moons。
+  const startPractice = (node: NodeId, practice: 1 | 2 | 3, moon?: number) => {
     clearTimer();
     seqGenRef.current++;
     const c = nodeToContent(node);
     const queue =
-      c.kind === 'lesson'
-        ? buildPractice(c.lesson, practice, Math.random)
-        : buildStation(c.station, Math.random);
-    const ls = new LessonSession(queue, { node, practice }, Math.random);
+      moon !== undefined ? buildMoon(moon, Math.random)
+      : c.kind === 'lesson' ? buildPractice(c.lesson, practice, Math.random)
+      : buildStation(c.station, Math.random);
+    const ls = new LessonSession(queue, { node, practice, ...(moon !== undefined && { moon }) }, Math.random);
     const q = ls.current();
     if (!q) return; // 空队列理论不可达（curriculum 数据约束每课 ≥6 条）
     lessonRef.current = ls;
     warmQueue(queue);
     // 开场白（按首题类型/空间站）+ 首题音，一个序列念完
     const intro =
-      c.kind === 'station' ? VOICE.station
+      moon !== undefined ? VOICE.moon
+      : c.kind === 'station' ? VOICE.station
       : q.kind === 'tone-pick' ? VOICE.gameTone
       : q.kind === 'blend' ? VOICE.gameBlend
       : VOICE.gameListen;
-    void playSeq([intro, clipOf(q)]);
+    void playSeq([intro, ...entryAudio(q)]);
     setSession({
       node,
       practice,
-      station: c.kind === 'station',
+      station: moon === undefined && c.kind === 'station',
+      ...(moon !== undefined && { moon }),
       qIndex: 0,
       length: ls.length,
       total: ls.total,
@@ -232,6 +243,7 @@ export function App() {
       excluded: [],
       stage: 0,
       docked: [],
+      tapped: [],
     });
     setScreen('practice');
   };
@@ -244,7 +256,7 @@ export function App() {
     clearTimer();
     if (ls.isDone()) { finishSession(); return; }
     const q = ls.current()!;
-    void playClip(clipOf(q)); // 进新题自动播题音（首手势解锁后合法）
+    void playSeq(entryAudio(q)); // 进新题自动播题音（首手势解锁后合法）
     setSession({
       ...s,
       qIndex: ls.index,
@@ -255,6 +267,7 @@ export function App() {
       lastWrong: undefined,
       stage: 0,
       docked: [],
+      tapped: [],
     });
   };
 
@@ -297,11 +310,13 @@ export function App() {
     const q = s.current;
     if (!q) return;
     if (q.kind === 'blend') { answerBlendStage(picked); return; }
+    if (q.kind === 'read-along') return; // 点读走 tapSyllable/readDone
     clearTimer();
     if (picked === q.answer) {
       ls.answer(true);
       sfx.right();
-      void playClip(RIGHT_LINES[Math.floor(Math.random() * RIGHT_LINES.length)]);
+      // 看拼音选图答对：念一遍这个词（读音印证）代替夸奖语
+      void playClip(q.kind === 'pic-pick' ? clipOf(q) : RIGHT_LINES[Math.floor(Math.random() * RIGHT_LINES.length)]);
       setSession({ ...s, feedback: 'right' });
       timerRef.current = window.setTimeout(advance, ADVANCE_MS);
     } else {
@@ -311,9 +326,32 @@ export function App() {
         const prevS = sessionRef.current;
         if (!prevS || prevS.feedback !== 'wrong') return;
         setSession({ ...prevS, feedback: null, lastWrong: undefined });
-        void playClip(clipOf(q)); // 重听一遍再试
+        if (q.kind !== 'pic-pick') void playClip(clipOf(q)); // 重听一遍再试（看图题不给音）
       }, RETRY_MS);
     }
+  };
+
+  // 句子点读：点音节播人声；轻声无人声 → 降级播整句（README「词句卫星」口径）。
+  const tapSyllable = (i: number) => {
+    const s = sessionRef.current;
+    const q = s?.current;
+    if (!s || !q || q.kind !== 'read-along') return;
+    void playClip(q.taps[i] ?? clipOf(q));
+    if (!s.tapped.includes(i)) setSession({ ...s, tapped: [...s.tapped, i] });
+  };
+
+  // 点读完成：不计分（LessonSession 对 read-along 直接推进），轻钟 + 夸奖后进下一题/结算。
+  const readDone = () => {
+    const s = sessionRef.current;
+    const ls = lessonRef.current;
+    const q = s?.current;
+    if (!s || !ls || !q || q.kind !== 'read-along' || s.feedback !== null) return;
+    clearTimer();
+    ls.answer(true);
+    sfx.right();
+    void playClip(RIGHT_LINES[Math.floor(Math.random() * RIGHT_LINES.length)]);
+    setSession({ ...s, feedback: 'right' });
+    timerRef.current = window.setTimeout(advance, ADVANCE_MS);
   };
 
   // 拼读对接逐段批改。任一段选错 = 本题首答错（LessonSession.answer(false, picked)，
@@ -377,7 +415,7 @@ export function App() {
   const retrySession = () => {
     const s = sessionRef.current;
     if (!s) return;
-    startPractice(s.node, s.practice);
+    startPractice(s.node, s.practice, s.moon);
   };
 
   // ── 自由练习（雷达/发射台）────────────────────────────────────────────────
@@ -638,6 +676,7 @@ export function App() {
             progress={progress}
             onStartLearn={startLearn}
             onStartPractice={startPractice}
+            onStartMoon={(lessonId) => startPractice(nodeOfLesson(lessonId), 1, lessonId)}
             onOpenRadar={() => startFree('radar')}
             onOpenLaunchpad={() => startFree('launchpad')}
             onOpenCollection={startCollection}
@@ -658,7 +697,14 @@ export function App() {
           />
         )}
         {screen === 'practice' && session && (
-          <Practice session={session} onPick={answer} onReplay={replayClip} onExit={exitToMap} />
+          <Practice
+            session={session}
+            onPick={answer}
+            onTapSyllable={tapSyllable}
+            onReadDone={readDone}
+            onReplay={replayClip}
+            onExit={exitToMap}
+          />
         )}
         {screen === 'result' && session && (
           <Result
@@ -666,6 +712,7 @@ export function App() {
             station={session.station}
             lesson={resultLesson}
             practice={session.practice}
+            moon={session.moon !== undefined}
             unlockedNext={!!session.resultUnlockedNext}
             newItems={session.resultNewItems ?? []}
             onRetry={retrySession}

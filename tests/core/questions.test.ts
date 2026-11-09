@@ -57,6 +57,7 @@ function checkQuestion(q: Question, ctx: string): void {
     check(q.options.every((o) => expected.has(o)), () => `${ctx}: 选项须是 '${q.base}' 的 4 个带调形，得 ${q.options}`);
     return;
   }
+  if (q.kind !== 'blend') throw new Error(`${ctx}: 一期出题器不应产出 ${q.kind}`);
   const roles = q.stages.map((s) => s.role).join(',');
   const wanted = [
     ...(q.target.initial !== '' ? ['initial'] : []),
@@ -161,7 +162,8 @@ describe('buildStation：只出覆盖课程的内容', () => {
           checkQuestion(q, `${station.id} seed${s}`);
           if (q.kind === 'listen-pick') { listen++; check(letters.has(q.answer), () => `${station.id} 听辨越界 '${q.answer}'`); }
           else if (q.kind === 'tone-pick') { tone++; check(bases.has(q.base), () => `${station.id} 四声越界 '${q.base}'`); }
-          else { blend++; check(blends.has(q.target.text), () => `${station.id} 拼读越界 '${q.target.text}'`); }
+          else if (q.kind === 'blend') { blend++; check(blends.has(q.target.text), () => `${station.id} 拼读越界 '${q.target.text}'`); }
+          else throw new Error(`空间站不应出 ${q.kind}`);
         }
         check(listen === 3 && tone === 3 && blend === 4, () => `${station.id} 配比 ${listen}/${tone}/${blend}`);
       }

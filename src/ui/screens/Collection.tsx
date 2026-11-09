@@ -1,11 +1,12 @@
-// 宇宙图鉴：12 件收藏品 4×3 网格。已解锁 → 彩色卡（代码画 SVG + 名字）；
+// 宇宙图鉴：15 件收藏品 5×3 网格（一期 12 + 词句卫星 3）。已解锁 → 彩色卡（代码画 SVG + 名字）；
 // 未解锁 → 剪影 + ⭐N 门槛提示。newIds = 本次到访新点亮的收藏（App 进屏时
 // 用 markCollectionSeen 已落盘），逐张播 pop 揭示动画 + 「新!」角标。
 import { COLLECTION } from '../../core/collection';
+import { MAX_STARS } from '../../core/progression';
 import { CollectibleArt } from '../components/CollectibleArt';
 
 interface CollectionProps {
-  stars: number;          // totalStars（页眉 ★ N / 123 与解锁判定同源）
+  stars: number;          // totalStars（页眉 ★ N / MAX_STARS 与解锁判定同源）
   newIds: readonly string[];
   onExit: () => void;
 }
@@ -16,7 +17,7 @@ export function Collection({ stars, newIds, onExit }: CollectionProps) {
       <div class="pp-screen-top">
         <button class="pp-back" onClick={onExit} aria-label="回星系">←</button>
         <div class="pp-screen-title">宇宙图鉴</div>
-        <div class="pp-coll-stars">★ {stars} / 123</div>
+        <div class="pp-coll-stars">★ {stars} / {MAX_STARS}</div>
       </div>
 
       <div class="pp-coll-grid">
@@ -30,7 +31,7 @@ export function Collection({ stars, newIds, onExit }: CollectionProps) {
               class={'pp-coll-card' + (open ? ' is-open' : ' is-locked') + (isNew ? ' is-new' : '')}
               style={isNew ? { animationDelay: `${0.25 + revealIndex * 0.35}s` } : undefined}
             >
-              <div class="pp-coll-art"><CollectibleArt id={c.id} size={92} /></div>
+              <div class="pp-coll-art"><CollectibleArt id={c.id} size={80} /></div>
               {open ? (
                 <div class="pp-coll-name">{c.name}</div>
               ) : (

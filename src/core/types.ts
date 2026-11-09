@@ -18,6 +18,7 @@ export interface Progress {
   version: 1;
   planets: Record<number, PlanetProgress>; // 课 1-13；缺项 = 未触碰（读取用 progression.planetOf）
   stations: Record<'r1' | 'r2', Star>;
+  moons: Record<number, Star>; // 词句卫星（二期）：课 3-13 → 星；缺项 = 未玩（旧存档经 storage 合并缺省）
   unlocked: number; // NodeId 前沿 1..15
   radar: { items: Record<string, FactState>; sessions: number; total: number };
   launchpad: { items: Record<string, FactState>; sessions: number; streak: number; bestStreak: number; total: number };
@@ -35,6 +36,7 @@ export function defaultProgress(): Progress {
     version: 1,
     planets: {},
     stations: { r1: 0, r2: 0 },
+    moons: {},
     unlocked: 1,
     radar: { items: {}, sessions: 0, total: 0 },
     launchpad: { items: {}, sessions: 0, streak: 0, bestStreak: 0, total: 0 },

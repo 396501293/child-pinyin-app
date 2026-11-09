@@ -1,12 +1,15 @@
 # 拼音星球
 
-面向幼小衔接/一年级（6-7 岁）儿童的 iPad 横屏拼音学习 PWA：跟部编版一年级上册 13 课拼音进度走，13 颗星球 + 2 个空间站复习关的线性航线，每颗星球 [学] → [练1 听音辨认] → [练2 四声辨音] → [练3 拼读组合（飞船对接）]，按首次正确率得 1-3 星。另有两个自由练习（聪耳雷达=无尽听辨、拼读发射台=无尽拼读，共享间隔重复掌握度）、星星解锁的宇宙图鉴、多档案与家长小结。首次联网加载后**全程离线可用**（发音是预生成音频，非在线 TTS）。
+面向幼小衔接/一年级（6-7 岁）儿童的 iPad 横屏拼音学习 PWA：跟部编版一年级上册 13 课拼音进度走，13 颗星球 + 2 个空间站复习关的线性航线，每颗星球 [学] → [练1 听音辨认] → [练2 四声辨音] → [练3 拼读组合（飞船对接）]，按首次正确率得 1-3 星。另有两个自由练习（聪耳雷达=无尽听辨、拼读发射台=无尽拼读，共享间隔重复掌握度）、星星解锁的宇宙图鉴、多档案与家长小结。
+
+**二期·词句卫星**：第 3-13 课每颗星球点亮后开放一颗「词句卫星」（星球面板第 5 行 + 地图上的 🌙），从「认音节」走向「用拼音」——3 道看拼音选图 + 3 道听词选拼音（干扰项含只差一个声调的假词）+ 末尾 2 句注音句点读（点音节听人声、🔊 读整句）。词句只用截至本课学过的声母韵母（测试强制）；卫星星星计入图鉴（满星 123 → 156），不挡主航线。首次联网加载后**全程离线可用**（发音是预生成音频，非在线 TTS）。
 
 姊妹项目：[数学夜航（child-math-app）](../child-math-app)——同栈（Preact + Vite + TS + vite-plugin-pwa），本项目 fork 其骨架后换「明亮扁平卡通太空」主题。
 
 ## 文档地图
 
-- [`docs/superpowers/specs/2026-08-07-pinyin-planet-design.md`](./docs/superpowers/specs/2026-08-07-pinyin-planet-design.md) — 设计与实施计划（课程表、玩法、架构、里程碑），设计决策以此为权威来源。
+- [`docs/superpowers/specs/2026-08-07-pinyin-planet-design.md`](./docs/superpowers/specs/2026-08-07-pinyin-planet-design.md) — 设计与实施计划（课程表、玩法、架构、里程碑），设计决策以此为权威来源；末尾「二期：词句卫星」一节记录二期决策。
+- [`src/data/wordbank.ts`](./src/data/wordbank.ts) — 词句卫星词库（词/句/配图提示词），约束见文件头与 `tests/core/wordbank.test.ts`。
 
 ## 本地开发
 
@@ -23,14 +26,26 @@ pnpm build      # 类型检查 + 生产构建 → dist/（含 PWA 预缓存清�
 
 ## 资产再生成（产物已入库，CI 不碰）
 
-三条生成管线都遵循同一哲学：**本地生成、产物提交、CI 只跑 Node**。平时无需执行，改了对应源数据再跑。
+四条生成管线都遵循同一哲学：**本地生成、产物提交、CI 只跑 Node**。平时无需执行，改了对应源数据再跑。
 
-### 语音（public/audio/*.mp3，229 条）
+### 语音（public/audio/*.mp3，417 条）
 
 音频唯一源是 `src/data/audio-script.json`（clipId → 台词/载字 + 文件名 + 音源）。**两类音源**（clip 的 `source` 字段，缺省 = tts）：
 
 - **带调音节 168 条（sy-\*/tv-\*/zt-\*）＝人声**。edge-tts 念单字带句子语调而非 citation tone，声学审计（`scripts/tone_audit.py`，F0 轮廓判型）33/168 失败、上声大面积平掉——家长实测「一二三四声分不出来」，故整体换用公有领域人声数据集 [davinfifield/mp3-chinese-pinyin-sound](https://github.com/davinfifield/mp3-chinese-pinyin-sound)（Unlicense；许可与映射见 `docs/LICENSE-pinyin-audio.txt`），由 `scripts/import_pinyin_dataset.py` 导入（响度对齐台词、24kHz 48kbps）。数据集没有裸 o 音节，tv-o1..o4 由 `scripts/resynth_tv_o.py` 用 Praat PSOLA 按五度制轮廓重合成（source: resynth）。换后审计 0/168 失败。
-- **声母/韵母呼读音与台词 61 条（sm-\*/ym-\*/ln-\*）＝ TTS**（edge-tts，XiaoxiaoNeural）。增改后：
+- **声母/韵母呼读音与台词（sm-\*/ym-\*/ln-\*）＝ TTS**（edge-tts，XiaoxiaoNeural）。
+- **词句卫星（二期）**：词句里的带调音节同样走人声数据集（`sy-*`，点读用）；**整词 `wd-*`、整句 `st-*` ＝ TTS**（词句里 TTS 语调自然，单字 citation tone 的问题不存在）。轻声：数据集只有 ma/de/le/ne/dei 的 `*5`，有则导入为 `sy-{base}0`，其余轻声点读时降级播整句（`manifest.clipForTap` 返回 null）。改了词库后：
+
+```bash
+node --experimental-strip-types scripts/sync-wordbank-audio.mjs        # 词库 → audio-script.json 补条目（幂等，不动已有）
+git clone --depth 1 https://github.com/davinfifield/mp3-chinese-pinyin-sound.git /tmp/ds
+scripts/.venv/bin/python scripts/import_pinyin_dataset.py /tmp/ds/mp3 --missing-only   # 只补缺的人声音节
+bash scripts/gen-voice.sh --only wd- && bash scripts/gen-voice.sh --only st-          # 整词/整句 TTS
+```
+
+> edge-tts 报 `403 Invalid response status` = 版本过旧（微软轮换客户端校验），`scripts/.venv/bin/pip install -U edge-tts` 即可（2026-11 由 7.2.8 升到 7.3.1 修复）。
+
+TTS 部分增改后：
 
 ```bash
 bash scripts/gen-voice.sh              # 跳过已存在，可中断续跑；非 TTS 音源永不覆盖（--force 也不）
@@ -39,6 +54,18 @@ bash scripts/gen-voice.sh --force      # TTS 部分全量重生成
 ```
 
 生成后两道把关：`scripts/.venv/bin/python scripts/tone_audit.py` 声学审计带调 clip（需 `pip install praat-parselmouth numpy`），再用**听审页**人耳过——浏览器直接打开 `scripts/qa-listen.html`（file:// 即可，🎙=人声库 🎛=重合成），TTS 条目可从 candidates（`scripts/audio-qa/`，已 gitignore）里挑替换。`pnpm test` 的清单守卫会确保 audio-script.json ↔ 磁盘 mp3 一一对应。
+
+### 词句卫星配图（public/pics/*.webp，61 张）
+
+用 Agnes AI 文生图（`agnes-image-2.5-flash`，免费试用档）生成，提示词与文件名唯一来源是词库 `WordEntry.pic` / `picId()`：
+
+```bash
+AGNES_API_KEY=... node --experimental-strip-types scripts/gen-pics.mjs           # 只补缺的
+AGNES_API_KEY=... node --experimental-strip-types scripts/gen-pics.mjs baba mama # 指定重出
+KEEP_RAW=1 ...  # 保留原图到 .raw-pics/（gitignore），之后 --reprocess 只重做去底/缩放不调 API
+```
+
+处理：纯白底洪泛去底 → 裁边 → 320×320 透明 webp（每张 ~15-25KB）。**免费账号限流约 10 次/分钟**：脚本串行、每张间隔 7s（`GAP_MS`），遇 429 自动退避 60s 重试。`pnpm test` 的 wordbank 守卫会报缺图。
 
 ### 拼音字体子集（src/assets/fonts/andika-pinyin.woff2）
 
@@ -74,6 +101,8 @@ node scripts/gen-icons.mjs      # sharp 栅格化 192/512/180 三种尺寸
 4. **家长设置**：星系图右下角**长按齿轮约 1.5 秒**打开（防儿童误触），可看进度与易错音统计、调语音音量、管理多档案；数据全部存在本机。
 
 ## 待人工验收
+
+- **词句卫星（二期）**：①听审页抽听新增的 `wd-*`/`st-*`（整词整句 TTS）与新导入的人声音节；②过一遍 61 张配图，有歧义/不像的用 `scripts/gen-pics.mjs <picId>` 重出或改提示词；③iPad 真机玩一颗卫星，确认图片和点读离线可用、点读字块大小手感合适。
 
 - **音频抽听**（换人声数据集后）：打开 `scripts/qa-listen.html` 抽听——重点①tv-\* 24 条（练2 的直接素材，含 4 条重合成的 tv-o\*，听是否自然）；②声学审计的 6 条边缘阴平（sy-la1 / sy-xie1 / sy-xin1 / sy-you1 / zt-yuan / zt-yue，微升 1-2 半音，判定仍算平）；③剩余 TTS 的 sm-/ym- 各抽几条与人声音节对比音色/响度是否突兀。人声条目不满意没有 candidates 可换，需另寻音源。
 - **iPad 真机验收**：Safari 打开 `https://396501293.github.io/child-pinyin-app/` → 添加到主屏幕 → 从主屏图标全屏横屏启动 → 联网完整加载一遍 → 开飞行模式完整过第 1 颗星球（学 → 练1 → 练2 → 练3 → 拿星），确认全程发音可播。

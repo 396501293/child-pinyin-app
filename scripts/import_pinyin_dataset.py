@@ -11,7 +11,9 @@
 处理：测 input_i 后纯增益对齐 −19.7 LUFS（ln-* 中位数；不用 loudnorm 动态模式，
 短音频会抽吸），true peak 封顶 −1 dBTP，重采样 24kHz 单声道 48kbps（与 TTS 音一致）。
 
-用法：scripts/.venv/bin/python scripts/import_pinyin_dataset.py <数据集mp3目录> [--out 输出目录]
+用法：scripts/.venv/bin/python scripts/import_pinyin_dataset.py <数据集mp3目录> [--out 输出目录] [--missing-only]
+  --missing-only：只导入磁盘上缺的（词句卫星新增音节），已有文件不重转。
+  轻声 sy-{base}0 → 数据集 {base}5（仅 ma/de/le/ne/dei 有）。
 默认输出 public/audio/（覆盖同名旧 TTS 音）。gen_voice.py 会跳过 source!="tts" 的 clip。
 """
 
@@ -38,7 +40,8 @@ ZT_STEM = {
 def dataset_stem(clip_id):
     """clipId → 数据集文件 stem；None = 数据集不覆盖（如 tv-o*）。"""
     if clip_id.startswith("sy-"):
-        return clip_id[3:].replace("ü", "uu")
+        stem = clip_id[3:].replace("ü", "uu")
+        return stem[:-1] + "5" if stem.endswith("0") else stem  # 轻声 sy-ma0 → ma5
     if clip_id.startswith("tv-"):
         base = TV_TO_SYLLABLE[clip_id[3:-1]]
         return base + clip_id[-1] if base else None
@@ -76,6 +79,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("dataset", help="mp3-chinese-pinyin-sound 的 mp3/ 目录")
     parser.add_argument("--out", default=str(ROOT / "public" / "audio"))
+    parser.add_argument("--missing-only", action="store_true",
+                        help="只导入磁盘上还没有的 clip（词句卫星补音节用，不重转已有 168 条）")
     args = parser.parse_args()
     dataset = Path(args.dataset)
     out_dir = Path(args.out)
@@ -89,6 +94,8 @@ def main():
         stem = dataset_stem(clip_id)
         if stem is None:
             skipped.append(clip_id)
+            continue
+        if args.missing_only and (out_dir / clip["file"]).exists():
             continue
         src = dataset / f"{stem}.mp3"
         if not src.exists():

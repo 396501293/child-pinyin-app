@@ -47,7 +47,8 @@ function ConfirmButton({ label, confirmLabel, onConfirm }: {
 }
 
 // 条目 key（'L:b'/'S:bà'）→ 家长可读行：类别标签 + 拼音（拼音一律走 .pp-py）。
-const itemKind = (item: string): string => (item.startsWith('L:') ? '字母' : '音节');
+const itemKind = (item: string): string =>
+  item.startsWith('L:') ? '字母' : item.startsWith('W:') ? '词语' : '音节';
 
 export function SettingsModal({ progress, onUpdateSettings, onResetProgress, onUnlockAll, onFillStars, onAddProfile, onSwitchProfile, onClose }: SettingsModalProps) {
   const profiles = profileMeta();

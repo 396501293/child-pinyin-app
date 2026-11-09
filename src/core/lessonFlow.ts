@@ -12,7 +12,8 @@ import type { Progress, Rng, Star } from './types';
 
 // node 必须经 curriculum.nodeOfLesson(lesson.id) 映射（L9-13 因 r1 占 node 9 而错位 +1）——
 // 拿 lesson.id 直接当 node，L9+ 的星星会被静默写进 stations.r1。空间站会话 practice 无意义，传 1。
-export interface LessonMeta { node: NodeId; practice: 1 | 2 | 3 }
+// moon = 词句卫星会话（值为课号）：星星写 progress.moons，不推进解锁链；node/practice 仅作 UI 回跳用。
+export interface LessonMeta { node: NodeId; practice: 1 | 2 | 3; moon?: number }
 
 interface Entry { q: Question; remeet: boolean }
 interface LogRow { item: string; ok: boolean; picked?: string } // 每次「首答」一行，供 insight
@@ -32,7 +33,7 @@ export class LessonSession {
     this.queue = queue.map((q) => ({ q, remeet: false }));
     this.meta = meta;
     this.rng = rng;
-    this.total = queue.length;
+    this.total = queue.filter((q) => q.kind !== 'read-along').length; // 点读不进星级分母
   }
 
   get firstTry(): number { return this.firstTryCount; }
@@ -46,12 +47,16 @@ export class LessonSession {
     if (q.kind === 'blend') {
       return { ...q, stages: q.stages.map((st) => ({ ...st, options: shuffle([...st.options], this.rng) })) };
     }
+    if (q.kind === 'read-along') return q; // 无选项、不会答错，实际走不到
     return { ...q, options: shuffle([...q.options], this.rng) };
   }
 
   // 首次答错 → 在 本题序号 + rand(3,5) 处再出一次（越界则会话末尾追加兜底）。
+  // 卫星局末尾的点读是收尾环节：再见面题一律排在首个后续点读之前，不跑到句子后面。
   private scheduleRemeet(q: Question): void {
-    const pos = this.idx + 3 + Math.floor(this.rng() * 3); // +3..5
+    let pos = this.idx + 3 + Math.floor(this.rng() * 3); // +3..5
+    const firstRead = this.queue.findIndex((e, i) => i > this.idx && e.q.kind === 'read-along');
+    if (firstRead >= 0 && pos > firstRead) pos = firstRead;
     const entry: Entry = { q: this.reshuffled(q), remeet: true };
     if (pos >= this.queue.length) this.queue.push(entry);
     else this.queue.splice(pos, 0, entry);
@@ -63,6 +68,11 @@ export class LessonSession {
   answer(correct: boolean, picked?: string): { advance: boolean } {
     if (this.isDone()) return { advance: false };
     const entry = this.queue[this.idx];
+    if (entry.q.kind === 'read-along') { // 点读：UI 在全部音节点过后报完成，不计星、不埋点
+      this.idx++;
+      this.attempted = false;
+      return { advance: true };
+    }
     const item = questionItem(entry.q);
     if (!this.attempted) { // 本条目「首答」：计星、埋点、必要时安排再见面
       this.log.push(correct ? { item, ok: true } : { item, ok: false, ...(picked !== undefined && { picked }) });
@@ -88,8 +98,14 @@ export class LessonSession {
   // 每会话结束后应恰好调用一次，并把结果 saveProgress 落盘（M4 职责）。
   commitToProgress(p: Progress, now: number = Date.now()): Progress {
     const stars = this.starsEarned();
-    const content = nodeToContent(this.meta.node);
     let next: Progress;
+    if (this.meta.moon !== undefined) {
+      const id = this.meta.moon;
+      next = { ...p, moons: { ...p.moons, [id]: Math.max(p.moons[id] ?? 0, stars) as Star } };
+      for (const row of this.log) next = recordAnswer(next, row.item, row.ok, row.picked, now);
+      return next;
+    }
+    const content = nodeToContent(this.meta.node);
     if (content.kind === 'lesson') {
       const id = content.lesson.id;
       const planet = planetOf(p, id);

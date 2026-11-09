@@ -80,8 +80,9 @@ test('peekProfile：窥视星星数与前沿，不动 active；缺档给 null', 
   p.unlocked = 4;
   p.planets[1] = { learned: true, stars: [3, 2, 1] };
   p.stations.r1 = 2;
+  p.moons[3] = 3; // 词句卫星星星也计入（与 totalStars 同口径）
   saveProgress(p, st);
-  expect(peekProfile(0, st)).toEqual({ unlocked: 4, stars: 8 });
+  expect(peekProfile(0, st)).toEqual({ unlocked: 4, stars: 11 });
   expect(profileMeta(st).active).toBe(0);
   expect(peekProfile(1, st)).toBeNull(); // 档 1 尚无数据
 });

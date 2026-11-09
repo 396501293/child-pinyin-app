@@ -1,10 +1,13 @@
 import { describe, expect, test } from 'vitest';
 import { LESSONS, STATIONS } from '../../src/core/curriculum';
+import { MOONS } from '../../src/data/wordbank';
 import { letterKey, syllableKey } from '../../src/core/mastery';
 import {
   MAX_NODE,
+  MAX_STARS,
   launchpadPool,
   launchpadUnlocked,
+  moonState,
   nodeState,
   planetCleared,
   planetOf,
@@ -123,11 +126,14 @@ describe('自由练习门槛与池', () => {
 });
 
 describe('totalStars', () => {
-  test('满进度 = 123（13×9 + 2×3）', () => {
+  test('满进度 = MAX_STARS = 156（13×9 + 2×3 + 11 卫星×3）', () => {
     const p = defaultProgress();
     for (const l of LESSONS) p.planets[l.id] = { learned: true, stars: [3, 3, 3] };
     for (const s of STATIONS) p.stations[s.id] = 3;
     expect(totalStars(p)).toBe(123);
+    for (const m of MOONS) p.moons[m.lesson] = 3;
+    expect(totalStars(p)).toBe(156);
+    expect(MAX_STARS).toBe(156);
   });
   test('缺省 0；部分累加正确', () => {
     expect(totalStars(defaultProgress())).toBe(0);
@@ -135,5 +141,23 @@ describe('totalStars', () => {
     p.planets[1] = { learned: true, stars: [3, 2, 1] };
     p.stations.r1 = 2;
     expect(totalStars(p)).toBe(8);
+  });
+});
+
+describe('moonState（词句卫星）', () => {
+  test('L1-2 无卫星；星球未点亮 → locked；点亮 → available；≥1★ → cleared', () => {
+    const p = defaultProgress();
+    expect(moonState(p, 1)).toBe('none');
+    expect(moonState(p, 2)).toBe('none');
+    expect(moonState(p, 3)).toBe('locked');
+    p.planets[3] = { learned: true, stars: [1, 1, 1] };
+    expect(moonState(p, 3)).toBe('available');
+    p.moons[3] = 1;
+    expect(moonState(p, 3)).toBe('cleared');
+  });
+  test('卫星星星不影响主航线解锁', () => {
+    const p = defaultProgress();
+    p.moons[3] = 3;
+    expect(nodeState(p, 4)).toBe('locked');
   });
 });

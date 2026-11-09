@@ -1,10 +1,14 @@
 // 解锁链 + 星级 + 自由练习门槛/练习池。全部纯函数，不落盘。
+import { MOONS } from '../data/wordbank';
 import { LESSONS, nodeToContent, STATIONS } from './curriculum';
 import type { NodeId } from './curriculum';
 import { letterKey, syllableKey } from './mastery';
 import type { PlanetProgress, Progress, Star } from './types';
 
 export const MAX_NODE = 15; // [L1..L8, R1, L9..L13, R2]
+
+// 满星：13 星球 × 9 + 2 空间站 × 3 + 11 词句卫星 × 3 = 156。
+export const MAX_STARS = 156;
 
 // 星级按首次正确率：100%→3★，≥80%→2★，完成即有 1★（无挫败）；空会话 0★ 守卫。
 export function starsFor(firstTry: number, total: number): Star {
@@ -39,12 +43,22 @@ export const unlockAfterClear = (p: Progress, node: NodeId): Progress => ({
 export const radarUnlocked = (p: Progress): boolean => planetCleared(p, 3);
 export const launchpadUnlocked = (p: Progress): boolean => planetCleared(p, 5);
 
-// 星星总数：13 星球 × (3 练 × 3★) + 2 空间站 × 3★ = 123 满。
+// 星星总数：13 星球 × (3 练 × 3★) + 2 空间站 × 3★ + 11 卫星 × 3★ = 156 满。
 export function totalStars(p: Progress): number {
   let sum = 0;
   for (const l of LESSONS) for (const s of planetOf(p, l.id).stars) sum += s;
   for (const st of STATIONS) sum += p.stations[st.id] ?? 0;
+  for (const m of MOONS) sum += p.moons[m.lesson] ?? 0;
   return sum;
+}
+
+// 词句卫星（二期）：所属星球点亮即开放；不进解锁链（卫星不挡主航线）。
+export const moonOfLessonExists = (lessonId: number): boolean => MOONS.some((m) => m.lesson === lessonId);
+
+export function moonState(p: Progress, lessonId: number): 'none' | 'locked' | 'available' | 'cleared' {
+  if (!moonOfLessonExists(lessonId)) return 'none';
+  if (!planetCleared(p, lessonId)) return 'locked';
+  return (p.moons[lessonId] ?? 0) >= 1 ? 'cleared' : 'available';
 }
 
 // 雷达池：已点亮星球的字母单元（'L:*'）；未解锁时为空（UI 门槛与池同源）。

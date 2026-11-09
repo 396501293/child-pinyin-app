@@ -103,3 +103,21 @@ test('storage 抛错 → 会话期内存兜底可读回', () => {
   saveProgress(p, boom); // 不抛
   expect(loadProgress(boom).unlocked).toBe(9); // 内存兜底读回
 });
+
+test('一期旧存档（无 moons 字段）加载后补空 moons，其余数据原样', () => {
+  const old = defaultProgress() as unknown as Record<string, unknown>;
+  delete old.moons;
+  (old.planets as Record<number, unknown>)[3] = { learned: true, stars: [3, 3, 3] };
+  const s = fakeStore({ pinyin_planet_v1: JSON.stringify(old) });
+  const p = loadProgress(s);
+  expect(p.moons).toEqual({});
+  expect(p.planets[3].stars).toEqual([3, 3, 3]);
+});
+
+test('moons 随存档往返', () => {
+  const s = fakeStore();
+  const p = defaultProgress();
+  p.moons[4] = 2;
+  saveProgress(p, s);
+  expect(loadProgress(s).moons).toEqual({ 4: 2 });
+});

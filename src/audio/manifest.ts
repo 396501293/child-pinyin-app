@@ -2,7 +2,10 @@
 // 缺失一律 throw：tests/audio/manifest.test.ts 四重守卫保证运行时永远打不中。
 import audioScript from '../data/audio-script.json';
 import { ALL_FINALS, ALL_INITIALS } from '../core/curriculum';
+import { parseSyllable } from '../core/pinyin';
 import type { Syllable, Tone } from '../core/pinyin';
+import { sentenceClipId, syllableClipId, wordClipId } from '../data/wordbank';
+import type { WordEntry } from '../data/wordbank';
 
 export type ClipId = keyof typeof audioScript.clips;
 
@@ -54,4 +57,25 @@ export const clipForTonedVowel = (vowel: string, tone: Tone): ClipId =>
 export function clipForLine(id: string): ClipId {
   if (!id.startsWith('ln-')) throw new Error(`manifest: '${id}' is not a voice line`);
   return ensure(id);
+}
+
+// ── 词句卫星（二期）：id 推导在 data/wordbank.ts（与 sync-wordbank-audio.mjs 同源）──
+
+/** 整词 TTS（wd-*）。 */
+export const clipForWord = (w: WordEntry): ClipId => ensure(wordClipId(w));
+
+/** 整句 TTS（st-{课}-{n}）。 */
+export const clipForSentence = (lesson: number, index: number): ClipId =>
+  ensure(sentenceClipId(lesson, index));
+
+/**
+ * 点读单个音节 → 人声 clip。带调音节必有（缺失 throw）；
+ * 轻声只有数据集带 *5 的（ma/de/le/ne/dei）才有 clip，其余返回 null——
+ * 调用方降级播所在整词/整句（README「词句卫星」口径）。
+ */
+export function clipForTap(syl: string): ClipId | null {
+  const parsed = parseSyllable(syl);
+  if (parsed.tone !== 0) return clipForSyllable(parsed);
+  const id = syllableClipId(syl);
+  return id in CLIPS ? (id as ClipId) : null;
 }

@@ -1,6 +1,9 @@
 // 出题器（纯函数 + 种子 Rng）：听音辨认(3选1) / 四声辨音(4选1) / 拼读对接(1-3 段)。
 // clip 一律经 manifest 纯查询解析，缺失即 throw——性质测试遍历全课程保证运行时打不中。
-import { clipForLetter, clipForSyllable, clipForTonedVowel } from '../audio/manifest';
+import { clipForLetter, clipForSentence, clipForSyllable, clipForTap, clipForTonedVowel, clipForWord } from '../audio/manifest';
+import type { ClipId } from '../audio/manifest';
+import { moonOf, picId, splitTone } from '../data/wordbank';
+import type { WordEntry } from '../data/wordbank';
 import { pickDistractors } from './confusables';
 import { ALL_FINALS, ALL_INITIALS, LESSONS } from './curriculum';
 import type { Lesson, Station } from './curriculum';
@@ -17,7 +20,24 @@ export interface BlendStage { role: 'initial' | 'medial' | 'final'; answer: stri
 // 立即 LessonSession.answer(false, picked=该段的错选单元)，该段原地重试；
 // 全部段一次通过才 answer(true)。answer 每题至多一次 false（后续重试仍 false 但不重复计）。
 export interface Blend { kind: 'blend'; clip: string; target: Syllable; stages: BlendStage[] }
-export type Question = ListenPick | TonePick | Blend;
+// ── 词句卫星（二期）──
+// 听词选拼音：播整词 → 3 张拼音词卡（1 张同词换一个声调的「变调假词」+ 1 个同卫星别的词）。
+export interface WordPick { kind: 'word-pick'; clip: string; answer: string; options: string[] }
+// 看拼音选图：显示拼音词（不播音）→ 3 张图（picId）；答对后 UI 播 clip。
+export interface PicPick { kind: 'pic-pick'; clip: string; text: string; answer: string; options: string[] }
+// 句子点读：不计对错、不进星级分母；taps[i] = 第 i 个音节的人声 clip，null = 轻声无人声
+//（UI 降级播整句 clip）。全部音节点过一遍即完成。
+export interface ReadAlong {
+  kind: 'read-along';
+  clip: string;
+  syl: string[];
+  hz: string;
+  taps: (ClipId | null)[];
+}
+export type Question = ListenPick | TonePick | Blend | WordPick | PicPick | ReadAlong;
+
+/** 拼音词显示形：音节直接相连（课本写法 bàba）。 */
+export const wordText = (w: Pick<WordEntry, 'syl'>): string => w.syl.join('');
 
 const TONES: readonly Tone[] = [1, 2, 3, 4];
 const LETTER_UNITS = new Set([...ALL_INITIALS, ...ALL_FINALS]);
@@ -25,6 +45,9 @@ const MEDIALS = ['i', 'u', 'ü'] as const;
 
 // 掌握度/埋点条目 key：听辨字母 → 'L:*'；带调内容（四声/拼读/带调元音）→ 'S:*'。
 export function questionItem(q: Question): string {
+  if (q.kind === 'word-pick') return `W:${q.answer}`;
+  if (q.kind === 'pic-pick') return `W:${q.text}`;
+  if (q.kind === 'read-along') return `R:${q.hz}`; // 不计分，不进 insight（LessonSession 跳过）
   if (q.kind === 'blend') return syllableKey(q.target.text);
   if (q.kind === 'tone-pick') return syllableKey(q.answer);
   return LETTER_UNITS.has(q.answer) ? letterKey(q.answer) : syllableKey(q.answer);
@@ -173,4 +196,56 @@ export function buildLaunchpadQuestion(
   const key = pickItem(pool, states, rng, exclude);
   const text = unitOfKey(key);
   return blendQuestion(text, BLEND_LESSON.get(text) ?? LESSONS[LESSONS.length - 1].id, rng);
+}
+
+// ── 词句卫星出题 ──
+
+// 「变调假词」：把词里一个带调音节换成另一个声调（轻声音节不动），且不与卫星内真词重形。
+function toneVariant(w: WordEntry, taken: ReadonlySet<string>, rng: Rng): string | null {
+  const slots = w.syl.map((s, i) => [s, i] as const).filter(([s]) => splitTone(s).tone !== 0);
+  for (const [syl, i] of shuffle([...slots], rng)) {
+    const { base, tone } = splitTone(syl);
+    for (const t of shuffle(TONES.filter((x) => x !== tone), rng)) {
+      const alt = w.syl.map((x, j) => (j === i ? toneMark(base, t) : x)).join('');
+      if (!taken.has(alt)) return alt;
+    }
+  }
+  return null;
+}
+
+function wordPick(w: WordEntry, pool: readonly WordEntry[], rng: Rng): WordPick {
+  const answer = wordText(w);
+  const real = new Set(pool.map(wordText));
+  const others = shuffle(pool.filter((x) => x !== w), rng).map(wordText);
+  const variant = toneVariant(w, real, rng);
+  const distractors = variant ? [variant, others[0]] : others.slice(0, 2);
+  return { kind: 'word-pick', clip: clipForWord(w), answer, options: shuffle([answer, ...distractors], rng) };
+}
+
+function picPick(w: WordEntry, pool: readonly WordEntry[], rng: Rng): PicPick {
+  const answer = picId(w);
+  const others = shuffle(pool.filter((x) => x !== w && x.pic), rng).slice(0, 2).map(picId);
+  return {
+    kind: 'pic-pick', clip: clipForWord(w), text: wordText(w), answer,
+    options: shuffle([answer, ...others], rng),
+  };
+}
+
+// 卫星一局：3 看拼音选图 + 3 听词选拼音（尽量不同词）洗牌，末尾 2 句点读（「读给小伙伴听」收尾）。
+export function buildMoon(lessonId: number, rng: Rng): Question[] {
+  const moon = moonOf(lessonId);
+  if (!moon) throw new Error(`buildMoon: lesson ${lessonId} has no moon`);
+  const withPic = shuffle(moon.words.filter((w) => w.pic), rng);
+  const picked = withPic.slice(0, 3);
+  const rest = shuffle(moon.words.filter((w) => !picked.includes(w)), rng);
+  const listen = [...rest, ...picked].slice(0, 3);
+  const scored: Question[] = [
+    ...picked.map((w) => picPick(w, moon.words, rng)),
+    ...listen.map((w) => wordPick(w, moon.words, rng)),
+  ];
+  const reads: ReadAlong[] = moon.sentences.map((st, i) => ({
+    kind: 'read-along', clip: clipForSentence(lessonId, i), syl: [...st.syl], hz: st.hz,
+    taps: st.syl.map(clipForTap),
+  }));
+  return [...shuffle(scored, rng), ...reads];
 }

@@ -1,30 +1,32 @@
 import { describe, expect, test } from 'vitest';
 import { COLLECTION, markCollectionSeen, newlyUnlocked, unlockedItems } from '../../src/core/collection';
+import { MAX_STARS } from '../../src/core/progression';
 import { defaultProgress } from '../../src/core/types';
 
 describe('图鉴目录', () => {
-  test('恰 12 个收藏品，id 唯一，字段齐全', () => {
-    expect(COLLECTION).toHaveLength(12);
-    expect(new Set(COLLECTION.map((c) => c.id)).size).toBe(12);
+  test('恰 15 个收藏品（一期 12 + 词句卫星 3），id 唯一，字段齐全', () => {
+    expect(COLLECTION).toHaveLength(15);
+    expect(new Set(COLLECTION.map((c) => c.id)).size).toBe(15);
     for (const c of COLLECTION) {
       expect(c.name.length).toBeGreaterThan(0);
       expect(c.icon.length).toBeGreaterThan(0);
     }
   });
 
-  test('门槛严格递增，落在 1..123（满星）内', () => {
+  test('门槛严格递增，落在 1..MAX_STARS 内，末件恰 = 满星', () => {
     for (let i = 0; i < COLLECTION.length; i++) {
       expect(COLLECTION[i].threshold).toBeGreaterThanOrEqual(1);
-      expect(COLLECTION[i].threshold).toBeLessThanOrEqual(123);
+      expect(COLLECTION[i].threshold).toBeLessThanOrEqual(MAX_STARS);
       if (i > 0) expect(COLLECTION[i].threshold).toBeGreaterThan(COLLECTION[i - 1].threshold);
     }
+    expect(COLLECTION[COLLECTION.length - 1].threshold).toBe(MAX_STARS);
   });
 });
 
 describe('unlockedItems（纯派生）', () => {
   test('0 星无收藏；满星全收藏；门槛边界闭合（≤）', () => {
     expect(unlockedItems(0)).toEqual([]);
-    expect(unlockedItems(123)).toHaveLength(12);
+    expect(unlockedItems(MAX_STARS)).toHaveLength(15);
     const first = COLLECTION[0];
     expect(unlockedItems(first.threshold - 1)).toEqual([]);
     expect(unlockedItems(first.threshold)).toEqual([first]);
@@ -37,7 +39,7 @@ describe('unlockedItems（纯派生）', () => {
   });
 
   test('单调：星星更多解锁不变少', () => {
-    for (let s = 1; s <= 123; s++) {
+    for (let s = 1; s <= MAX_STARS; s++) {
       expect(unlockedItems(s).length).toBeGreaterThanOrEqual(unlockedItems(s - 1).length);
     }
   });

@@ -26,6 +26,7 @@ export interface Session {
   node: NodeId;
   practice: 1 | 2 | 3;   // 空间站会话无意义，恒传 1（见 lessonFlow.LessonMeta）
   station: boolean;
+  moon?: number;         // 词句卫星会话 = 课号（星写 progress.moons）；其余会话缺省
   qIndex: number;        // 镜像 LessonSession.index
   length: number;        // 镜像 .length——再见面插题会增长，进度轨每题重读
   total: number;         // 星级分母（计划题数，不含再见面）
@@ -35,6 +36,7 @@ export interface Session {
   lastWrong?: string;    // 最近点错项——仅它在 wrong 反馈期抖动，旧排除项保持静止
   stage: number;         // blend 段游标（listen/tone 恒 0）
   docked: string[];      // blend 已对接的部件文本（按段序）
+  tapped: number[];      // read-along 已点读过的音节下标（其余题恒空）
   resultStars?: Star;         // 结算星级（进结算前算定并落盘，供结算屏读取）
   resultUnlockedNext?: boolean; // 本次点亮是否推进了解锁链（结算屏「解锁新星球」横幅）
   resultNewItems?: string[];    // 本次拿星新点亮的图鉴收藏名（「新伙伴」横幅；揭示留给图鉴到访）

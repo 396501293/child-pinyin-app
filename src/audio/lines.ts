@@ -19,6 +19,8 @@ export const VOICE = {
   unlockRadar: 'ln-unlock-radar', //   聪耳雷达开放啦！
   unlockLaunch: 'ln-unlock-launch', // 拼读发射台开放啦！
   station: 'ln-station', //         欢迎来到空间站，我们一起复习吧！
+  moon: 'ln-moon', //               欢迎来到词句卫星，我们来读词语和句子吧！
+  gameRead: 'ln-game-read', //      点一点拼音，读一读句子！
 } as const satisfies Record<string, ClipId>;
 
 export type VoiceLineId = (typeof VOICE)[keyof typeof VOICE];

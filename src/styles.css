@@ -361,6 +361,24 @@ button {
   font-size: 30px;
   filter: drop-shadow(0 2px 2px rgba(var(--ink-shadow-rgb), 0.4));
 }
+/* 词句卫星小月亮：星球点亮后挂在右上；未玩时轻轻摇，拿星后发金光 */
+.pp-node-moon {
+  position: absolute;
+  top: -2px;
+  right: -6px;
+  font-size: 30px;
+  filter: drop-shadow(0 2px 2px rgba(var(--ink-shadow-rgb), 0.35));
+}
+.pp-node-moon.is-available {
+  animation: pp-moon-wiggle 2.4s ease-in-out infinite;
+}
+.pp-node-moon.is-cleared {
+  filter: drop-shadow(0 0 8px rgba(255, 214, 92, 0.95));
+}
+@keyframes pp-moon-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-14deg); }
+}
 .pp-node.is-available .pp-node-btn {
   animation: pp-node-pulse 1.8s ease-in-out infinite;
 }
@@ -571,6 +589,13 @@ button {
 }
 .pp-panel-row.is-locked:active {
   transform: none;
+}
+.pp-panel-row--moon {
+  background: var(--lavender);
+  box-shadow: 0 5px 0 var(--lavender-shade);
+}
+.pp-panel-row--moon:active {
+  box-shadow: 0 2px 0 var(--lavender-shade);
 }
 .pp-panel-row-tail {
   font-size: 21px;
@@ -808,6 +833,113 @@ button {
 }
 .pp-card-text {
   line-height: 1.15;
+}
+
+/* ── 词句卫星（二期）────────────────────────────────────────────────── */
+/* 听词选拼音：双音节词卡（比单音节略宽、字号略小） */
+.pp-card--word {
+  min-width: 268px;
+  min-height: 200px;
+  padding: 16px 30px;
+}
+.pp-card--word .pp-card-text {
+  font-size: 80px;
+}
+/* 看拼音选图：上方大拼音词，下方 3 张图卡 */
+.pp-picq {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+.pp-picq-word {
+  font-size: 96px;
+  line-height: 1.1;
+  color: var(--color-white-100);
+  text-shadow: 0 4px 0 rgba(var(--ink-shadow-rgb), 0.35);
+}
+.pp-card--pic {
+  width: 246px;
+  height: 246px;
+  padding: 18px;
+}
+.pp-card-pic {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+/* 句子点读：拼音上、汉字下的字块一行排开 */
+.pp-read {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+}
+.pp-read-line {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+}
+.pp-read-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 128px;
+  padding: 18px 16px 14px;
+  background: var(--cream);
+  border-radius: 24px;
+  box-shadow: 0 7px 0 var(--cream-shade);
+  color: var(--ink);
+  transition: transform 0.08s, box-shadow 0.08s, background 0.2s;
+}
+.pp-read-tile:active {
+  transform: translateY(4px);
+  box-shadow: 0 3px 0 var(--cream-shade);
+}
+.pp-read-tile.is-tapped {
+  background: var(--candy-yellow);
+  box-shadow: 0 7px 0 var(--candy-yellow-deep);
+}
+.pp-read-py {
+  font-size: 50px;
+  line-height: 1.15;
+}
+.pp-read-hz {
+  font-size: 46px;
+  font-weight: 700;
+}
+.pp-read-stop {
+  color: var(--color-white-100);
+  padding-bottom: 18px;
+}
+.pp-read-actions {
+  display: flex;
+  gap: 28px;
+}
+.pp-read-all,
+.pp-read-done {
+  min-height: 80px;
+  padding: 0 40px;
+  font-size: 32px;
+  font-weight: 700;
+  border-radius: var(--r-pill);
+  color: var(--color-white-100);
+}
+.pp-read-all {
+  background: var(--candy-sky);
+  box-shadow: 0 6px 0 var(--candy-sky-deep);
+}
+.pp-read-done {
+  background: var(--candy-mint);
+  box-shadow: 0 6px 0 var(--candy-mint-deep);
+  animation: pp-pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 /* 排除态：静止半透明（惩罚不存在，只是「这个不是」） */
 .pp-card--excluded {
@@ -1400,9 +1532,9 @@ button {
   flex: 1;
   margin-top: 14px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  gap: 16px;
+  gap: 14px;
 }
 .pp-coll-card {
   position: relative;

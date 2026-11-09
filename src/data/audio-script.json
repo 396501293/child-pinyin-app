@@ -1181,6 +1181,841 @@
     "ln-station": {
       "say": "欢迎来到空间站，我们一起复习吧！",
       "file": "ln-station.mp3"
+    },
+    "sy-ma0": {
+      "say": "妈",
+      "file": "sy-ma0.mp3",
+      "source": "davinfifield"
+    },
+    "sy-yi3": {
+      "say": "蚁",
+      "file": "sy-yi3.mp3",
+      "source": "davinfifield"
+    },
+    "sy-yi1": {
+      "say": "衣",
+      "file": "sy-yi1.mp3",
+      "source": "davinfifield"
+    },
+    "sy-pu4": {
+      "say": "瀑",
+      "file": "sy-pu4.mp3",
+      "source": "davinfifield"
+    },
+    "sy-bu4": {
+      "say": "布",
+      "file": "sy-bu4.mp3",
+      "source": "davinfifield"
+    },
+    "sy-wu1": {
+      "say": "乌",
+      "file": "sy-wu1.mp3",
+      "source": "davinfifield"
+    },
+    "sy-ya1": {
+      "say": "鸦",
+      "file": "sy-ya1.mp3",
+      "source": "davinfifield"
+    },
+    "sy-fu4": {
+      "say": "父",
+      "file": "sy-fu4.mp3",
+      "source": "davinfifield"
+    },
+    "sy-mu3": {
+      "say": "母",
+      "file": "sy-mu3.mp3",
+      "source": "davinfifield"
+    },
+    "sy-pa2": {
+      "say": "爬",
+      "file": "sy-pa2.mp3",
+      "source": "davinfifield"
+    },
+    "sy-po1": {
+      "say": "坡",
+      "file": "sy-po1.mp3",
+      "source": "davinfifield"
+    },
+    "sy-mo1": {
+      "say": "摸",
+      "file": "sy-mo1.mp3",
+      "source": "davinfifield"
+    },
+    "sy-wo3": {
+      "say": "我",
+      "file": "sy-wo3.mp3",
+      "source": "davinfifield"
+    },
+    "wd-ba4-ba0": {
+      "say": "爸爸",
+      "file": "wd-ba4-ba0.mp3"
+    },
+    "wd-ma1-ma0": {
+      "say": "妈妈",
+      "file": "wd-ma1-ma0.mp3"
+    },
+    "wd-mu4-ma3": {
+      "say": "木马",
+      "file": "wd-mu4-ma3.mp3"
+    },
+    "wd-ma3-yi3": {
+      "say": "蚂蚁",
+      "file": "wd-ma3-yi3.mp3"
+    },
+    "wd-yi1-fu0": {
+      "say": "衣服",
+      "file": "wd-yi1-fu0.mp3"
+    },
+    "wd-pu4-bu4": {
+      "say": "瀑布",
+      "file": "wd-pu4-bu4.mp3"
+    },
+    "wd-wu1-ya1": {
+      "say": "乌鸦",
+      "file": "wd-wu1-ya1.mp3"
+    },
+    "wd-fu4-mu3": {
+      "say": "父母",
+      "file": "wd-fu4-mu3.mp3"
+    },
+    "st-3-1": {
+      "say": "爸爸爬坡。",
+      "file": "st-3-1.mp3"
+    },
+    "st-3-2": {
+      "say": "妈妈摸摸我。",
+      "file": "st-3-2.mp3"
+    },
+    "sy-mi3": {
+      "say": "米",
+      "file": "sy-mi3.mp3",
+      "source": "davinfifield"
+    },
+    "sy-yu2": {
+      "say": "鱼",
+      "file": "sy-yu2.mp3",
+      "source": "davinfifield"
+    },
+    "sy-di4": {
+      "say": "地",
+      "file": "sy-di4.mp3",
+      "source": "davinfifield"
+    },
+    "sy-la3": {
+      "say": "喇",
+      "file": "sy-la3.mp3",
+      "source": "davinfifield"
+    },
+    "sy-ni2": {
+      "say": "泥",
+      "file": "sy-ni2.mp3",
+      "source": "davinfifield"
+    },
+    "sy-pa4": {
+      "say": "怕",
+      "file": "sy-pa4.mp3",
+      "source": "davinfifield"
+    },
+    "sy-di1": {
+      "say": "嘀",
+      "file": "sy-di1.mp3",
+      "source": "davinfifield"
+    },
+    "sy-da1": {
+      "say": "嗒",
+      "file": "sy-da1.mp3",
+      "source": "davinfifield"
+    },
+    "wd-da4-mi3": {
+      "say": "大米",
+      "file": "wd-da4-mi3.mp3"
+    },
+    "wd-da4-yu2": {
+      "say": "大鱼",
+      "file": "wd-da4-yu2.mp3"
+    },
+    "wd-di4-tu2": {
+      "say": "地图",
+      "file": "wd-di4-tu2.mp3"
+    },
+    "wd-ma3-lu4": {
+      "say": "马路",
+      "file": "wd-ma3-lu4.mp3"
+    },
+    "wd-la3-ba0": {
+      "say": "喇叭",
+      "file": "wd-la3-ba0.mp3"
+    },
+    "wd-ni2-tu3": {
+      "say": "泥土",
+      "file": "wd-ni2-tu3.mp3"
+    },
+    "wd-tu3-di4": {
+      "say": "土地",
+      "file": "wd-tu3-di4.mp3"
+    },
+    "wd-da4-lu4": {
+      "say": "大陆",
+      "file": "wd-da4-lu4.mp3"
+    },
+    "st-4-1": {
+      "say": "他不怕。",
+      "file": "st-4-1.mp3"
+    },
+    "st-4-2": {
+      "say": "喇叭嘀嘀嗒。",
+      "file": "st-4-2.mp3"
+    },
+    "sy-hua1": {
+      "say": "花",
+      "file": "sy-hua1.mp3",
+      "source": "davinfifield"
+    },
+    "sy-duo3": {
+      "say": "朵",
+      "file": "sy-duo3.mp3",
+      "source": "davinfifield"
+    },
+    "sy-ke3": {
+      "say": "可",
+      "file": "sy-ke3.mp3",
+      "source": "davinfifield"
+    },
+    "sy-le4": {
+      "say": "乐",
+      "file": "sy-le4.mp3",
+      "source": "davinfifield"
+    },
+    "sy-gu1": {
+      "say": "姑",
+      "file": "sy-gu1.mp3",
+      "source": "davinfifield"
+    },
+    "sy-he1": {
+      "say": "喝",
+      "file": "sy-he1.mp3",
+      "source": "davinfifield"
+    },
+    "wd-ge1-ge0": {
+      "say": "哥哥",
+      "file": "wd-ge1-ge0.mp3"
+    },
+    "wd-he2-ma3": {
+      "say": "河马",
+      "file": "wd-he2-ma3.mp3"
+    },
+    "wd-hua1-duo3": {
+      "say": "花朵",
+      "file": "wd-hua1-duo3.mp3"
+    },
+    "wd-ke3-le4": {
+      "say": "可乐",
+      "file": "wd-ke3-le4.mp3"
+    },
+    "wd-da4-he2": {
+      "say": "大河",
+      "file": "wd-da4-he2.mp3"
+    },
+    "wd-mu4-gua1": {
+      "say": "木瓜",
+      "file": "wd-mu4-gua1.mp3"
+    },
+    "wd-gu1-gu0": {
+      "say": "姑姑",
+      "file": "wd-gu1-gu0.mp3"
+    },
+    "st-5-1": {
+      "say": "哥哥喝可乐。",
+      "file": "st-5-1.mp3"
+    },
+    "st-5-2": {
+      "say": "河马过河。",
+      "file": "st-5-2.mp3"
+    },
+    "sy-xi1": {
+      "say": "西",
+      "file": "sy-xi1.mp3",
+      "source": "davinfifield"
+    },
+    "sy-xia1": {
+      "say": "虾",
+      "file": "sy-xia1.mp3",
+      "source": "davinfifield"
+    },
+    "sy-qu1": {
+      "say": "曲",
+      "file": "sy-qu1.mp3",
+      "source": "davinfifield"
+    },
+    "wd-xi1-gua1": {
+      "say": "西瓜",
+      "file": "wd-xi1-gua1.mp3"
+    },
+    "wd-da4-xia1": {
+      "say": "大虾",
+      "file": "wd-da4-xia1.mp3"
+    },
+    "wd-ju2-hua1": {
+      "say": "菊花",
+      "file": "wd-ju2-hua1.mp3"
+    },
+    "wd-ji1-qi4": {
+      "say": "机器",
+      "file": "wd-ji1-qi4.mp3"
+    },
+    "wd-qu1-qi2": {
+      "say": "曲奇",
+      "file": "wd-qu1-qi2.mp3"
+    },
+    "wd-jia1-ju4": {
+      "say": "家具",
+      "file": "wd-jia1-ju4.mp3"
+    },
+    "wd-xi3-yi1": {
+      "say": "洗衣",
+      "file": "wd-xi3-yi1.mp3"
+    },
+    "st-6-1": {
+      "say": "大虾过河。",
+      "file": "st-6-1.mp3"
+    },
+    "st-6-2": {
+      "say": "我去洗衣。",
+      "file": "st-6-2.mp3"
+    },
+    "sy-ku4": {
+      "say": "裤",
+      "file": "sy-ku4.mp3",
+      "source": "davinfifield"
+    },
+    "sy-wa4": {
+      "say": "袜",
+      "file": "sy-wa4.mp3",
+      "source": "davinfifield"
+    },
+    "sy-zi3": {
+      "say": "紫",
+      "file": "sy-zi3.mp3",
+      "source": "davinfifield"
+    },
+    "sy-zi4": {
+      "say": "字",
+      "file": "sy-zi4.mp3",
+      "source": "davinfifield"
+    },
+    "sy-si1": {
+      "say": "司",
+      "file": "sy-si1.mp3",
+      "source": "davinfifield"
+    },
+    "sy-guo2": {
+      "say": "国",
+      "file": "sy-guo2.mp3",
+      "source": "davinfifield"
+    },
+    "sy-ji3": {
+      "say": "己",
+      "file": "sy-ji3.mp3",
+      "source": "davinfifield"
+    },
+    "sy-xia4": {
+      "say": "下",
+      "file": "sy-xia4.mp3",
+      "source": "davinfifield"
+    },
+    "wd-ku4-zi0": {
+      "say": "裤子",
+      "file": "wd-ku4-zi0.mp3"
+    },
+    "wd-wa4-zi0": {
+      "say": "袜子",
+      "file": "wd-wa4-zi0.mp3"
+    },
+    "wd-zi3-se4": {
+      "say": "紫色",
+      "file": "wd-zi3-se4.mp3"
+    },
+    "wd-zi4-mu3": {
+      "say": "字母",
+      "file": "wd-zi4-mu3.mp3"
+    },
+    "wd-si1-ji1": {
+      "say": "司机",
+      "file": "wd-si1-ji1.mp3"
+    },
+    "wd-zu3-guo2": {
+      "say": "祖国",
+      "file": "wd-zu3-guo2.mp3"
+    },
+    "st-7-1": {
+      "say": "我自己洗袜子。",
+      "file": "st-7-1.mp3"
+    },
+    "st-7-2": {
+      "say": "弟弟坐下。",
+      "file": "st-7-2.mp3"
+    },
+    "sy-che1": {
+      "say": "车",
+      "file": "sy-che1.mp3",
+      "source": "davinfifield"
+    },
+    "sy-shi1": {
+      "say": "狮",
+      "file": "sy-shi1.mp3",
+      "source": "davinfifield"
+    },
+    "sy-ri4": {
+      "say": "日",
+      "file": "sy-ri4.mp3",
+      "source": "davinfifield"
+    },
+    "sy-chu1": {
+      "say": "出",
+      "file": "sy-chu1.mp3",
+      "source": "davinfifield"
+    },
+    "sy-zhi1": {
+      "say": "枝",
+      "file": "sy-zhi1.mp3",
+      "source": "davinfifield"
+    },
+    "sy-zhe4": {
+      "say": "这",
+      "file": "sy-zhe4.mp3",
+      "source": "davinfifield"
+    },
+    "sy-shi4": {
+      "say": "是",
+      "file": "sy-shi4.mp3",
+      "source": "davinfifield"
+    },
+    "wd-huo3-che1": {
+      "say": "火车",
+      "file": "wd-huo3-che1.mp3"
+    },
+    "wd-shi1-zi0": {
+      "say": "狮子",
+      "file": "wd-shi1-zi0.mp3"
+    },
+    "wd-ri4-chu1": {
+      "say": "日出",
+      "file": "wd-ri4-chu1.mp3"
+    },
+    "wd-zhu2-zi0": {
+      "say": "竹子",
+      "file": "wd-zhu2-zi0.mp3"
+    },
+    "wd-he1-cha2": {
+      "say": "喝茶",
+      "file": "wd-he1-cha2.mp3"
+    },
+    "wd-shu4-zhi1": {
+      "say": "树枝",
+      "file": "wd-shu4-zhi1.mp3"
+    },
+    "wd-shu1-shu0": {
+      "say": "叔叔",
+      "file": "wd-shu1-shu0.mp3"
+    },
+    "st-8-1": {
+      "say": "叔叔喝茶。",
+      "file": "st-8-1.mp3"
+    },
+    "st-8-2": {
+      "say": "这是书。",
+      "file": "st-8-2.mp3"
+    },
+    "sy-cai4": {
+      "say": "菜",
+      "file": "sy-cai4.mp3",
+      "source": "davinfifield"
+    },
+    "sy-guo3": {
+      "say": "果",
+      "file": "sy-guo3.mp3",
+      "source": "davinfifield"
+    },
+    "sy-fei1": {
+      "say": "飞",
+      "file": "sy-fei1.mp3",
+      "source": "davinfifield"
+    },
+    "sy-nai3": {
+      "say": "奶",
+      "file": "sy-nai3.mp3",
+      "source": "davinfifield"
+    },
+    "sy-mei4": {
+      "say": "妹",
+      "file": "sy-mei4.mp3",
+      "source": "davinfifield"
+    },
+    "sy-gui4": {
+      "say": "柜",
+      "file": "sy-gui4.mp3",
+      "source": "davinfifield"
+    },
+    "sy-zai4": {
+      "say": "在",
+      "file": "sy-zai4.mp3",
+      "source": "davinfifield"
+    },
+    "sy-ai4": {
+      "say": "爱",
+      "file": "sy-ai4.mp3",
+      "source": "davinfifield"
+    },
+    "wd-bei1-zi0": {
+      "say": "杯子",
+      "file": "wd-bei1-zi0.mp3"
+    },
+    "wd-bai2-cai4": {
+      "say": "白菜",
+      "file": "wd-bai2-cai4.mp3"
+    },
+    "wd-shui3-guo3": {
+      "say": "水果",
+      "file": "wd-shui3-guo3.mp3"
+    },
+    "wd-da4-hai3": {
+      "say": "大海",
+      "file": "wd-da4-hai3.mp3"
+    },
+    "wd-fei1-ji1": {
+      "say": "飞机",
+      "file": "wd-fei1-ji1.mp3"
+    },
+    "wd-nai3-nai0": {
+      "say": "奶奶",
+      "file": "wd-nai3-nai0.mp3"
+    },
+    "wd-mei4-mei0": {
+      "say": "妹妹",
+      "file": "wd-mei4-mei0.mp3"
+    },
+    "wd-gui4-zi0": {
+      "say": "柜子",
+      "file": "wd-gui4-zi0.mp3"
+    },
+    "st-9-1": {
+      "say": "飞机在飞。",
+      "file": "st-9-1.mp3"
+    },
+    "st-9-2": {
+      "say": "我爱喝水。",
+      "file": "st-9-2.mp3"
+    },
+    "sy-xiao3": {
+      "say": "小",
+      "file": "sy-xiao3.mp3",
+      "source": "davinfifield"
+    },
+    "sy-qiu2": {
+      "say": "球",
+      "file": "sy-qiu2.mp3",
+      "source": "davinfifield"
+    },
+    "sy-lao3": {
+      "say": "老",
+      "file": "sy-lao3.mp3",
+      "source": "davinfifield"
+    },
+    "sy-cao3": {
+      "say": "草",
+      "file": "sy-cao3.mp3",
+      "source": "davinfifield"
+    },
+    "sy-mei2": {
+      "say": "莓",
+      "file": "sy-mei2.mp3",
+      "source": "davinfifield"
+    },
+    "sy-hou2": {
+      "say": "猴",
+      "file": "sy-hou2.mp3",
+      "source": "davinfifield"
+    },
+    "sy-chi1": {
+      "say": "吃",
+      "file": "sy-chi1.mp3",
+      "source": "davinfifield"
+    },
+    "sy-ti1": {
+      "say": "踢",
+      "file": "sy-ti1.mp3",
+      "source": "davinfifield"
+    },
+    "wd-xiao3-gou3": {
+      "say": "小狗",
+      "file": "wd-xiao3-gou3.mp3"
+    },
+    "wd-xiao3-mao1": {
+      "say": "小猫",
+      "file": "wd-xiao3-mao1.mp3"
+    },
+    "wd-qi4-qiu2": {
+      "say": "气球",
+      "file": "wd-qi4-qiu2.mp3"
+    },
+    "wd-lao3-hu3": {
+      "say": "老虎",
+      "file": "wd-lao3-hu3.mp3"
+    },
+    "wd-zu2-qiu2": {
+      "say": "足球",
+      "file": "wd-zu2-qiu2.mp3"
+    },
+    "wd-cao3-mei2": {
+      "say": "草莓",
+      "file": "wd-cao3-mei2.mp3"
+    },
+    "wd-hou2-zi0": {
+      "say": "猴子",
+      "file": "wd-hou2-zi0.mp3"
+    },
+    "wd-niu2-nai3": {
+      "say": "牛奶",
+      "file": "wd-niu2-nai3.mp3"
+    },
+    "st-10-1": {
+      "say": "小猫吃鱼。",
+      "file": "st-10-1.mp3"
+    },
+    "st-10-2": {
+      "say": "我爱踢足球。",
+      "file": "st-10-2.mp3"
+    },
+    "sy-die2": {
+      "say": "蝶",
+      "file": "sy-die2.mp3",
+      "source": "davinfifield"
+    },
+    "sy-er3": {
+      "say": "耳",
+      "file": "sy-er3.mp3",
+      "source": "davinfifield"
+    },
+    "sy-xiao4": {
+      "say": "校",
+      "file": "sy-xiao4.mp3",
+      "source": "davinfifield"
+    },
+    "sy-ye2": {
+      "say": "爷",
+      "file": "sy-ye2.mp3",
+      "source": "davinfifield"
+    },
+    "wd-xie2-zi0": {
+      "say": "鞋子",
+      "file": "wd-xie2-zi0.mp3"
+    },
+    "wd-hu2-die2": {
+      "say": "蝴蝶",
+      "file": "wd-hu2-die2.mp3"
+    },
+    "wd-er3-duo0": {
+      "say": "耳朵",
+      "file": "wd-er3-duo0.mp3"
+    },
+    "wd-xue2-xiao4": {
+      "say": "学校",
+      "file": "wd-xue2-xiao4.mp3"
+    },
+    "wd-ye2-ye0": {
+      "say": "爷爷",
+      "file": "wd-ye2-ye0.mp3"
+    },
+    "wd-jie3-jie0": {
+      "say": "姐姐",
+      "file": "wd-jie3-jie0.mp3"
+    },
+    "wd-xue3-hua1": {
+      "say": "雪花",
+      "file": "wd-xue3-hua1.mp3"
+    },
+    "st-11-1": {
+      "say": "蝴蝶在飞。",
+      "file": "st-11-1.mp3"
+    },
+    "st-11-2": {
+      "say": "姐姐去学校。",
+      "file": "st-11-2.mp3"
+    },
+    "sy-ren2": {
+      "say": "人",
+      "file": "sy-ren2.mp3",
+      "source": "davinfifield"
+    },
+    "sy-yu3": {
+      "say": "雨",
+      "file": "sy-yu3.mp3",
+      "source": "davinfifield"
+    },
+    "sy-san3": {
+      "say": "伞",
+      "file": "sy-san3.mp3",
+      "source": "davinfifield"
+    },
+    "sy-mian4": {
+      "say": "面",
+      "file": "sy-mian4.mp3",
+      "source": "davinfifield"
+    },
+    "sy-bao1": {
+      "say": "包",
+      "file": "sy-bao1.mp3",
+      "source": "davinfifield"
+    },
+    "sy-dian4": {
+      "say": "电",
+      "file": "sy-dian4.mp3",
+      "source": "davinfifield"
+    },
+    "sy-nao3": {
+      "say": "脑",
+      "file": "sy-nao3.mp3",
+      "source": "davinfifield"
+    },
+    "sy-yun2": {
+      "say": "云",
+      "file": "sy-yun2.mp3",
+      "source": "davinfifield"
+    },
+    "sy-qin1": {
+      "say": "亲",
+      "file": "sy-qin1.mp3",
+      "source": "davinfifield"
+    },
+    "sy-dui1": {
+      "say": "堆",
+      "file": "sy-dui1.mp3",
+      "source": "davinfifield"
+    },
+    "sy-piao1": {
+      "say": "飘",
+      "file": "sy-piao1.mp3",
+      "source": "davinfifield"
+    },
+    "wd-xue3-ren2": {
+      "say": "雪人",
+      "file": "wd-xue3-ren2.mp3"
+    },
+    "wd-yu3-san3": {
+      "say": "雨伞",
+      "file": "wd-yu3-san3.mp3"
+    },
+    "wd-mian4-bao1": {
+      "say": "面包",
+      "file": "wd-mian4-bao1.mp3"
+    },
+    "wd-qun2-zi0": {
+      "say": "裙子",
+      "file": "wd-qun2-zi0.mp3"
+    },
+    "wd-dian4-nao3": {
+      "say": "电脑",
+      "file": "wd-dian4-nao3.mp3"
+    },
+    "wd-bai2-yun2": {
+      "say": "白云",
+      "file": "wd-bai2-yun2.mp3"
+    },
+    "wd-qin1-ren2": {
+      "say": "亲人",
+      "file": "wd-qin1-ren2.mp3"
+    },
+    "st-12-1": {
+      "say": "我们堆雪人。",
+      "file": "st-12-1.mp3"
+    },
+    "st-12-2": {
+      "say": "白云飘飘。",
+      "file": "st-12-2.mp3"
+    },
+    "sy-tai4": {
+      "say": "太",
+      "file": "sy-tai4.mp3",
+      "source": "davinfifield"
+    },
+    "sy-yue4": {
+      "say": "月",
+      "file": "sy-yue4.mp3",
+      "source": "davinfifield"
+    },
+    "sy-deng1": {
+      "say": "灯",
+      "file": "sy-deng1.mp3",
+      "source": "davinfifield"
+    },
+    "sy-xiang4": {
+      "say": "相",
+      "file": "sy-xiang4.mp3",
+      "source": "davinfifield"
+    },
+    "sy-hong2": {
+      "say": "红",
+      "file": "sy-hong2.mp3",
+      "source": "davinfifield"
+    },
+    "sy-shang4": {
+      "say": "上",
+      "file": "sy-shang4.mp3",
+      "source": "davinfifield"
+    },
+    "sy-fang4": {
+      "say": "放",
+      "file": "sy-fang4.mp3",
+      "source": "davinfifield"
+    },
+    "wd-xiong2-mao1": {
+      "say": "熊猫",
+      "file": "wd-xiong2-mao1.mp3"
+    },
+    "wd-xing1-xing0": {
+      "say": "星星",
+      "file": "wd-xing1-xing0.mp3"
+    },
+    "wd-tai4-yang2": {
+      "say": "太阳",
+      "file": "wd-tai4-yang2.mp3"
+    },
+    "wd-yue4-liang0": {
+      "say": "月亮",
+      "file": "wd-yue4-liang0.mp3"
+    },
+    "wd-feng1-zheng0": {
+      "say": "风筝",
+      "file": "wd-feng1-zheng0.mp3"
+    },
+    "wd-deng1-long0": {
+      "say": "灯笼",
+      "file": "wd-deng1-long0.mp3"
+    },
+    "wd-xiang4-ji1": {
+      "say": "相机",
+      "file": "wd-xiang4-ji1.mp3"
+    },
+    "wd-hong2-se4": {
+      "say": "红色",
+      "file": "wd-hong2-se4.mp3"
+    },
+    "st-13-1": {
+      "say": "天上有星星。",
+      "file": "st-13-1.mp3"
+    },
+    "st-13-2": {
+      "say": "我爱放风筝。",
+      "file": "st-13-2.mp3"
+    },
+    "ln-moon": {
+      "say": "欢迎来到词句卫星，我们来读词语和句子吧！",
+      "file": "ln-moon.mp3"
+    },
+    "ln-game-read": {
+      "say": "点一点拼音，读一读句子！",
+      "file": "ln-game-read.mp3"
     }
   }
 }

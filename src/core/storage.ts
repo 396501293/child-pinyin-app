@@ -73,6 +73,7 @@ export function peekProfile(
     for (const planet of Object.values(p.planets ?? {}))
       for (const s of planet?.stars ?? []) stars += Number(s) || 0;
     for (const s of Object.values(p.stations ?? {})) stars += Number(s) || 0;
+    for (const s of Object.values(p.moons ?? {})) stars += Number(s) || 0; // 词句卫星（与 totalStars 同口径）
     return { unlocked: Number(p.unlocked) || 1, stars };
   } catch {
     return null;
@@ -157,6 +158,7 @@ export function loadProgress(store: StorageLike = safeStore()): Progress {
     unlocked: Math.min(MAX_NODE, Math.max(1, Number(parsed.unlocked) || 1)),
     planets: { ...d.planets, ...parsed.planets },
     stations: { ...d.stations, ...parsed.stations },
+    moons: { ...d.moons, ...parsed.moons },
     radar: { ...d.radar, ...parsed.radar },
     launchpad: { ...d.launchpad, ...parsed.launchpad },
     collectionSeen: parsed.collectionSeen ?? [],

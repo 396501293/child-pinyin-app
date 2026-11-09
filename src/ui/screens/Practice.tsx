@@ -8,10 +8,14 @@ import { PinyinCards } from '../components/PinyinCard';
 import { DockingShip } from '../components/DockingShip';
 import { FeedbackOverlay } from '../components/FeedbackOverlay';
 import { FourLineGrid } from '../components/FourLineGrid';
+import { PicCards } from '../components/PicCards';
+import { ReadAlong } from '../components/ReadAlong';
 
 interface PracticeProps {
   session: Session;
-  onPick: (value: string) => void; // 三种题共用；blend 由 App 按当前段批改
+  onPick: (value: string) => void; // 选择题共用；blend 由 App 按当前段批改
+  onTapSyllable: (index: number) => void; // read-along 点读
+  onReadDone: () => void;               // read-along 读完
   onReplay: () => void;            // 大 🔊 重播本题音频
   onExit: () => void;
 }
@@ -20,9 +24,12 @@ const PROMPT: Record<Question['kind'], string> = {
   'listen-pick': '听一听，是哪一个？',
   'tone-pick': '听一听，是第几声？',
   blend: '把飞船拼出来！',
+  'word-pick': '听一听，是哪个词？',
+  'pic-pick': '读一读，是哪张图？',
+  'read-along': '点一点，读一读！',
 };
 
-export function Practice({ session, onPick, onReplay, onExit }: PracticeProps) {
+export function Practice({ session, onPick, onTapSyllable, onReadDone, onReplay, onExit }: PracticeProps) {
   const q = session.current;
   if (!q) return null; // 结算瞬间的空帧（App 立即切 result）
 
@@ -41,11 +48,35 @@ export function Practice({ session, onPick, onReplay, onExit }: PracticeProps) {
 
       {/* 提示行：大喇叭重播 + 一句话题干 */}
       <div class="pp-prompt">
-        <button class="pp-replay" onClick={onReplay} aria-label="再听一遍">🔊</button>
+        {/* 看拼音选图考「自己读」：不给喇叭（播了就成听辨）；点读题的整句按钮在题面里 */}
+        {q.kind !== 'pic-pick' && q.kind !== 'read-along' && (
+          <button class="pp-replay" onClick={onReplay} aria-label="再听一遍">🔊</button>
+        )}
         <span class="pp-prompt-text">{PROMPT[q.kind]}</span>
       </div>
 
-      {q.kind === 'blend' ? (
+      {q.kind === 'pic-pick' ? (
+        <div class="pp-picq">
+          <div class="pp-py pp-picq-word">{q.text}</div>
+          <PicCards
+            options={q.options}
+            answer={q.answer}
+            excluded={session.excluded}
+            lastWrong={session.lastWrong}
+            feedback={session.feedback}
+            onPick={onPick}
+          />
+        </div>
+      ) : q.kind === 'read-along' ? (
+        <ReadAlong
+          syl={q.syl}
+          hz={q.hz}
+          tapped={session.tapped}
+          onTap={onTapSyllable}
+          onPlayAll={onReplay}
+          onDone={onReadDone}
+        />
+      ) : q.kind === 'blend' ? (
         <div class="pp-blend">
           <FourLineGrid text={q.target.text} band={44} />
           <DockingShip stages={q.stages} docked={session.docked} stage={session.stage} />
@@ -66,7 +97,7 @@ export function Practice({ session, onPick, onReplay, onExit }: PracticeProps) {
           excluded={session.excluded}
           lastWrong={session.lastWrong}
           feedback={session.feedback}
-          size={q.kind === 'tone-pick' ? 'tone' : 'listen'}
+          size={q.kind === 'tone-pick' ? 'tone' : q.kind === 'word-pick' ? 'word' : 'listen'}
           onPick={onPick}
         />
       )}

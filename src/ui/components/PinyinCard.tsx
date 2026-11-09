@@ -9,7 +9,7 @@ interface PinyinCardsProps {
   excluded: readonly string[];
   lastWrong?: string;
   feedback: Feedback;
-  size: 'listen' | 'tone' | 'stage'; // 练1 三大卡 / 练2 四声宽卡 / 拼读段选卡
+  size: 'listen' | 'tone' | 'stage' | 'word'; // 练1 三大卡 / 练2 四声宽卡 / 拼读段选卡 / 卫星词卡
   onPick: (value: string) => void;
 }
 

@@ -4,6 +4,7 @@
 // (c) public/audio/ 无孤儿 mp3（每个文件恰被一个 clip 引用）；
 // (d) lines.ts 的 VOICE 台词与 audio-script.json 的 ln-* 双向一致。
 // 外加：sy-* 的 say 必须等于课程表载字（audio-script 与 curriculum 永不脱钩）。
+// (e) 词句卫星（wordbank）的整词/整句/点读全部可解析；只有轻声允许点读无 clip。
 import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -17,9 +18,13 @@ import {
   clipForLine,
   clipForSyllable,
   clipForTonedVowel,
+  clipForSentence,
+  clipForTap,
   clipForWholeRead,
+  clipForWord,
   clipInfo,
 } from '../../src/audio/manifest';
+import { MOONS } from '../../src/data/wordbank';
 import type { ClipId } from '../../src/audio/manifest';
 import { VOICE } from '../../src/audio/lines';
 
@@ -165,5 +170,33 @@ describe('manifest id mapping', () => {
     expect(() => clipForLine('ln-nope')).toThrow();
     expect(() => clipForLine('sy-ba4')).toThrow(); // 非 ln- 不走台词通道
     expect(() => clipInfo('sy-nope1' as ClipId)).toThrow(); // clipInfo 同守「缺失即 throw」
+  });
+});
+
+describe('guard (e): wordbank (词句卫星) resolves', () => {
+  it('every word / sentence has its TTS clip', () => {
+    for (const m of MOONS) {
+      for (const w of m.words) expect(() => clipForWord(w), w.hz).not.toThrow();
+      m.sentences.forEach((s, i) => expect(() => clipForSentence(m.lesson, i), s.hz).not.toThrow());
+    }
+  });
+
+  it('every toned syllable taps to a human-voice clip; only 轻声 may fall back (null)', () => {
+    for (const m of MOONS) {
+      for (const e of [...m.words, ...m.sentences]) {
+        for (const syl of e.syl) {
+          const id = clipForTap(syl);
+          if (parseSyllable(syl).tone === 0) continue; // 轻声：有则用，无则降级整词/整句
+          expect(id, `${e.hz}「${syl}」`).not.toBeNull();
+          expect((CLIPS[id!] as { source?: string }).source, `${id} 应为人声`).toBe('davinfifield');
+        }
+      }
+    }
+  });
+
+  it('轻声 sy-*0 只来自数据集（不是 TTS）', () => {
+    for (const [id, clip] of Object.entries(CLIPS)) {
+      if (/^sy-.*0$/.test(id)) expect((clip as { source?: string }).source, id).toBe('davinfifield');
+    }
   });
 });

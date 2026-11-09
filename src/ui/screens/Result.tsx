@@ -10,6 +10,7 @@ interface ResultProps {
   station: boolean;
   lesson: Lesson | null;  // station 时 null
   practice: 1 | 2 | 3;
+  moon?: boolean;         // 词句卫星会话（标题改「词句卫星完成！」）
   unlockedNext: boolean;  // 本次点亮推进了解锁链 → 「解锁新星球」横幅
   newItems: string[];     // 本次拿星新点亮的图鉴收藏名 → 「新伙伴」横幅（揭示在图鉴到访时）
   onRetry: () => void;    // 再来一次（同一练重开）
@@ -23,7 +24,7 @@ const SUB: Record<Star, string> = {
   0: '再试一次吧！', // 防御性：完成即 ≥1★（progression.starsFor），0 仅在异常态出现
 };
 
-export function Result({ stars, station, lesson, practice, unlockedNext, newItems, onRetry, onBackToMap }: ResultProps) {
+export function Result({ stars, station, lesson, practice, moon, unlockedNext, newItems, onRetry, onBackToMap }: ResultProps) {
   return (
     <div class="pp-result">
       <div class="pp-result-card">
@@ -37,7 +38,7 @@ export function Result({ stars, station, lesson, practice, unlockedNext, newItem
           {station ? '空间站复习完成！' : (
             <>
               <span class="pp-py pp-result-title-py">{lesson?.title}</span>
-              {` · ${lesson ? practiceLabel(lesson, practice) : ''}完成！`}
+              {` · ${moon ? '词句卫星' : lesson ? practiceLabel(lesson, practice) : ''}完成！`}
             </>
           )}
         </div>
